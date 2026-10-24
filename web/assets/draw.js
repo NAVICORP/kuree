@@ -568,7 +568,7 @@
     var g = canvas.getContext("2d"), scene = null, raf = 0, t0 = 0, from = 0, snd = null, api = {};
     function fit() {
       var r = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var w = Math.max(270, Math.round(r.width * dpr)), h = Math.round(w * H / W);
+      var w = Math.max(270, Math.round(Math.max(r.width, r.height * W / H) * dpr)), h = Math.round(w * H / W);
       if (canvas.width !== w) { canvas.width = w; canvas.height = h; }
     }
     function frame(now) {
