@@ -1,10 +1,10 @@
 # Kuree: store listing
 
-Everything to paste into Google Play Console and App Store Connect. The pictures are in `store/` (made by `tools/store/make.cjs` from the app screens with the made-up Riverside kuri, so no real names are shown).
+Everything to paste into Google Play Console and App Store Connect. The pictures are in `store/` (made by `tools/store/make.cjs` from the app screens with the made-up Riverside chit, so no real names are shown).
 
 ## Both stores
 
-- App name: **Kuree: Kuri Tracker** (if the name is free; otherwise **Kuree Kuri Manager**)
+- App name: **Kuree: Chit Tracker** (if the name is free; otherwise **Kuree Chit Manager**)
 - Developer: SkiFi (SKIFI GROUP LLC)
 - Category: **Finance** (App Store secondary: Productivity)
 - Website: https://kureeapp.com
@@ -19,15 +19,15 @@ Everything to paste into Google Play Console and App Store Connect. The pictures
 **Short description** (80 max)
 
 ```
-Track kuri payments and fines, draw who takes the pot, remind on WhatsApp.
+Track chit payments and fines, draw who takes the pot, remind on WhatsApp.
 ```
 
 **Full description** (4000 max)
 
 ```
-Kuree keeps your kuri in one place: who paid, who is late, who takes the pot and what comes next.
+Kuree keeps your chit in one place: who paid, who is late, who takes the pot and what comes next.
 
-It is made for the people who run a kuri. Members don't need the app. They follow along from a private link you share in the group, with no login.
+It is made for the people who run a chit. Members don't need the app. They follow along from a private link you share in the group, with no login.
 
 EVERY MONTH ON ONE SCREEN
 - Tap the tick when someone pays. The total and what's left update as you go.
@@ -75,19 +75,19 @@ Sign in with a code on WhatsApp or by email.
 | Name (the admin's display name) | Yes | No | App functionality | No |
 | Phone number (admin sign-in with WhatsApp) | Yes | No | Account management | Yes, email works instead |
 | Email address (admin sign-in with email) | Yes | No | Account management | Yes, WhatsApp works instead |
-| Other user-generated content (the kuri: member names, payments, and member phone numbers the admin adds for reminders) | Yes | No | App functionality | No |
+| Other user-generated content (the chit: member names, payments, and member phone numbers the admin adds for reminders) | Yes | No | App functionality | No |
 
 - Data is encrypted in transit: Yes.
 - Users can ask for their data to be deleted: Yes (in the app, and https://kureeapp.com/delete-account).
 - No location, contacts, photos, files, audio, device IDs, analytics or crash data are collected. Saving the draw video writes to the phone's gallery only.
 
-**App access** (for review): sign in with Email > Use a password, with the review account in `docs/RELEASE.md` section 5. It opens a sample kuri.
+**App access** (for review): sign in with Email > Use a password, with the review account in `docs/RELEASE.md` section 5. It opens a sample chit.
 
 ## App Store
 
 - **Subtitle** (30 max): `Payments, fines and the draw`
-- **Promotional text** (170 max): `Run your kuri from your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.`
-- **Keywords** (100 max): `kuri,savings group,rotating savings,committee,monthly draw,pot,collection,fines,members,whatsapp`
+- **Promotional text** (170 max): `Run your chit from your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.`
+- **Keywords** (100 max): `chit,chit fund,kuri,savings group,rotating savings,committee,monthly draw,pot,fines,whatsapp`
 - **Description**: the Google Play full description above.
 - **What's New** (first version): `The first version of Kuree.`
 - Age rating: 4+ (no gambling: see the content rating note above). Made for Kids: No.
@@ -97,13 +97,13 @@ Sign in with a code on WhatsApp or by email.
 - Review notes:
 
 ```
-Kuree is for the admins of a kuri, a rotating savings group common in Kerala, India: each month every member pays a share and one member takes the whole pot, until everyone has had it once. The app keeps the record only and never holds or moves money.
+Kuree is for the admins of a chit, an informal rotating savings group common in India (also called a kuri): each month every member pays a share and one member takes the whole pot, until everyone has had it once. The app keeps the record only and never holds or moves money. It is not a chit fund company and offers no financial service.
 
-To sign in: Email > Use a password, with the review account below. It has a sample kuri ready.
+To sign in: Email > Use a password, with the review account below. It has a sample chit ready.
 
 The bottle draw picks which member receives this month's pot (their own group's savings). Nothing is staked or won from the app.
 
-Members see the kuri on a read-only web page from a link the admin shares, for example https://kureeapp.com/k/demo
+Members see the chit on a read-only web page from a link the admin shares, for example https://kureeapp.com/k/demo
 ```
 
 ## Pictures

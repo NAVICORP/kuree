@@ -34,7 +34,7 @@ export function demoKuri(now = new Date()) {
   }
   const data = {
     v: 1,
-    name: '10K Kuri',
+    name: '10K Chit',
     group: 'Riverside',
     share: SHARE,
     slots: 12,

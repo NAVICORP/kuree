@@ -93,7 +93,7 @@ def main(out, d):
         ws.column_dimensions[get_column_letter(4 + i)].width = 12
 
     ws = wb.create_sheet("How it works")
-    title = ("%s %s" % (d.get("group") or "", d.get("name") or "Kuri")).strip()
+    title = ("%s %s" % (d.get("group") or "", d.get("name") or "Chit")).strip()
     ws.append([title])
     ws["A1"].font = Font(bold=True, size=13)
     cd, ld = int(d.get("collectDay") or 20), int(d.get("lastDay") or 25)

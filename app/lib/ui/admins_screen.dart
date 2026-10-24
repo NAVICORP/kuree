@@ -47,15 +47,15 @@ class _AdminsScreenState extends State<AdminsScreen> {
     final added = await showKSheet<dynamic>(context, title: 'Add an admin', builder: (ctx) => _AddAdmin(kuriId: widget.record.id));
     if (added != null && mounted) {
       _take(added);
-      toast(context, 'Added. They see this kuri when they sign in.');
+      toast(context, 'Added. They see this chit when they sign in.');
     }
   }
 
   Future<void> _remove(Map<String, dynamic> a) async {
     final mine = a['me'] == true;
     final ok = await confirm(context,
-        title: mine ? 'Leave this kuri?' : 'Remove ${_label(a)}?',
-        text: mine ? 'You will no longer see or change it.' : 'They will no longer see or change this kuri.',
+        title: mine ? 'Leave this chit?' : 'Remove ${_label(a)}?',
+        text: mine ? 'You will no longer see or change it.' : 'They will no longer see or change this chit.',
         yes: mine ? 'Leave' : 'Remove',
         danger: true);
     if (!ok) return;
@@ -75,7 +75,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
   Future<void> _makeOwner(Map<String, dynamic> a) async {
     final ok = await confirm(context,
         title: 'Make ${_label(a)} the owner?',
-        text: 'They will be able to add and remove admins and delete the kuri. You stay on as an admin.',
+        text: 'They will be able to add and remove admins and delete the chit. You stay on as an admin.',
         yes: 'Make owner');
     if (!ok) return;
     try {
@@ -83,7 +83,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
       if (!mounted) return;
       _take(j);
       Navigator.of(context).popUntil((r) => r.isFirst);
-      toast(context, '${_label(a)} owns the kuri now.');
+      toast(context, '${_label(a)} owns the chit now.');
     } on ApiError catch (e) {
       if (mounted) toast(context, e.message, bad: true);
     }
@@ -150,7 +150,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
                     onPressed: () async {
                       final pick = await showPicker<String>(context, title: _label(a), options: [
                         if (owner && a['me'] != true) const PickOption('owner', 'Make owner', icon: Icons.workspace_premium_outlined),
-                        PickOption('remove', a['me'] == true ? 'Leave this kuri' : 'Remove admin', icon: Icons.person_remove_outlined),
+                        PickOption('remove', a['me'] == true ? 'Leave this chit' : 'Remove admin', icon: Icons.person_remove_outlined),
                       ]);
                       if (pick?.value == 'owner') await _makeOwner(a);
                       if (pick?.value == 'remove') await _remove(a);
@@ -252,7 +252,7 @@ class _AddAdminState extends State<_AddAdmin> {
           ),
         ]),
       const SizedBox(height: 8),
-      Text('They sign in to Kuree with this ${byEmail ? 'email' : 'number'} to see the kuri.', style: T.small),
+      Text('They sign in to Kuree with this ${byEmail ? 'email' : 'number'} to see the chit.', style: T.small),
       const SizedBox(height: 16),
       KButton(label: 'Add admin', icon: Icons.person_add_alt_1_rounded, expand: true, busy: busy, onPressed: _go),
     ]);

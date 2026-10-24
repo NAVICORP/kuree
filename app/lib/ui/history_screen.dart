@@ -81,7 +81,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _restore(_Version v) async {
     final ok = await confirm(context,
         title: 'Put this version back?',
-        text: 'The kuri goes back to how ${v.by} left it, ${ago(v.at)}. What it shows now is kept in the history too, so you can undo this.',
+        text: 'The chit goes back to how ${v.by} left it, ${ago(v.at)}. What it shows now is kept in the history too, so you can undo this.',
         yes: 'Put it back');
     if (!ok) return;
     setState(() => restoring = v.id);

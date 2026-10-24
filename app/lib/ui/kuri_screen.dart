@@ -95,7 +95,7 @@ class _KuriScreenState extends State<KuriScreen> {
       if (e.isConflict) {
         final reload = await confirm(context,
             title: 'Someone else saved this',
-            text: 'Another admin saved this kuri a moment ago. Reload to see their change, then make yours again.',
+            text: 'Another admin saved this chit a moment ago. Reload to see their change, then make yours again.',
             yes: 'Reload');
         if (reload) {
           setState(() => dirty = false);
@@ -223,7 +223,7 @@ class _KuriScreenState extends State<KuriScreen> {
   }
 
   Future<void> _edit() async {
-    if (dirty && !await confirm(context, title: 'Save first?', text: 'Save this month\'s changes before editing the kuri.', yes: 'Save')) return;
+    if (dirty && !await confirm(context, title: 'Save first?', text: 'Save this month\'s changes before editing the chit.', yes: 'Save')) return;
     if (dirty && !await _save()) return;
     if (!mounted) return;
     final updated = await Navigator.of(context).push<KuriRecord>(MaterialPageRoute(builder: (_) => KuriEditorScreen(record: rec)));
@@ -239,7 +239,7 @@ class _KuriScreenState extends State<KuriScreen> {
   Future<void> _delete() async {
     final ok = await confirm(context,
         title: 'Delete ${doc.name}?',
-        text: 'The kuri, its history and the members\' link are deleted for good. This cannot be undone.',
+        text: 'The chit, its history and the members\' link are deleted for good. This cannot be undone.',
         yes: 'Delete',
         danger: true);
     if (!ok) return;
@@ -257,9 +257,9 @@ class _KuriScreenState extends State<KuriScreen> {
       const PickOption('rest', 'Draw the rest', sub: 'Shuffle every month still open', icon: Icons.shuffle_rounded),
       const PickOption('report', 'Spreadsheet', sub: 'Every month, every member', icon: Icons.table_chart_outlined),
       const PickOption('history', 'History', sub: 'Every earlier version', icon: Icons.history_rounded),
-      const PickOption('admins', 'Admins', sub: 'Who runs this kuri', icon: Icons.admin_panel_settings_outlined),
-      const PickOption('edit', 'Edit kuri', sub: 'Name, amounts, dates, slots, people', icon: Icons.tune_rounded),
-      if (rec.isOwner) const PickOption('delete', 'Delete kuri', icon: Icons.delete_outline_rounded),
+      const PickOption('admins', 'Admins', sub: 'Who runs this chit', icon: Icons.admin_panel_settings_outlined),
+      const PickOption('edit', 'Edit chit', sub: 'Name, amounts, dates, slots, people', icon: Icons.tune_rounded),
+      if (rec.isOwner) const PickOption('delete', 'Delete chit', icon: Icons.delete_outline_rounded),
     ]);
     if (!mounted || pick == null) return;
     switch (pick.value) {

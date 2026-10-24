@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               highlightElevation: 4,
               shape: const StadiumBorder(),
               icon: const Icon(Icons.add_rounded),
-              label: Text('New kuri', style: T.button.copyWith(color: Colors.white)),
+              label: Text('New chit', style: T.button.copyWith(color: Colors.white)),
             ),
       body: _body(),
     );
@@ -174,8 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(top: 60),
               child: EmptyState(
                 icon: Icons.savings_outlined,
-                text: 'No kuris yet.',
-                action: KButton(label: 'Start a kuri', icon: Icons.add_rounded, onPressed: _create),
+                text: 'No chits yet.',
+                action: KButton(label: 'Start a chit', icon: Icons.add_rounded, onPressed: _create),
               ),
             ),
           for (final k in kuris!) ...[

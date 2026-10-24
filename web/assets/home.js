@@ -140,7 +140,7 @@ document.documentElement.classList.add("js");
       var entries = [{ slot: 1, name: "Rahul" }, { slot: 3, name: "Jibin" }, { slot: 4, name: "Shabna" }, { slot: 5, name: "Vishnu" },
         { slot: 7, name: "Salman" }, { slot: 9, name: "Anand" }, { slot: 10, name: "Riya / Jaseem" }, { slot: 12, name: "Faisal" }];
       var d = window.KureeDraw.mount(cv, {
-        entries: entries, kicker: "RIVERSIDE 10K KURI", title: "Month 5 draw",
+        entries: entries, kicker: "RIVERSIDE 10K CHIT", title: "Month 5 draw",
         subtitle: MEN[now.getMonth()] + " " + now.getFullYear() + ", pot ₹1,20,000", pot: "₹1,20,000"
       });
       var visible = false, again = 0, fontsReady = false, withSound = false;

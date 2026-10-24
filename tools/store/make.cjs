@@ -23,7 +23,7 @@ const FRAMES = [
   ['reminders', 'Reminders on WhatsApp <b>in one tap</b>'],
   ['link', 'Members follow along <b>from a link</b>'],
   ['slots', 'Two people can <b>share a slot</b>'],
-  ['home', 'Run <b>all your kuris</b>'],
+  ['home', 'Run <b>all your chits</b>'],
 ];
 
 /* the iPhone status bar: time, signal, wifi, battery */
@@ -104,7 +104,7 @@ function featurePage(shot) {
   .sys .bat{height:8.3px}
   .sys .wifi{fill:none;stroke:currentColor}
   </style></head><body><div class="glow"></div>
-  <div class="copy"><div class="mark"><img src="${url(ICON)}"><span>Kuree</span></div><p>Run your kuri <b>from your phone</b></p></div>
+  <div class="copy"><div class="mark"><img src="${url(ICON)}"><span>Kuree</span></div><p>Run your chit <b>from your phone</b></p></div>
   <div class="dev"><div class="scr"><img src="${url(shot)}">${BAR}<i class="island"></i></div></div></body></html>`;
 }
 

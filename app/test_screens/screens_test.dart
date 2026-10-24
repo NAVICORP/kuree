@@ -91,7 +91,7 @@ KuriRecord small() => KuriRecord.fromJson({
       'role': 'admin',
       'share_token': 'zyxwvutsrqponmlkjihgfedc',
       'data': {
-        'name': 'Family Kuri', 'group': '', 'share': 2000, 'slots': 6, 'startYear': DateTime.now().year, 'startMonth': DateTime.now().month,
+        'name': 'Family Chit', 'group': '', 'share': 2000, 'slots': 6, 'startYear': DateTime.now().year, 'startMonth': DateTime.now().month,
         'collectDay': 5, 'lastDay': 10, 'fine': 0,
         'people': [for (var i = 1; i <= 6; i++) {'id': 'm$i', 'name': ['Umma', 'Shameer', 'Riyas', 'Faseela', 'Jasna', 'Nabeel'][i - 1]}],
         'payers': [for (var i = 1; i <= 6; i++) {'id': 'p$i', 'slot': i, 'person': 'm$i', 'amt': 2000}],

@@ -148,7 +148,7 @@ function shell(title, body, { home = false } = {}) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${esc(title)}</title>
-<meta name="description" content="Kuree: run your kuri from your phone.">
+<meta name="description" content="Kuree: run your chit from your phone.">
 <meta name="theme-color" content="#FAFAF5">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/assets/brand/touch-180.png">
@@ -190,7 +190,7 @@ async function sharedKuri(token) {
 function kuriPage(token, k, { live = true } = {}) {
   const d = k.data;
   const group = String(d.group || '').trim();
-  const name = String(d.name || 'Kuri').trim();
+  const name = String(d.name || 'Chit').trim();
   const cd = Number(d.collectDay) || 20, ld = Number(d.lastDay) || 25, fine = Number(d.fine) || 0;
   const lead = `Collection on the ${ordinal(cd)} of every month.<br>Pay by midnight on the ${ordinal(ld)}${ld < cd ? ' of the next month' : ''}` +
     (fine ? `, ${esc(money(fine))} fine after that.` : '.');
@@ -238,7 +238,7 @@ async function report(req, res, token, k) {
     await making.get(file);
   }
   const d = k.data;
-  const base = `${d.group || ''} ${d.name || 'kuri'}`.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'kuri';
+  const base = `${d.group || ''} ${d.name || 'chit'}`.trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'chit';
   res.writeHead(200, {
     ...SECURITY,
     'content-type': TYPES['.xlsx'],
@@ -344,7 +344,7 @@ async function handle(req, res) {
       k = await sharedKuri(t[1]);
     } catch (e) {
       console.error('shared kuri', e.message);
-      return sendBody(req, res, 503, TYPES['.html'], shell('Kuree', '<div class="kgone"><h1>One moment</h1><p>The kuri could not be loaded just now. Try again in a minute.</p></div>', { home: true }),
+      return sendBody(req, res, 503, TYPES['.html'], shell('Kuree', '<div class="kgone"><h1>One moment</h1><p>The chit could not be loaded just now. Try again in a minute.</p></div>', { home: true }),
         { 'cache-control': 'no-store', 'retry-after': '30' });
     }
     if (!k) return notFound(req, res, true);
