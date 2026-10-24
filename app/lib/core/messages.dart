@@ -33,9 +33,8 @@ String groupList(KuriDoc k, Month m, String shareToken) {
   final mon = kMonths[k.collectDate(m.n).month - 1];
   final paid = k.paidNames(m);
   final due = k.dues(m).map((d) => d.person.name).toList();
-  final ml = k.groupLang != 'en';
-  final paidHead = ml ? '$mon : പണമടച്ചവർ' : '$mon : Paid';
-  final dueHead = ml ? '$mon : പണമടക്കാത്തവർ' : '$mon : Not paid yet';
+  final paidHead = '$mon : Paid';
+  final dueHead = '$mon : Not paid yet';
   final b = StringBuffer();
   if (paid.isNotEmpty) {
     b.writeln(paidHead);

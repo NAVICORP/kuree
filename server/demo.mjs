@@ -43,7 +43,6 @@ export function demoKuri(now = new Date()) {
     collectDay: 1,
     lastDay: 10,
     fine: 200,
-    groupLang: 'ml',
     people,
     payers,
     months,

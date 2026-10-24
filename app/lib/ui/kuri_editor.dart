@@ -46,7 +46,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   late int startMonth = base.startMonth;
   late int collectDay = base.collectDay;
   late int lastDay = base.lastDay;
-  late String groupLang = base.groupLang;
   final List<List<_Holder>> rows = [];
   final Map<String, String> phones = {};
   String? error;
@@ -149,8 +148,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       ..startYear = startYear
       ..startMonth = startMonth
       ..collectDay = collectDay
-      ..lastDay = lastDay
-      ..groupLang = groupLang;
+      ..lastDay = lastDay;
 
     // People: the same name in two slots is the same person.
     final byKey = {for (final p in base.people) nameKey(p.name): p};
@@ -353,17 +351,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text('Numbers are only for WhatsApp reminders. They never show on the members\' link.', style: T.small),
-          ),
-          const SectionTitle('Group message'),
-          KCard(
-            padding: EdgeInsets.zero,
-            child: _choice('Paid and not paid list in', groupLang == 'en' ? 'English' : 'Malayalam', () async {
-              final p = await showPicker<String>(context, title: 'Group message', selected: groupLang, options: const [
-                PickOption('ml', 'Malayalam', sub: 'പണമടച്ചവർ, പണമടക്കാത്തവർ'),
-                PickOption('en', 'English', sub: 'Paid, Not paid yet'),
-              ]);
-              if (p != null) setState(() => groupLang = p.value);
-            }),
           ),
         ],
       ),

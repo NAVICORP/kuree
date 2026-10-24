@@ -1,6 +1,6 @@
 /* kuree.skifi.co: the landing page. The phone in the hero ticks off who
-   paid, the feature cards come in as they scroll into view, the group
-   message switches language, and the bottle draw plays when it is seen. */
+   paid, the feature cards come in as they scroll into view, and the bottle
+   draw plays when it is seen. */
 document.documentElement.classList.add("js");
 (function () {
   "use strict";
@@ -39,6 +39,7 @@ document.documentElement.classList.add("js");
     var now = new Date();
     $$("[data-month]").forEach(function (el) { el.textContent = MEN[now.getMonth()] + " " + now.getFullYear(); });
     $$("[data-mon]").forEach(function (el) { el.textContent = MSH[now.getMonth()]; });
+    $$("[data-mname]").forEach(function (el) { el.textContent = MEN[now.getMonth()]; });
 
     /* the bar at the top gets a line once the page moves */
     var nav = $("#nav");
@@ -131,21 +132,6 @@ document.documentElement.classList.add("js");
         requestAnimationFrame(loop);
       })(performance.now());
     })();
-
-    /* ---------------------------------------------------------- the group message */
-    var WORDS = { ml: { paid: "പണമടച്ചവർ", due: "പണമടക്കാത്തവർ" }, en: { paid: "Paid", due: "Not paid yet" } };
-    $$(".seg__b").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var lang = b.getAttribute("data-lang");
-        $$(".seg__b").forEach(function (x) { var onx = x === b; x.classList.toggle("is-on", onx); x.setAttribute("aria-pressed", onx ? "true" : "false"); });
-        $$("[data-t]").forEach(function (el) {
-          el.textContent = WORDS[lang][el.getAttribute("data-t")];
-          el.classList.toggle("ml", lang === "ml");
-        });
-        var bub = $("#groupMsg");
-        bub.classList.remove("swap"); void bub.offsetWidth; bub.classList.add("swap");
-      });
-    });
 
     /* ---------------------------------------------------------- the bottle draw */
     (function draw() {

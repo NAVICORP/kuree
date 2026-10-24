@@ -129,7 +129,6 @@ class KuriDoc {
     this.collectDay = 20,
     this.lastDay = 25,
     this.fine = 200,
-    this.groupLang = 'ml',
     List<Person>? people,
     List<Payer>? payers,
     List<Month>? months,
@@ -154,14 +153,14 @@ class KuriDoc {
   int lastDay;
   int fine;
 
-  /// The language of the paid and not paid list for the group: 'ml' or 'en'.
-  String groupLang;
   final List<Person> people;
   final List<Payer> payers;
   final List<Month> months;
   String updated;
   final Map<String, dynamic> extra;
 
+  // 'groupLang' was a setting for the group message's language; the message
+  // is English now, so an old value is read and dropped.
   static const _known = {
     'v', 'name', 'group', 'share', 'slots', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
     'groupLang', 'people', 'payers', 'months', 'updated',
@@ -181,7 +180,6 @@ class KuriDoc {
       collectDay: _int(j['collectDay'], 20).clamp(1, 31),
       lastDay: _int(j['lastDay'], 25).clamp(1, 31),
       fine: _int(j['fine'], 0),
-      groupLang: j['groupLang'] == 'en' ? 'en' : 'ml',
       people: list('people').map(Person.fromJson).toList(),
       payers: list('payers').map(Payer.fromJson).toList(),
       months: list('months').map(Month.fromJson).toList(),
@@ -206,7 +204,6 @@ class KuriDoc {
         'collectDay': collectDay,
         'lastDay': lastDay,
         'fine': fine,
-        'groupLang': groupLang,
         'people': people.map((p) => p.toJson()).toList(),
         'payers': payers.map((p) => p.toJson()).toList(),
         'months': months.map((m) => m.toJson()).toList(),

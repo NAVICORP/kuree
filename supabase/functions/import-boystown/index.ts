@@ -92,7 +92,6 @@ export function convert(kuri: any, members: any[]): Record<string, unknown> {
     collectDay: 20,
     lastDay: 25,
     fine: Number(kuri.fine) || 200,
-    groupLang: 'ml',
     people,
     payers,
     months,
