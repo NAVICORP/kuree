@@ -4,7 +4,7 @@
 document.documentElement.classList.add("js");
 
 /* The store links. Leave a link empty while the app is not out on that
-   store: its button then shows "Coming soon" under it. */
+   store: its button then stays on the page without going anywhere. */
 var STORE = {
   play: "https://play.google.com/store/apps/details?id=co.skifi.kuree",
   ios: ""
@@ -52,14 +52,11 @@ var STORE = {
     /* the store buttons take their links from STORE */
     $$("[data-store]").forEach(function (a) {
       var url = STORE[a.getAttribute("data-store")];
-      var soon = $('[data-store-soon="' + a.getAttribute("data-store") + '"]', a.parentNode);
       if (url) {
         a.href = url; a.target = "_blank"; a.rel = "noopener";
-        a.setAttribute("aria-label", a.getAttribute("aria-label").replace(", coming soon", ""));
-        if (soon) soon.remove();
       } else {
-        a.removeAttribute("href");
-        a.classList.add("is-soon");
+        a.removeAttribute("target");
+        a.addEventListener("click", function (e) { e.preventDefault(); });
       }
     });
 
@@ -209,5 +206,31 @@ var STORE = {
       playBtn.addEventListener("click", function () { start(true); });
       againBtn.addEventListener("click", function () { start(false); });
     })();
+  });
+})();
+
+/* the 3D pieces around the hero phone drift a little with the pointer */
+(function () {
+  if (!window.matchMedia || !matchMedia("(pointer: fine)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var hero = document.querySelector(".hero");
+  if (!hero) return;
+  var items = [].slice.call(hero.querySelectorAll(".d3[data-depth]"));
+  if (!items.length) return;
+  var raf = 0, x = 0, y = 0;
+  hero.addEventListener("pointermove", function (e) {
+    var r = hero.getBoundingClientRect();
+    x = (e.clientX - r.left) / r.width - 0.5;
+    y = (e.clientY - r.top) / r.height - 0.5;
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = 0;
+      items.forEach(function (el) {
+        var d = parseFloat(el.getAttribute("data-depth")) || 1;
+        el.style.transform = "translate3d(" + (-x * d * 12).toFixed(1) + "px," + (-y * d * 12).toFixed(1) + "px,0)";
+      });
+    });
+  });
+  hero.addEventListener("pointerleave", function () {
+    items.forEach(function (el) { el.style.transform = ""; });
   });
 })();
