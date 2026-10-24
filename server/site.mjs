@@ -251,7 +251,8 @@ async function report(req, res, token, k) {
 
 // ---------------------------------------------------------------- the API
 
-const HOP = new Set(['connection', 'keep-alive', 'proxy-connection', 'transfer-encoding', 'upgrade', 'te', 'trailer', 'host', 'content-length']);
+/* expect: Windows PowerShell sends "Expect: 100-continue", which fetch refuses to pass on. */
+const HOP = new Set(['connection', 'keep-alive', 'proxy-connection', 'transfer-encoding', 'upgrade', 'te', 'trailer', 'host', 'content-length', 'expect']);
 async function proxy(req, res) {
   const headers = new Headers();
   for (const [k, v] of Object.entries(req.headers)) {
