@@ -29,8 +29,8 @@ void main() {
       for (final k in en.keys) {
         expect(holes(t[k]!), holes(en[k]!), reason: '$code.$k');
         expect(t[k]!.trim(), isNotEmpty, reason: '$code.$k');
-        expect(t[k]!.contains('—'), isFalse, reason: '$code.$k has an em dash');
-        expect(t[k]!.contains('·'), isFalse, reason: '$code.$k has a middle dot');
+        expect(t[k]!.contains('\u2014'), isFalse, reason: '$code.$k has an em dash');
+        expect(t[k]!.contains('\u00b7'), isFalse, reason: '$code.$k has a middle dot');
         if (en[k]!.contains('Kuree')) expect(t[k]!.contains('Kuree'), isTrue, reason: '$code.$k should keep the name Kuree');
       }
     });
