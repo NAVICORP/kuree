@@ -80,6 +80,42 @@ jobs:
       - if: failure()
         run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Check"
 
+  # Pictures of every main screen, rendered by the tests and pushed to the
+  # `screens` branch, so the design can be checked without a phone.
+  screens:
+    needs: [platforms, check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.platforms.outputs.sha }}
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - working-directory: app
+        run: flutter pub get
+      - working-directory: app
+        run: set -o pipefail; flutter test test_screens --update-goldens 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        continue-on-error: true
+      - run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Screens"
+        if: always()
+      - name: Push the pictures to the screens branch
+        run: |
+          set -e
+          [ -d app/test_screens/shots ] || { echo "no pictures"; exit 0; }
+          mkdir -p /tmp/shots && cp app/test_screens/shots/*.png /tmp/shots/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan screens-tmp
+          git rm -rf --quiet .
+          git clean -fdq
+          cp /tmp/shots/*.png .
+          echo "${{ needs.platforms.outputs.sha }}" > SOURCE
+          git add -A
+          git commit -qm "Screens for ${{ needs.platforms.outputs.sha }}"
+          git push -f origin HEAD:screens
+
   android:
     needs: [platforms, check]
     runs-on: ubuntu-latest

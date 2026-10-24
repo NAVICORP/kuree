@@ -92,6 +92,9 @@ class Api {
   /// The signed-in person's name, once the home screen has asked the server.
   String name = '';
 
+  /// For screenshots and tests: every call fails at once, without the network.
+  bool offline = false;
+
   Session? get session => _session;
   bool get signedIn => _session != null;
   Stream<Session?> get changes => _changes.stream;
@@ -170,6 +173,7 @@ class Api {
 
   Future<dynamic> _send(String method, String path,
       {Object? body, Map<String, String>? query, bool withUser = true, bool retry = true}) async {
+    if (offline) throw ApiError('Offline.');
     if (withUser) await _fresh();
     final uri = Uri.parse('$kApiBase$path').replace(queryParameters: query);
     http.Response r;

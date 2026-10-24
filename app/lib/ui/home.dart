@@ -11,7 +11,10 @@ import 'widgets.dart';
 
 /// Every kuri this person runs.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.preview});
+
+  /// Kuris and the signed-in person to show without asking the server (screenshots).
+  final (List<KuriRecord>, Map<String, dynamic>)? preview;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,10 +29,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    final p = widget.preview;
+    if (p != null) {
+      kuris = p.$1;
+      me = p.$2;
+      _asked = true;
+      return;
+    }
     _load();
   }
 
   Future<void> _load() async {
+    if (widget.preview != null) return;
     try {
       final results = await Future.wait([Api.instance.rpc('my_kuris'), Api.instance.rpc('whoami')]);
       final list = (results[0] as List? ?? const []).whereType<Map>().map((e) => KuriRecord.fromJson(Map<String, dynamic>.from(e))).toList();

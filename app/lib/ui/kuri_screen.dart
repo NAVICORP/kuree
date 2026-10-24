@@ -298,7 +298,7 @@ class _KuriScreenState extends State<KuriScreen> {
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 4,
-          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          title: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (doc.group.trim().isNotEmpty) Text(doc.group, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
             Text(doc.name, style: T.h3.copyWith(fontSize: 19)),
           ]),

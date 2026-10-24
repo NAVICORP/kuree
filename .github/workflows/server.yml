@@ -34,12 +34,8 @@ jobs:
       PGDATABASE: kuree
     steps:
       - uses: actions/checkout@v5
-      - name: The shared platform pieces (auth schema and roles)
-        run: |
-          curl -fsSL -H "Authorization: Bearer ${{ secrets.PLATFORM_READ_TOKEN }}" \
-            "https://raw.githubusercontent.com/NAVICORP/farmi-life/main/backend/db/platform.sql" -o /tmp/platform.sql \
-            || cp supabase/tests/platform.sql /tmp/platform.sql
-          psql -v ON_ERROR_STOP=1 -q -f /tmp/platform.sql
+      - name: The shared platform pieces (auth schema and roles, a copy from the app base)
+        run: psql -v ON_ERROR_STOP=1 -q -f supabase/tests/platform.sql
       - name: Migrations
         run: for f in supabase/migrations/*.sql; do echo "$f"; psql -v ON_ERROR_STOP=1 -q -f "$f"; done
       - name: Database tests

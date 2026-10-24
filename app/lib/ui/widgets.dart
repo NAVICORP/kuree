@@ -214,26 +214,25 @@ class ProgressLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(height),
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: Stack(children: [
-          Positioned.fill(child: ColoredBox(color: track)),
-          FractionallySizedBox(
-            alignment: Alignment.centerLeft,
-            widthFactor: value.clamp(0, 1).toDouble(),
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: 1),
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutCubic,
-              builder: (_, t, __) => Opacity(opacity: t, child: ColoredBox(color: color, child: SizedBox(height: height))),
-            ),
+    return LayoutBuilder(builder: (context, c) {
+      final w = c.maxWidth.isFinite ? c.maxWidth : 200.0;
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(height),
+        child: Container(
+          width: w,
+          height: height,
+          color: track,
+          alignment: Alignment.centerLeft,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            width: w * value.clamp(0, 1).toDouble(),
+            height: height,
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(height)),
           ),
-        ]),
-      ),
-    );
+        ),
+      );
+    });
   }
 }
 
