@@ -1,0 +1,141 @@
+# The Kuree app: checks and builds on every push.
+#
+# 1. platforms: makes the Android and iOS projects the first time (with the
+#    same Flutter the builds use) and commits them back to the branch.
+# 2. check: flutter analyze and the tests.
+# 3. android: a release APK to install on a phone (Actions > this run >
+#    Artifacts). With the signing secrets set, also the Play Store bundle.
+# 4. ios: a full iOS build, on request only (Run workflow, or "[ios]" in the
+#    commit message), because Mac minutes cost ten times more.
+
+name: App
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "app/**"
+      - ".github/workflows/app.yml"
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: "Also build iOS"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  platforms:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.make.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - id: make
+        run: |
+          set -e
+          if [ -d app/android ] && [ -d app/ios ]; then
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          flutter create --org co.skifi --project-name kuree --platforms android,ios /tmp/kuree_tmp
+          [ -d app/android ] || cp -r /tmp/kuree_tmp/android app/android
+          [ -d app/ios ] || cp -r /tmp/kuree_tmp/ios app/ios
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/android app/ios
+          git commit -m "Add the Android and iOS projects"
+          git push
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: platforms
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.platforms.outputs.sha }}
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter --version
+      - working-directory: app
+        run: flutter pub get
+      - working-directory: app
+        run: flutter analyze --no-fatal-infos
+      - working-directory: app
+        run: flutter test
+
+  android:
+    needs: [platforms, check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.platforms.outputs.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - working-directory: app
+        run: flutter pub get
+      - name: Signing key (when the secrets are set)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "No signing secrets: the APK is signed with the debug key, fine for testing."; exit 0; fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$RUNNER_TEMP/upload.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > app/android/key.properties
+      - working-directory: app
+        run: flutter build apk --release --build-number=${{ github.run_number }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kuree-android-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+      - name: Play Store bundle
+        if: ${{ hashFiles('app/android/key.properties') != '' }}
+        working-directory: app
+        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('app/android/key.properties') != '' }}
+        with:
+          name: kuree-android-bundle
+          path: app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  ios:
+    needs: [platforms, check]
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.ios) || contains(github.event.head_commit.message, '[ios]') }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.platforms.outputs.sha }}
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - working-directory: app
+        run: flutter pub get
+      - working-directory: app
+        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
