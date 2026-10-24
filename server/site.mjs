@@ -5,6 +5,7 @@
  * /k/<token>              a kuri as its members see it (read only, no numbers)
  * /k/<token>/report.xlsx  the same kuri as a spreadsheet, made fresh when it changes
  * /, /privacy, /terms, /delete-account
+ * /admin/requests        the Kuree team's inbox of feature requests (owners sign in)
  * /rest/v1, /auth/v1, /functions/v1, /storage/v1, /platform  passed to the API
  *
  * Pages asked for on an old address (kuree.skifi.co, www.kureeapp.com) move
@@ -141,7 +142,7 @@ function sendFile(req, res, file, cache) {
 }
 
 /** A plain page (home, privacy, terms) in the Kuree shell. */
-function shell(title, body, { home = false } = {}) {
+function shell(title, body, { home = false, head = '', foot = '' } = {}) {
   return stampAssets(`<!doctype html>
 <html lang="en">
 <head>
@@ -157,6 +158,7 @@ function shell(title, body, { home = false } = {}) {
 <link rel="stylesheet" href="/assets/app.css">
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/kuree.css">
+${head}
 </head>
 <body>
 <main class="kpage">
@@ -164,6 +166,7 @@ ${home ? '' : '<a class="kpage__top" href="/"><img src="/assets/brand/icon-64.pn
 ${body}
 </main>
 <footer class="kfoot"><p><a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="/delete-account">Delete an account</a></p><p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p></footer>
+${foot}
 </body>
 </html>`);
 }
@@ -365,12 +368,21 @@ async function handle(req, res) {
     });
   }
 
+  // The Kuree team's inbox of feature requests. The page itself is plain;
+  // the requests load only after an owner signs in, and the database checks.
+  if (p === '/admin/requests' || p === '/admin/requests/') {
+    return sendBody(req, res, 200, TYPES['.html'], shell('Feature requests | Kuree', read('pages/admin-requests.html'), {
+      head: '<meta name="robots" content="noindex, nofollow">\n<link rel="stylesheet" href="/assets/admin.css">',
+      foot: '<script src="/assets/admin.js" defer></script>',
+    }), { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow', 'referrer-policy': 'no-referrer', 'content-security-policy': CSP });
+  }
+
   const page = PAGES[p.replace(/\/$/, '') || '/'];
   if (page) {
     return sendBody(req, res, 200, TYPES['.html'], shell(page[0], read(page[1]), { home: !!page[2] }),
       { 'cache-control': 'public, max-age=300', 'content-security-policy': CSP });
   }
-  if (p === '/robots.txt') return sendBody(req, res, 200, TYPES['.txt'], 'User-agent: *\nDisallow: /k/\n', { 'cache-control': 'public, max-age=3600' });
+  if (p === '/robots.txt') return sendBody(req, res, 200, TYPES['.txt'], 'User-agent: *\nDisallow: /k/\nDisallow: /admin/\n', { 'cache-control': 'public, max-age=3600' });
   if (p === '/favicon.ico') return sendFile(req, res, path.join(ROOT, 'favicon.ico'), 'public, max-age=86400');
   if (p.startsWith('/assets/')) {
     let rel;
