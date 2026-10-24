@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/painting.dart';
 
 import '../core/format.dart';
+import '../l10n/strings.dart';
+import '../ui/theme.dart' show kFontFallback;
 
 /// One slip: a slot still waiting for the pot.
 class DrawEntry {
@@ -371,7 +373,7 @@ class BottleScene {
         final f = (since % 1000) / 1000;
         _text(g, '$left', W / 2, 1160,
             size: 360 + f * 120, weight: FontWeight.w800, heading: true, color: C.sun.withValues(alpha: 1 - f * 0.6), base: _Base.middle);
-        _caption(g, 'Get ready', 'The draw starts in a moment');
+        _caption(g, S.current.drawGetReady, S.current.drawStartsSoon);
       }
       _footer(g);
       return;
@@ -425,16 +427,16 @@ class BottleScene {
     // Captions
     final lastEnd = p.writeAt.last + p.writeD;
     if (t < 1500) {
-      _caption(g, 'Writing every name', 'One slip for every slot still waiting for the pot');
+      _caption(g, S.current.drawWriting, S.current.drawWritingSub);
     } else if (t < lastEnd) {
       final cur = [for (final s in _slips) if (t >= p.writeAt[s.i]) s].length;
-      _caption(g, 'Into the bottle', '$cur of ${_slips.length}');
+      _caption(g, S.current.drawInto, S.current.countOf(cur, _slips.length));
     } else if (t < p.shake) {
-      _caption(g, 'Closing the bottle', null);
+      _caption(g, S.current.drawClosing, null);
     } else if (t < p.shake + p.shakeD) {
-      _caption(g, 'Shaking', 'Every slip has the same chance');
+      _caption(g, S.current.drawShaking, S.current.drawShakingSub);
     } else if (t < p.reveal) {
-      _caption(g, 'Picking one', null);
+      _caption(g, S.current.drawPicking, null);
     }
 
     for (final f in top) {
@@ -504,7 +506,7 @@ class BottleScene {
       }
       final a = ((rk - 700) / 500).clamp(0.0, 1.0);
       if (a > 0) {
-        _text(g, 'TAKES THE POT THIS MONTH', W / 2, 1010, size: 46, weight: FontWeight.w800, color: C.sun.withValues(alpha: a));
+        _text(g, S.current.takesPotThisMonth.toUpperCase(), W / 2, 1010, size: 46, weight: FontWeight.w800, color: C.sun.withValues(alpha: a));
         _text(g, subtitlePot, W / 2, 1110, size: 96, weight: FontWeight.w800, heading: true, color: const Color(0xFFFFFFFF).withValues(alpha: a));
       }
     }
@@ -554,7 +556,8 @@ class BottleScene {
 
   void _footer(Canvas g) {
     final at = when;
-    _text(g, '${_slips.length} names in the bottle. ${at != null ? 'Drawn ${stamp(at)}' : stamp(DateTime.now())}', W / 2, H - 70,
+    final n = _slips.length;
+    _text(g, at != null ? S.current.drawFooterDrawn(n, stamp(at)) : S.current.drawFooterNow(n, stamp(DateTime.now())), W / 2, H - 70,
         size: 30, weight: FontWeight.w600, color: const Color(0xB3DDEEDF));
   }
 
@@ -707,9 +710,16 @@ class BottleScene {
     final tp = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(fontFamily: heading ? 'Bricolage' : 'Manrope', fontSize: size, fontWeight: weight, color: color, letterSpacing: 0, height: 1),
+        style: TextStyle(
+            fontFamily: heading ? 'Bricolage' : 'Manrope',
+            fontFamilyFallback: kFontFallback,
+            fontSize: size,
+            fontWeight: weight,
+            color: color,
+            letterSpacing: 0,
+            height: 1),
       ),
-      textDirection: TextDirection.ltr,
+      textDirection: align == TextAlign.center ? S.current.direction : TextDirection.ltr,
       maxLines: 1,
     )..layout();
     final dx = align == TextAlign.center ? x - tp.width / 2 : x;

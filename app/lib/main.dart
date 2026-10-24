@@ -3,8 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/api.dart';
+import 'l10n/lang.dart';
+import 'l10n/strings.dart';
 import 'ui/home.dart';
 import 'ui/sign_in.dart';
 import 'ui/theme.dart';
@@ -24,7 +27,7 @@ Future<void> main() async {
     systemNavigationBarColor: K.paper,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
-  await Api.instance.load();
+  await Future.wait([Api.instance.load(), Lang.instance.load()]);
   runApp(const KureeApp());
 }
 
@@ -33,23 +36,36 @@ class KureeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kuree',
-      debugShowCheckedModeBanner: false,
-      theme: kureeTheme(),
-      navigatorKey: navigatorKey,
-      // Text never grows past a size that breaks the cards.
-      builder: (context, child) {
-        final mq = MediaQuery.of(context);
-        final scale = mq.textScaler.clamp(minScaleFactor: 0.85, maxScaleFactor: 1.3);
-        return MediaQuery(data: mq.copyWith(textScaler: scale), child: child!);
-      },
-      home: const AuthGate(),
+    // The language follows the phone, unless one was picked in the app.
+    return ListenableBuilder(
+      listenable: Lang.instance,
+      builder: (context, _) => MaterialApp(
+        title: 'Kuree',
+        debugShowCheckedModeBanner: false,
+        theme: kureeTheme(),
+        navigatorKey: navigatorKey,
+        locale: Lang.instance.locale,
+        supportedLocales: [for (final c in S.codes) Locale(c)],
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeListResolutionCallback: (phone, _) => Lang.resolve(phone),
+        // Text never grows past a size that breaks the cards.
+        builder: (context, child) {
+          final mq = MediaQuery.of(context);
+          final scale = mq.textScaler.clamp(minScaleFactor: 0.85, maxScaleFactor: 1.3);
+          return MediaQuery(data: mq.copyWith(textScaler: scale), child: child!);
+        },
+        home: const AuthGate(),
+      ),
     );
   }
 }
 
-/// Signed in: the kuris. Signed out: the sign-in screen.
+/// Signed in: the chits. Signed out: the sign-in screen.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 

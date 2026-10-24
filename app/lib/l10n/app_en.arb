@@ -1,0 +1,922 @@
+{
+  "@@locale": "en",
+  "month1": "January",
+  "month2": "February",
+  "month3": "March",
+  "month4": "April",
+  "month5": "May",
+  "month6": "June",
+  "month7": "July",
+  "month8": "August",
+  "month9": "September",
+  "month10": "October",
+  "month11": "November",
+  "month12": "December",
+  "monthShort1": "Jan",
+  "monthShort2": "Feb",
+  "monthShort3": "Mar",
+  "monthShort4": "Apr",
+  "monthShort5": "May",
+  "monthShort6": "Jun",
+  "monthShort7": "Jul",
+  "monthShort8": "Aug",
+  "monthShort9": "Sep",
+  "monthShort10": "Oct",
+  "monthShort11": "Nov",
+  "monthShort12": "Dec",
+  "currencyINR": "Indian rupee",
+  "currencyAED": "UAE dirham",
+  "currencySAR": "Saudi riyal",
+  "currencyQAR": "Qatari riyal",
+  "currencyKWD": "Kuwaiti dinar",
+  "currencyOMR": "Omani rial",
+  "currencyBHD": "Bahraini dinar",
+  "currencyUSD": "US dollar",
+  "currencyGBP": "British pound",
+  "currencyEUR": "Euro",
+  "currencySGD": "Singapore dollar",
+  "currencyMYR": "Malaysian ringgit",
+  "currencyLKR": "Sri Lankan rupee",
+  "country_in": "India",
+  "country_ae": "UAE",
+  "country_sa": "Saudi Arabia",
+  "country_qa": "Qatar",
+  "country_kw": "Kuwait",
+  "country_om": "Oman",
+  "country_bh": "Bahrain",
+  "country_us": "United States",
+  "country_gb": "United Kingdom",
+  "country_au": "Australia",
+  "country_sg": "Singapore",
+  "country_my": "Malaysia",
+  "country_de": "Germany",
+  "lang_en": "English",
+  "lang_ar": "Arabic",
+  "lang_ml": "Malayalam",
+  "lang_ta": "Tamil",
+  "lang_kn": "Kannada",
+  "lang_hi": "Hindi",
+  "account": "Account",
+  "askNameTitle": "What should we call you?",
+  "importDone": "Your 5K chit is in.",
+  "importTitle": "Bring in your 5K chit",
+  "importButton": "Bring in",
+  "newChit": "New chit",
+  "noChits": "No chits yet.",
+  "startChit": "Start a chit",
+  "yourChits": "Your chits",
+  "roleAdmin": "Admin",
+  "monthOfTotal": "Month {n} of {total}, {label}",
+  "@monthOfTotal": {
+    "placeholders": {
+      "n": {},
+      "total": {},
+      "label": {}
+    }
+  },
+  "ofAmount": "of {amount}",
+  "@ofAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "paidOfTotal": "{paid} of {total} paid",
+  "@paidOfTotal": {
+    "placeholders": {
+      "paid": {},
+      "total": {}
+    }
+  },
+  "collectionNote": "Collection {day} {month}, {note}",
+  "@collectionNote": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "note": {}
+    }
+  },
+  "takesPotName": "Takes the pot: {name}",
+  "@takesPotName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "yourName": "Your name",
+  "save": "Save",
+  "cancel": "Cancel",
+  "close": "Close",
+  "yes": "Yes",
+  "tryAgain": "Try again",
+  "language": "Language",
+  "languagePhone": "Same as phone",
+  "agoJustNow": "just now",
+  "agoMinutes": "{n} min ago",
+  "@agoMinutes": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "agoToday": "today, {time}",
+  "@agoToday": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "agoYesterday": "yesterday, {time}",
+  "@agoYesterday": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "am": "am",
+  "pm": "pm",
+  "andJoin": "{first} and {last}",
+  "@andJoin": {
+    "placeholders": {
+      "first": {},
+      "last": {}
+    }
+  },
+  "slotN": "Slot {n}",
+  "@slotN": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "someone": "Someone",
+  "shareHalf": "½ share",
+  "shareThird": "⅓ share",
+  "shareQuarter": "¼ share",
+  "shareAmount": "{amount} share",
+  "@shareAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "noteInDays": "in {n} days",
+  "@noteInDays": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "noteTomorrow": "tomorrow",
+  "noteToday": "today",
+  "noteDaysLeft": "{n} days left to pay",
+  "@noteDaysLeft": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "noteLastDayTomorrow": "last day tomorrow",
+  "notePayToday": "pay by midnight today",
+  "noteDeadlinePassed": "deadline passed",
+  "errSessionEnded": "Your sign-in has ended. Sign in again.",
+  "errSignInAgain": "Sign in again.",
+  "errOffline": "Offline.",
+  "errTimeout": "The server took too long to answer. Check your connection and try again.",
+  "errNoConnection": "No connection. Check your internet and try again.",
+  "errServer": "The Kuree server had a problem. Try again in a minute.",
+  "errStatus": "Something went wrong ({status}).",
+  "@errStatus": {
+    "placeholders": {
+      "status": {}
+    }
+  },
+  "errNotOnWhatsApp": "This number is not on WhatsApp.",
+  "errCouldNotSend": "We could not send the code. Try again in a minute.",
+  "errTooMany": "Too many tries. Wait a minute and try again.",
+  "errWrongCode": "That code is wrong or has expired. Ask for a new one.",
+  "errPasswordMismatch": "That email and password do not match.",
+  "errPhoneCountry": "Enter your WhatsApp number with the country code.",
+  "errEmailLooksWrong": "That email does not look right.",
+  "errSignInNotFinished": "The sign-in did not finish. Try again.",
+  "errFile": "The file could not be made just now. Try again in a minute.",
+  "msgReminder": "Hi {name}, a reminder: your {chit} payment of {amount} for month {n} ({label}) is due by midnight on the {day}.",
+  "@msgReminder": {
+    "placeholders": {
+      "name": {},
+      "chit": {},
+      "amount": {},
+      "n": {},
+      "label": {},
+      "day": {}
+    }
+  },
+  "msgReminderFrom": "Hi {name}, a reminder from {group}: your {chit} payment of {amount} for month {n} ({label}) is due by midnight on the {day}.",
+  "@msgReminderFrom": {
+    "placeholders": {
+      "name": {},
+      "group": {},
+      "chit": {},
+      "amount": {},
+      "n": {},
+      "label": {},
+      "day": {}
+    }
+  },
+  "msgFineAfter": " After that there is a late fine of {fine}.",
+  "@msgFineAfter": {
+    "placeholders": {
+      "fine": {}
+    }
+  },
+  "msgThanks": " Thank you.",
+  "msgPaidHead": "{month} : Paid",
+  "@msgPaidHead": {
+    "placeholders": {
+      "month": {}
+    }
+  },
+  "msgDueHead": "{month} : Not paid yet",
+  "@msgDueHead": {
+    "placeholders": {
+      "month": {}
+    }
+  },
+  "msgDrawResult": "{chit}, month {n} ({label})\nThe bottle picked: {slot}. {name}\nTakes the pot of {pot}.\n{count} names were in the bottle. Drawn {when}.",
+  "@msgDrawResult": {
+    "placeholders": {
+      "chit": {},
+      "n": {},
+      "label": {},
+      "slot": {},
+      "name": {},
+      "pot": {},
+      "count": {},
+      "when": {}
+    }
+  },
+  "savedMembersSee": "Saved. Members see it now.",
+  "conflictTitle": "Someone else saved this",
+  "conflictText": "Another admin saved this chit a moment ago. Reload to see their change, then make yours again.",
+  "reload": "Reload",
+  "nobodyYet": "Nobody yet",
+  "clearChoice": "Clear the choice",
+  "takesPotInMonth": "Takes the pot in month {n}",
+  "@takesPotInMonth": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "allSlotsTaken": "Every slot has already taken the pot.",
+  "onlyOneLeft": "Only {name} is left, so there is nothing to draw. Use Choose.",
+  "@onlyOneLeft": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "savedMonthGoesTo": "Saved. Month {n} goes to {name}.",
+  "@savedMonthGoesTo": {
+    "placeholders": {
+      "n": {},
+      "name": {}
+    }
+  },
+  "drawDonePressSave": "Draw done. Press Save to publish it.",
+  "numberAddedPressSave": "Number added. Press Save to keep it.",
+  "newLinkTitle": "Make a new link?",
+  "newLinkText": "The old link stops working straight away. Share the new one in the group.",
+  "newLinkYes": "Make a new link",
+  "makingSheet": "Making the spreadsheet…",
+  "saveFirstTitle": "Save first?",
+  "saveFirstText": "Save this month's changes before editing the chit.",
+  "deleteChitTitle": "Delete {name}?",
+  "@deleteChitTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "deleteChitText": "The chit, its history and the members' link are deleted for good. This cannot be undone.",
+  "delete": "Delete",
+  "membersLink": "Members' link",
+  "membersLinkSub": "Share it in the group",
+  "drawRest": "Draw the rest",
+  "drawRestSub": "Shuffle every month still open",
+  "spreadsheet": "Spreadsheet",
+  "spreadsheetSub": "Every month, every member",
+  "history": "History",
+  "historySub": "Every earlier version",
+  "admins": "Admins",
+  "adminsSub": "Who runs this chit",
+  "editChit": "Edit chit",
+  "editChitSub": "Name, amounts, currency, dates, slots, people",
+  "deleteChit": "Delete chit",
+  "leaveTitle": "Leave without saving?",
+  "leaveText": "Your changes to this month are not saved yet.",
+  "leave": "Leave",
+  "more": "More",
+  "saveChangesFirst": "Save your changes first.",
+  "historyKept": "Every save is kept in History, so nothing is lost.",
+  "lastSavedBy": "Last saved by {name}, {when}",
+  "@lastSavedBy": {
+    "placeholders": {
+      "name": {},
+      "when": {}
+    }
+  },
+  "notSavedYet": "Not saved yet",
+  "undo": "Undo",
+  "prevMonth": "Previous month",
+  "nextMonth": "Next month",
+  "monthNLabel": "Month {n}, {label}",
+  "@monthNLabel": {
+    "placeholders": {
+      "n": {},
+      "label": {}
+    }
+  },
+  "collectedOf": "of {pot} collected",
+  "@collectedOf": {
+    "placeholders": {
+      "pot": {}
+    }
+  },
+  "collectedOfFines": "of {pot} collected, plus {fines} in fines",
+  "@collectedOfFines": {
+    "placeholders": {
+      "pot": {},
+      "fines": {}
+    }
+  },
+  "toGo": "{n} to go",
+  "@toGo": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "everyonePaid": "Everyone paid",
+  "heroCollection": "Collection {day} {month}, pay by {payDay} {payMonth}: {note}",
+  "@heroCollection": {
+    "placeholders": {
+      "day": {},
+      "month": {},
+      "payDay": {},
+      "payMonth": {},
+      "note": {}
+    }
+  },
+  "month": "Month",
+  "settled": "Settled",
+  "inProgress": "In progress",
+  "inProgressTakes": "In progress, {name} takes the pot",
+  "@inProgressTakes": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "upcoming": "Upcoming",
+  "upcomingTakes": "Upcoming, {name} takes the pot",
+  "@upcomingTakes": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "winnerAmountFine": "{total} (pot plus {fine} fine)",
+  "@winnerAmountFine": {
+    "placeholders": {
+      "total": {},
+      "fine": {}
+    }
+  },
+  "pickedFromBottle": "{amount}, picked from the bottle",
+  "@pickedFromBottle": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "takesPotThisMonth": "Takes the pot this month",
+  "notDecided": "Not decided yet",
+  "bottleDraw": "Bottle draw",
+  "choose": "Choose",
+  "change": "Change",
+  "allPaid": "All paid",
+  "reminders": "Reminders",
+  "everyonePaidFor": "Everyone paid for month {n}",
+  "@everyonePaidFor": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "showList": "Show",
+  "hideList": "Hide",
+  "filterAll": "All {n}",
+  "@filterAll": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "filterDue": "To pay {n}",
+  "@filterDue": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "filterPaid": "Paid {n}",
+  "@filterPaid": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "tickHelp": "Tap the tick when someone pays. Tap Late if they paid after the last date.",
+  "everyonePaidMonth": "Everyone has paid for month {n}.",
+  "@everyonePaidMonth": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "nobodyPaidMonth": "Nobody has paid for month {n} yet.",
+  "@nobodyPaidMonth": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "statusPaid": "Paid {amount}",
+  "@statusPaid": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "statusPending": "Pending {amount}",
+  "@statusPending": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "statusLateFine": "{status}, late fine {fine}",
+  "@statusLateFine": {
+    "placeholders": {
+      "status": {},
+      "fine": {}
+    }
+  },
+  "monthN": "Month {n}",
+  "@monthN": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "semPaid": "Paid: {name}",
+  "@semPaid": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "semLate": "Late fine, {name}",
+  "@semLate": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "lateButton": "Late",
+  "couldNotOpen": "Could not open that. Is WhatsApp installed?",
+  "copied": "Copied",
+  "drawTitle": "Month {n} draw",
+  "@drawTitle": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "drawSubtitle": "{label}, pot {pot}",
+  "@drawSubtitle": {
+    "placeholders": {
+      "label": {},
+      "pot": {}
+    }
+  },
+  "savedToPhotos": "Saved to your photos.",
+  "videoFailed": "The video could not be made on this phone.",
+  "drawShareTitle": "{title}, month {n} draw",
+  "@drawShareTitle": {
+    "placeholders": {
+      "title": {},
+      "n": {}
+    }
+  },
+  "stopDrawTitle": "Stop the draw?",
+  "nothingSaved": "Nothing is saved.",
+  "stop": "Stop",
+  "closeUnsavedTitle": "Close without saving?",
+  "winnerNotSaved": "The winner is not saved yet.",
+  "slipsGoIn": "{n} slips go in the bottle, one for every slot still waiting for the pot.",
+  "@slipsGoIn": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "recordHint": "Hold another phone over this screen and start recording, then press Start the draw. It counts down from 3.",
+  "musicSound": "Music and sound effects",
+  "gettingReady": "Getting ready",
+  "startDraw": "Start the draw",
+  "takesPotFor": "Takes the pot for month {n}, {label}.",
+  "@takesPotFor": {
+    "placeholders": {
+      "n": {},
+      "label": {}
+    }
+  },
+  "saved": "Saved",
+  "saveAsWinner": "Save as month {n} winner",
+  "@saveAsWinner": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "makingVideo": "Making the video {pct}%",
+  "@makingVideo": {
+    "placeholders": {
+      "pct": {}
+    }
+  },
+  "shareVideo": "Share the video",
+  "saveVideo": "Save the video",
+  "sendResultWa": "Send the result on WhatsApp",
+  "drawGetReady": "Get ready",
+  "drawStartsSoon": "The draw starts in a moment",
+  "drawWriting": "Writing every name",
+  "drawWritingSub": "One slip for every slot still waiting for the pot",
+  "drawInto": "Into the bottle",
+  "drawClosing": "Closing the bottle",
+  "drawShaking": "Shaking",
+  "drawShakingSub": "Every slip has the same chance",
+  "drawPicking": "Picking one",
+  "drawFooterDrawn": "{n} names in the bottle. Drawn {when}",
+  "@drawFooterDrawn": {
+    "placeholders": {
+      "n": {},
+      "when": {}
+    }
+  },
+  "drawFooterNow": "{n} names in the bottle. {when}",
+  "@drawFooterNow": {
+    "placeholders": {
+      "n": {},
+      "when": {}
+    }
+  },
+  "everyMonthTaken": "Every month from next month on already has someone taking the pot.",
+  "drawRestIntro": "{slots} slots still to take the pot, over {months} months from {from}. Each slot is one draw.",
+  "@drawRestIntro": {
+    "placeholders": {
+      "slots": {},
+      "months": {},
+      "from": {}
+    }
+  },
+  "drawRestIntroOne": "{slots} slots still to take the pot, over 1 month from {from}. Each slot is one draw.",
+  "@drawRestIntroOne": {
+    "placeholders": {
+      "slots": {},
+      "from": {}
+    }
+  },
+  "noSlotLeft": "No slot left",
+  "notPlaced": "Not placed (no month left for them): {list}",
+  "@notPlaced": {
+    "placeholders": {
+      "list": {}
+    }
+  },
+  "useThisOrder": "Use this order",
+  "useOrderTitle": "Use this order?",
+  "useOrderText": "This sets who takes the pot for {n} months. You can still change any month by hand before saving.",
+  "@useOrderText": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "useIt": "Use it",
+  "shuffleAgain": "Shuffle again",
+  "remindersTitle": "Reminders, month {n}",
+  "@remindersTitle": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "shareListInGroup": "Share the list in the group",
+  "nobodyToRemind": "Everyone has paid, so there is nobody to remind.",
+  "remindEach": "Or message each person. {rest}",
+  "@remindEach": {
+    "placeholders": {
+      "rest": {}
+    }
+  },
+  "everyoneHasNumber": "Everyone here has a number.",
+  "noNumberOne": "1 has no number yet.",
+  "noNumberMany": "{n} have no number yet.",
+  "@noNumberMany": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "noNumberYet": "No number yet",
+  "dueMonth": "{amount} due, month {n}",
+  "@dueMonth": {
+    "placeholders": {
+      "amount": {},
+      "n": {}
+    }
+  },
+  "addNumber": "Add number",
+  "sent": "Sent",
+  "remind": "Remind",
+  "couldNotOpenWa": "Could not open WhatsApp.",
+  "numberTitle": "{name}'s number",
+  "@numberTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "enterWaNumber": "Enter the WhatsApp number.",
+  "waNumberHint": "WhatsApp number",
+  "numberUse": "Used only for reminders. Members never see it.",
+  "saveNumber": "Save number",
+  "linkExplain": "Members open this in any browser. They see who paid, the fines, who took the pot and what is next. No app or sign-in, and no phone numbers.",
+  "copy": "Copy",
+  "linkCopied": "Link copied",
+  "whatsapp": "WhatsApp",
+  "open": "Open",
+  "share": "Share",
+  "errNeedName": "Give the chit a name, like 5K Chit.",
+  "errNeedShare": "Enter how much each slot pays a month.",
+  "errSlotName": "Slot {n} needs a name.",
+  "@errSlotName": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errPartsSum": "Slot {n}: the parts add up to {total}, but a slot pays {share}.",
+  "@errPartsSum": {
+    "placeholders": {
+      "n": {},
+      "total": {},
+      "share": {}
+    }
+  },
+  "errPartAmount": "Slot {n}: enter what each person pays.",
+  "@errPartAmount": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errFewerSlots": "Month {n} already has payments or a taker, so the chit cannot have fewer than {n} slots.",
+  "@errFewerSlots": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errTakerSlot": "Slot {slot} took the pot in month {n}, so the chit needs at least {slot} slots.",
+  "@errTakerSlot": {
+    "placeholders": {
+      "slot": {},
+      "n": {}
+    }
+  },
+  "errConflictEditor": "Another admin saved this chit a moment ago. Go back, reload it, then make your changes again.",
+  "firstMonth": "First month",
+  "shorterMonths": "Shorter months use their last day",
+  "currency": "Currency",
+  "sectionChit": "Chit",
+  "sectionMoney": "Money",
+  "sectionDates": "Dates",
+  "fieldName": "Name",
+  "nameHint": "5K Chit",
+  "fieldGroup": "Group",
+  "groupHint": "Riverside",
+  "eachSlotPays": "Each slot pays a month",
+  "lateFine": "Late fine",
+  "fineNone": "None",
+  "slots": "Slots",
+  "fewerSlots": "Fewer slots",
+  "moreSlots": "More slots",
+  "potSummary": "Pot {pot} a month, for {n} months",
+  "@potSummary": {
+    "placeholders": {
+      "pot": {},
+      "n": {}
+    }
+  },
+  "potSummaryNone": "One slot takes the pot each month, for {n} months",
+  "@potSummaryNone": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "collectionDay": "Collection day",
+  "everyMonthDay": "{day} of every month",
+  "@everyMonthDay": {
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "lastDayToPay": "Last day to pay",
+  "byMidnight": "{day}, by midnight",
+  "@byMidnight": {
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "byMidnightNext": "{day}, by midnight, the month after",
+  "@byMidnightNext": {
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "oneNamePerSlot": "One name per slot",
+  "numbersForReminders": "Numbers for reminders",
+  "countOf": "{a} of {b}",
+  "@countOf": {
+    "placeholders": {
+      "a": {},
+      "b": {}
+    }
+  },
+  "addNamesFirst": "Add names to the slots first.",
+  "numbersNote": "Numbers are only for WhatsApp reminders. They never show on the members' link.",
+  "startTheChit": "Start the chit",
+  "saveChanges": "Save changes",
+  "nameN": "Name {n}",
+  "@nameN": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "remove": "Remove",
+  "splitSlot": "Split this slot",
+  "addPerson": "Add a person",
+  "somethingWrong": "Something went wrong. Try again.",
+  "enterYourWa": "Enter your WhatsApp number.",
+  "enterCode": "Enter the 6 digit code.",
+  "enterEmailPassword": "Enter the email and the password.",
+  "subPhoneCode": "Check WhatsApp for the code.",
+  "subEmailCode": "Check your email for the code.",
+  "subPhone": "Sign in with your WhatsApp number.",
+  "subEmail": "Sign in with your email.",
+  "subStart": "Run your chit from your phone.",
+  "privacy": "Privacy",
+  "terms": "Terms",
+  "continueWa": "Continue with WhatsApp",
+  "useEmailInstead": "Use email instead",
+  "phoneHint": "Phone number",
+  "sendCodeWa": "Send code on WhatsApp",
+  "codeSentWa": "We sent a 6 digit code on WhatsApp to {to}. It works for 10 minutes.",
+  "@codeSentWa": {
+    "placeholders": {
+      "to": {}
+    }
+  },
+  "codeSentEmail": "We sent a 6 digit code to {to}. It works for 10 minutes.",
+  "@codeSentEmail": {
+    "placeholders": {
+      "to": {}
+    }
+  },
+  "signIn": "Sign in",
+  "sendAgainIn": "Send again in {n}s",
+  "@sendAgainIn": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "sendAgain": "Send again",
+  "anotherNumber": "Another number",
+  "anotherEmail": "Another email",
+  "email": "Email",
+  "emailMeCode": "Email me a code",
+  "useWa": "Use WhatsApp",
+  "usePassword": "Use a password",
+  "password": "Password",
+  "emailCodeInstead": "Email me a code instead",
+  "countryCode": "Country code",
+  "signOutTitle": "Sign out?",
+  "signOutText": "Your chits stay safe on the server. Sign in again to see them.",
+  "signOut": "Sign out",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountText": "Your Kuree account and name are deleted. Chits you own pass to their next admin. Chits only you run are deleted for good, with their history and members' links. This cannot be undone.",
+  "deleteLoginToo": "Also delete my SkiFi login",
+  "deleteLoginTooSub": "The number or email you sign in with. Other SkiFi apps you use with it lose it too.",
+  "deleteAccount": "Delete account",
+  "deleting": "Deleting…",
+  "noNameYet": "No name yet",
+  "edit": "Edit",
+  "requestFeature": "Request a feature",
+  "featureInbox": "Feature requests",
+  "contact": "Contact",
+  "histPaid": "month {n}: {a} paid, later {b}",
+  "@histPaid": {
+    "placeholders": {
+      "n": {},
+      "a": {},
+      "b": {}
+    }
+  },
+  "histNoTaker": "month {n} had no taker yet",
+  "@histNoTaker": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "histWentTo": "month {n} went to {name}",
+  "@histWentTo": {
+    "placeholders": {
+      "n": {},
+      "name": {}
+    }
+  },
+  "histFines": "month {n}: {count} late fines",
+  "@histFines": {
+    "placeholders": {
+      "n": {},
+      "count": {}
+    }
+  },
+  "histSettings": "different settings",
+  "histPeople": "different people or slots",
+  "histSmall": "Small changes",
+  "histAndMore": "and more",
+  "restoreTitle": "Put this version back?",
+  "restoreText": "The chit goes back to how {name} left it, {when}. What it shows now is kept in the history too, so you can undo this.",
+  "@restoreText": {
+    "placeholders": {
+      "name": {},
+      "when": {}
+    }
+  },
+  "putItBack": "Put it back",
+  "historyEmpty": "No earlier versions yet. Each save adds one.",
+  "savedBy": "Saved by {name}",
+  "@savedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "putBack": "Put back",
+  "addAnAdmin": "Add an admin",
+  "adminAdded": "Added. They see this chit when they sign in.",
+  "leaveChitTitle": "Leave this chit?",
+  "removeAdminTitle": "Remove {name}?",
+  "@removeAdminTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "leaveChitText": "You will no longer see or change it.",
+  "removeAdminText": "They will no longer see or change this chit.",
+  "makeOwnerTitle": "Make {name} the owner?",
+  "@makeOwnerTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "makeOwnerText": "They will be able to add and remove admins and delete the chit. You stay on as an admin.",
+  "makeOwner": "Make owner",
+  "ownsNow": "{name} owns the chit now.",
+  "@ownsNow": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "addAdmin": "Add admin",
+  "adminsExplain": "Admins mark payments, run the draw and send reminders. The owner also adds and removes admins.",
+  "roleOwner": "Owner",
+  "you": "You",
+  "leaveChit": "Leave this chit",
+  "removeAdmin": "Remove admin",
+  "enterTheirWa": "Enter their WhatsApp number.",
+  "enterTheirEmail": "Enter their email.",
+  "theirName": "Their name",
+  "useEmail": "Use email",
+  "adminSignInEmail": "They sign in to Kuree with this email to see the chit.",
+  "adminSignInNumber": "They sign in to Kuree with this number to see the chit.",
+  "frTitle": "Request a feature",
+  "frIntroTitle": "Tell us what would help",
+  "frIntroText": "An idea, something that gets in the way, a feature you miss. We read every request.",
+  "frFieldTitle": "Your idea in a few words",
+  "frFieldTitleHint": "For example: a reminder the day before",
+  "frFieldDetails": "Tell us more (optional)",
+  "frFieldDetailsHint": "How would you use it? What happens today?",
+  "frImportance": "How much would it help?",
+  "frNice": "Nice to have",
+  "frImportant": "Important",
+  "frMust": "Must have",
+  "frSend": "Send request",
+  "frNeedTitle": "Give your idea a short title.",
+  "frThanksTitle": "Thank you!",
+  "frThanksText": "Your request reached the Kuree team. You can follow it below.",
+  "frSendAnother": "Send another",
+  "frYours": "Your requests",
+  "frNoneYet": "Your requests will show here, with what the team decides.",
+  "frReply": "From the Kuree team",
+  "frInboxTitle": "Feature requests",
+  "frInboxEmpty": "No requests here yet.",
+  "frAll": "All",
+  "frStatusNew": "New",
+  "frStatusPlanned": "Planned",
+  "frStatusDone": "Done",
+  "frStatusDeclined": "Declined",
+  "frChange": "Update the request",
+  "frNoteLabel": "Note for the person who asked (optional)",
+  "frNoteHint": "For example: coming in the next update",
+  "frSaved": "Saved.",
+  "frFrom": "From",
+  "frSignedOut": "Account deleted"
+}
