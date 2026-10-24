@@ -16,6 +16,7 @@ on:
     paths:
       - "app/**"
       - ".github/workflows/app.yml"
+      - ".github/scripts/**"
   workflow_dispatch:
     inputs:
       ios:
@@ -36,7 +37,7 @@ jobs:
     outputs:
       sha: ${{ steps.make.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -62,7 +63,7 @@ jobs:
     needs: platforms
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ needs.platforms.outputs.sha }}
       - uses: subosito/flutter-action@v2
@@ -73,18 +74,20 @@ jobs:
       - working-directory: app
         run: flutter pub get
       - working-directory: app
-        run: flutter analyze --no-fatal-infos
+        run: set -o pipefail; flutter analyze --no-fatal-infos 2>&1 | tee -a "$RUNNER_TEMP/out.log"
       - working-directory: app
-        run: flutter test
+        run: set -o pipefail; flutter test 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+      - if: failure()
+        run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Check"
 
   android:
     needs: [platforms, check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ needs.platforms.outputs.sha }}
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -106,7 +109,9 @@ jobs:
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$RUNNER_TEMP/upload.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > app/android/key.properties
       - working-directory: app
-        run: flutter build apk --release --build-number=${{ github.run_number }}
+        run: set -o pipefail; flutter build apk --release --build-number=${{ github.run_number }} 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+      - if: failure()
+        run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Android"
       - uses: actions/upload-artifact@v4
         with:
           name: kuree-android-apk
@@ -128,7 +133,7 @@ jobs:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.ios) || contains(github.event.head_commit.message, '[ios]') }}
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ needs.platforms.outputs.sha }}
       - uses: subosito/flutter-action@v2
@@ -138,4 +143,6 @@ jobs:
       - working-directory: app
         run: flutter pub get
       - working-directory: app
-        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
+        run: set -o pipefail; flutter build ios --release --no-codesign --build-number=${{ github.run_number }} 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+      - if: failure()
+        run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "iOS"
