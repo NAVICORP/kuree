@@ -285,11 +285,12 @@ class Api {
     await _setSession(null);
   }
 
-  /// Hands over or deletes this person's kuris, then deletes the sign-in.
+  /// Hands over or deletes this person's kuris and deletes their Kuree
+  /// account, then signs out. The SkiFi login itself (which other SkiFi apps
+  /// may use) stays; deleting that is a request by email.
   Future<void> deleteAccount() async {
     await rpc('delete_my_data');
-    await _send('DELETE', '/auth/v1/user');
-    await _setSession(null);
+    await signOut();
   }
 
   // ---------------------------------------------------------------- database

@@ -420,6 +420,8 @@ begin
   delete from public.kuri_admins a
    where a.user_id = auth.uid() or a.phone = public.my_phone() or a.email = public.me();
   delete from public.profiles p where p.user_id = auth.uid();
+  -- This app's copy of the sign-in (the SkiFi login itself is kept by SkAuth).
+  delete from auth.users u where u.id = auth.uid();
 end $$;
 
 -- ---------------------------------------------------------------- who may call what

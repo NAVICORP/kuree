@@ -41,7 +41,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final ok = await confirm(
       context,
       title: 'Delete your account?',
-      text: 'Kuris you own pass to their next admin. Kuris only you run are deleted for good, with their history and members\' links. This cannot be undone.',
+      text: 'Your Kuree account and name are deleted. Kuris you own pass to their next admin. Kuris only you run are deleted for good, with their history and members\' links. This cannot be undone.',
       yes: 'Delete account',
       danger: true,
     );
