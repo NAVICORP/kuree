@@ -50,7 +50,7 @@ Future<Map<int, int>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int 
               decoration: BoxDecoration(color: K.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: K.border)),
               child: Row(children: [
                 SizedBox(
-                  width: 96,
+                  width: 124,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('Month ${months[i]}', style: T.bodyStrong),
                     Text(doc.monthLabel(months[i]), style: T.small),
@@ -130,7 +130,7 @@ Future<void> showRemindersSheet(BuildContext context, KuriDoc doc, Month m, Stri
         Text(
           dues.isEmpty
               ? 'Everyone has paid, so there is nobody to remind.'
-              : 'Or message each person. ${withNo < dues.length ? '${dues.length - withNo} have no number yet.' : 'Everyone here has a number.'}',
+              : 'Or message each person. ${withNo < dues.length ? (dues.length - withNo == 1 ? '1 has no number yet.' : '${dues.length - withNo} have no number yet.') : 'Everyone here has a number.'}',
           style: T.small,
         ),
         const SizedBox(height: 12),

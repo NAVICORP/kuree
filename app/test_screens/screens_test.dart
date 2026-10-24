@@ -102,6 +102,7 @@ KuriRecord small() => KuriRecord.fromJson({
 Widget phone(Widget child) => MaterialApp(debugShowCheckedModeBanner: false, theme: kureeTheme(), home: child);
 
 Future<void> settle(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 300));
   await tester.runAsync(() async {
     for (final e in find.byType(Image).evaluate()) {
       final w = e.widget as Image;
