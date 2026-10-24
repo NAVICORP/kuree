@@ -1,0 +1,28 @@
+# One-off: copies the signed Play bundle from run 40126785496 to the
+# play-bundle branch so it can be uploaded to Play Console. Delete after.
+name: Bundle out
+on:
+  push:
+    branches: [bundle-out]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: kuree-android-bundle
+          run-id: 40126785496
+          github-token: ${{ github.token }}
+          path: out
+      - run: |
+          cd out
+          ls -la
+          git init -q -b play-bundle
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add app-release.aab
+          git commit -qm "Play bundle from run 40126785496"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" play-bundle
