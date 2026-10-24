@@ -68,20 +68,32 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
   background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:26px 26px;
   -webkit-mask-image:radial-gradient(70% 60% at 50% 40%,#000,transparent);mask-image:radial-gradient(70% 60% at 50% 40%,#000,transparent)}
 .hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
-.hero__copy{display:grid;gap:24px;justify-items:start}
+.hero__copy{display:grid;gap:22px;justify-items:start}
 .hero h1{font-size:clamp(50px,6.6vw,94px);line-height:.97;max-width:10.5ch}
-.lead{font-size:20px;line-height:1.55;color:rgba(221,238,223,.86);max-width:34ch}
-.hero__cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.lead{font-size:20px;line-height:1.55;color:rgba(221,238,223,.86);max-width:34ch;text-wrap:balance}
+.hero__get{margin-top:8px}
+.hero__link,.cta__link{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--sun);text-decoration:none}
+.hero__link .ic,.cta__link .ic{width:18px;height:18px;transition:transform .25s var(--ease)}
+.hero__link:hover .ic,.cta__link:hover .ic{transform:translateX(3px)}
+
+/* the store buttons: black, in the style of the official badges */
+.stores{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.store-wrap{display:grid;justify-items:center;gap:7px}
+.store{display:inline-flex;align-items:center;gap:11px;height:58px;min-width:184px;padding:0 20px 0 15px;border-radius:14px;background:#000;color:#fff;text-decoration:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 16px 30px -18px rgba(0,0,0,.8);transition:transform .25s var(--ease),box-shadow .25s}
+a.store[href]:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 20px 34px -18px rgba(0,0,0,.85)}
+a.store[href]:active{transform:translateY(0) scale(.98)}
+.store.is-soon{cursor:default}
+.store svg{width:29px;height:29px;flex:none;stroke:none}
+.store__txt{display:grid;text-align:left;line-height:1}
+.store__txt small{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.92)}
+.store__txt b{font-size:20.5px;font-weight:700;margin-top:4px;white-space:nowrap}
+.store__soon{font-size:13px;font-weight:700;color:rgba(221,238,223,.72)}
 .rise{opacity:0;transform:translateY(18px);animation:rise .9s var(--ease) forwards}
 .hero__copy .rise:nth-child(2){animation-delay:.08s}
 .hero__copy .rise:nth-child(3){animation-delay:.16s}
 .hero__copy .rise:nth-child(4){animation-delay:.24s}
 @keyframes rise{to{opacity:1;transform:none}}
-
-.strip{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:44px}
-.strip li{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.06);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);font-size:14.5px;font-weight:700;color:rgba(221,238,223,.9)}
-.strip .ic{width:18px;height:18px;color:var(--sun)}
 
 /* the stage: a phone and the cards around it */
 .stage{position:relative;display:grid;place-items:center;min-height:720px;opacity:0;animation:rise 1.1s .2s var(--ease) forwards}
@@ -200,6 +212,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 
 /* ------------------------------------------------------------ features */
 .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bento__more{display:contents}
 .card{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:26px;padding:28px;border-radius:32px;background:var(--card);
   box-shadow:0 0 0 1px var(--line),0 24px 50px -36px rgba(15,36,19,.35);overflow:hidden;min-height:300px;transition:transform .4s var(--ease),box-shadow .4s}
 .card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px var(--line),0 34px 60px -36px rgba(15,36,19,.45)}
@@ -237,6 +250,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .viz--late .vrow{background:#F5F8F3}
 .vlate{display:inline-flex;align-items:center;gap:6px;flex:none;padding:7px 12px;border-radius:999px;background:var(--peach);color:var(--rust);font-weight:800;font-size:14px;box-shadow:inset 0 0 0 1.5px rgba(166,69,44,.25)}
 .vlate svg{width:16px;height:16px}
+.vrow .vlate{flex:none}
 .card.in .vlate{animation:tickpop .6s .5s var(--ease) both}
 
 .vsplit{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:#F5F8F3}
@@ -335,16 +349,6 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .phone--link:hover .scroller img{animation-play-state:paused}
 @keyframes scrollshot{0%,8%{transform:translateY(0)}92%,100%{transform:translateY(calc(-100% + 100cqh))}}
 
-/* ------------------------------------------------------------ steps */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
-.step{display:grid;gap:10px;align-content:start;padding:32px;border-radius:32px;background:#fff;box-shadow:0 0 0 1px var(--line)}
-.step__n{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--deep);color:var(--sun);font-family:var(--fh);font-size:26px;font-weight:800;margin-bottom:10px}
-.step h3{font-size:25px}
-.step p{color:var(--muted)}
-.step:nth-child(2){transition-delay:.08s}
-.step:nth-child(3){transition-delay:.16s}
-
-
 /* ------------------------------------------------------------ questions */
 .faq{max-width:860px}
 .faq__list{display:grid;gap:12px}
@@ -366,7 +370,10 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .cta img{width:88px;height:88px;border-radius:24px;box-shadow:0 22px 40px -20px rgba(0,0,0,.7);margin-bottom:6px}
 .cta h2{font-size:clamp(40px,5.4vw,72px);line-height:1}
 .cta p{color:rgba(221,238,223,.86);font-size:19px}
-.cta__btns{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+.cta .stores{justify-content:center;margin-top:10px}
+.cta__link{margin-top:8px}
+
+.getbar{display:none}
 
 .foot{padding:40px 0 56px}
 .foot__in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 30px}
@@ -382,7 +389,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
   .hero__grid{grid-template-columns:1fr;gap:20px}
   .hero__copy{justify-items:center;text-align:center}
   .hero h1{max-width:12ch}
-  .hero__cta{justify-content:center}
+  .hero .stores{justify-content:center}
   .stage{min-height:600px}
   .draw__grid{grid-template-columns:1fr 360px;gap:40px}
   .split{gap:48px}
@@ -396,42 +403,130 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
   .ticks{justify-items:start;text-align:left}
   .split--rev .split__visual{order:0}
   .split__visual{order:-1}
-  .steps{grid-template-columns:1fr}
-  .step{grid-template-columns:auto 1fr;column-gap:18px;align-items:center}
-  .step__n{grid-row:span 2;margin:0}
 }
 @media (max-width:640px){
   body{font-size:16px}
   .wrap{padding:0 18px}
-  .hero{margin:0 8px;border-radius:30px;padding:44px 0 26px}
-  .hero h1{font-size:clamp(44px,12.5vw,60px)}
-  .lead{font-size:18px}
+  .nav__in{height:60px;padding:0 18px}
+  .brand{font-size:21px}
+  .brand img{width:32px;height:32px}
   .btn{height:52px;padding:0 20px;font-size:16px}
-  .stage{min-height:auto;padding:30px 0 10px}
-  .phone{--w:272px}
-  .phone--draw{--w:290px}
-  .phone--link{--w:280px}
-  .float--msg{display:none}
-  .float--win{right:-6px;bottom:4%;width:186px;padding:12px}
-  .slip b{font-size:24px}
-  .float--fine{right:auto;left:-6px;top:auto;bottom:24%;padding:9px 14px 9px 9px}
-  .float__dot{width:34px;height:34px}
-  .strip{margin-top:28px;gap:8px}
-  .strip li{font-size:13.5px;padding:9px 13px}
-  .sec{padding:84px 0}
-  .sec--tight{padding:20px 0}
+  .btn--sm{height:40px;padding:0 16px;font-size:14.5px}
+
+  /* hero: the headline, one line, the store buttons, then the phone */
+  .hero{margin:0 8px;border-radius:30px;padding:34px 0 0}
+  .hero__grid{gap:6px}
+  .hero__copy{gap:16px}
+  .hero h1{font-size:clamp(40px,11.6vw,54px);line-height:1}
+  .lead{font-size:17px;line-height:1.5}
+  .hero .lead{max-width:30ch}
+  .hero__get{margin-top:4px;width:100%}
+  .stores{gap:10px;width:100%;justify-content:center;flex-wrap:nowrap}
+  .store-wrap{flex:1 1 0;min-width:0;max-width:200px}
+  .store{width:100%;min-width:0;height:54px;gap:9px;padding:0 10px;justify-content:center;border-radius:13px}
+  .store svg{width:25px;height:25px}
+  .store__txt small{font-size:10.5px}
+  .store__txt b{font-size:17px;margin-top:3px}
+  .store__soon{font-size:12.5px}
+  .hero__link{font-size:15px}
+  .stage{min-height:auto;padding:22px 0 0;height:430px;overflow:hidden;align-items:start;
+    -webkit-mask-image:linear-gradient(#000 80%,transparent);mask-image:linear-gradient(#000 80%,transparent)}
+  .phone{--w:262px}
+  .phone--hero{animation:none}
+  .float{display:none}
+
+  /* sections */
+  .sec{padding:72px 0}
+  .sec--tight{padding:16px 0}
   .sec--mint,.draw{margin:0 8px;border-radius:30px}
-  .draw{padding:80px 0}
-  .sec__head{margin-bottom:36px}
+  .sec__head{margin-bottom:28px;gap:8px}
+  .sec h2,.draw h2{font-size:clamp(32px,9.2vw,42px);line-height:1.04}
+  .split__copy h2{font-size:clamp(32px,9.2vw,42px)}
+  .split{gap:28px}
+  .split__copy{gap:14px}
+
+  /* features: the big card, then the small ones side by side to swipe */
   .bento{grid-template-columns:1fr;gap:14px}
-  .card--big{grid-column:auto;padding:28px}
-  .card{min-height:0;border-radius:28px}
-  .vpay__amt{font-size:42px}
+  .card--big{grid-column:auto;padding:26px;gap:20px;border-radius:28px}
+  .card--big h3{font-size:32px}
+  .card--big .card__copy p{font-size:16.5px}
+  .card--big .card__copy{min-height:0}
+  .viz--pay .vrow.is-on:not(.vrow--a):not(.vrow--b){display:none}
+  .vpay__amt{font-size:40px}
+  .bento__more{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 14px;scroll-padding:0 18px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .bento__more::-webkit-scrollbar{display:none}
+  .bento__more .card{flex:0 0 86%;scroll-snap-align:start;min-height:0;justify-content:flex-start;padding:22px;gap:18px;border-radius:26px}
+  .viz--late .vrow{padding:12px;gap:10px}
+  .viz--late small{font-size:12.5px;white-space:nowrap}
+  .bento__more .card h3{font-size:22px}
+  .bento__more .card__copy{min-height:0}
+  .bento__more .card__copy p{font-size:15px}
+
+  /* the draw: the phone right after the headline */
+  .draw{padding:64px 0}
+  .draw__grid{display:flex;flex-direction:column;align-items:center;gap:0}
+  .draw__copy{display:contents}
+  .draw__copy>.pill{order:1;margin-bottom:16px}
+  .draw__copy>h2{order:2;text-align:center}
+  .draw__copy>.lead{order:3;text-align:center;margin-top:14px;max-width:30ch}
+  .draw__stage{order:4;margin-top:28px}
+  .draw__ctl{order:5;justify-content:center;margin-top:18px;gap:10px;flex-wrap:nowrap}
+  .draw__ctl .btn{height:46px;padding:0 16px;font-size:15px;gap:8px}
+  .draw__ctl .ic{width:17px;height:17px}
+  .ticks{order:6;margin-top:26px}
+  .draw .ticks{grid-template-columns:1fr 1fr;gap:10px;width:100%}
+  .draw .ticks li{flex-direction:column;align-items:flex-start;gap:10px;padding:14px;border-radius:20px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);font-size:14px;line-height:1.35}
+  .draw .ticks i{width:36px;height:36px}
+  .phone--draw{--w:262px}
+  .draw__note{display:none}
+
+  /* reminders: a shorter chat */
+  .chat{border-radius:26px}
   .chat__top{padding:12px}
   .chat__av{width:36px;height:36px}
-  .cta{padding:60px 20px;border-radius:30px}
+  .chat__body{min-height:0;max-height:300px;overflow:hidden;padding:18px 14px;
+    -webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+  .bubble{font-size:14.5px}
+  .remind__row:nth-child(3){display:none}
+  .remind__row small{white-space:nowrap}
+
+  .phone--link{--w:262px}
+  .ticks li{font-size:15.5px}
+
+  .faq summary{padding:18px 18px;font-size:16.5px}
+  .faq details p{padding:0 18px 18px;font-size:15.5px}
+
+  .cta{padding:48px 18px 44px;border-radius:30px;gap:12px}
+  .cta img{width:72px;height:72px;border-radius:20px}
+  .cta h2{font-size:clamp(36px,10.5vw,48px)}
+  .cta p{font-size:17px}
+  .cta .store__soon{color:rgba(221,238,223,.72)}
+
+  .foot{padding:32px 0 104px}
   .foot__in{justify-content:center;text-align:center}
   .foot nav{justify-content:center}
+
+  /* the bar at the bottom with "Get the app" */
+  .getbar{position:fixed;z-index:60;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:11px;
+    padding:9px 9px 9px 10px;border-radius:22px;background:rgba(3,42,9,.92);color:#fff;-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);
+    box-shadow:0 18px 40px -16px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.1);
+    transform:translateY(140%);opacity:0;transition:transform .45s var(--ease),opacity .3s}
+  .getbar.on{transform:none;opacity:1}
+  .getbar img{width:40px;height:40px;border-radius:11px;flex:none}
+  .getbar p{flex:1;min-width:0;display:grid;line-height:1.2}
+  .getbar b{font-family:var(--fh);font-size:17px}
+  .getbar span{font-size:13px;color:rgba(221,238,223,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .getbar .btn{flex:none}
+}
+@media (max-width:370px){
+  .store{gap:7px;padding:0 8px}
+  .store svg{width:22px;height:22px}
+  .store__txt small{font-size:10px}
+  .store__txt b{font-size:15.5px}
+  .bento__more .card{flex-basis:90%}
+  .remind__row small{font-size:12.5px}
+  .mini{padding:0 12px}
 }
 
 @media (prefers-reduced-motion:reduce){
