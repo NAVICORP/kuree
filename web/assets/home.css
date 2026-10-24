@@ -204,7 +204,8 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
   box-shadow:0 0 0 1px var(--line),0 24px 50px -36px rgba(15,36,19,.35);overflow:hidden;min-height:300px;transition:transform .4s var(--ease),box-shadow .4s}
 .card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px var(--line),0 34px 60px -36px rgba(15,36,19,.45)}
 .card h3{font-size:26px;line-height:1.1}
-.card__copy{display:grid;gap:8px}
+/* the same height in every small card, text from the top, so the titles in a row line up */
+.card__copy{display:grid;gap:8px;align-content:start;min-height:88px}
 .card__copy p{color:var(--muted);font-size:16.5px;line-height:1.5}
 .card--big{grid-column:span 2;grid-row:span 2;color:#fff;display:grid;grid-template-columns:1fr 1.05fr;align-items:start;gap:32px;padding:40px;
   background:radial-gradient(110% 90% at 90% 0%,#195425 0%,var(--deep) 55%,#021A05 100%)}
