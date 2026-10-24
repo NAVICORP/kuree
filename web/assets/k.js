@@ -1,4 +1,4 @@
-/* The members' page for one kuri: who paid, who has not, late fines, who
+/* The members' page for one chit: who paid, who has not, late fines, who
    took the pot, the numbers, the full ledger and the rules. Read only; the
    admins change the kuri in the Kuree app. The page arrives with the kuri
    inside it (#seed) and checks for a newer copy when it is opened again. */
@@ -24,7 +24,18 @@
     }
     return (n < 0 ? "-" : "") + s;
   }
-  function money(n) { return "₹" + group(Number(n) || 0); }
+  // The chit's currency: [symbol, Indian grouping, space after the symbol].
+  // Chits saved before currencies existed are in rupees.
+  var CUR = {
+    INR: ["\u20B9", 1, 0], AED: ["AED", 0, 1], SAR: ["SAR", 0, 1], QAR: ["QAR", 0, 1], KWD: ["KWD", 0, 1], OMR: ["OMR", 0, 1],
+    BHD: ["BHD", 0, 1], USD: ["$", 0, 0], GBP: ["\u00A3", 0, 0], EUR: ["\u20AC", 0, 0], SGD: ["S$", 0, 0], MYR: ["RM", 0, 1], LKR: ["Rs", 0, 1]
+  };
+  function thousands(n) { return (n < 0 ? "-" : "") + String(Math.round(Math.abs(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function money(n) {
+    var c = CUR[String((data && data.currency) || "INR").toUpperCase()] || CUR.INR, v = Number(n) || 0;
+    var g = c[1] ? group(v) : thousands(v);
+    return c[2] ? c[0] + "\u00A0" + g : c[0] + g;
+  }
   function ord(n) { var m = n % 100; if (m >= 11 && m <= 13) return n + "th"; return n + (["th", "st", "nd", "rd"][n % 10] || "th"); }
   function svgi(id, cls) { return '<svg class="' + (cls || "icon") + '" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
   function dim(y, m) { return new Date(y, m + 1, 0).getDate(); }

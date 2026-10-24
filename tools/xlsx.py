@@ -1,4 +1,4 @@
-"""Makes a kuri's spreadsheet from its saved document.
+"""Makes a chit's spreadsheet from its saved document.
 
     python3 tools/xlsx.py OUT.xlsx  < kuri.json
 
@@ -16,7 +16,43 @@ from openpyxl.utils import get_column_letter
 MEN = ["January", "February", "March", "April", "May", "June",
        "July", "August", "September", "October", "November", "December"]
 MSH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-RUPEE = '"₹"#,##0'
+# The chit's currency: (symbol, Indian grouping, space after the symbol).
+# Chits saved before currencies existed are in rupees.
+CURRENCIES = {
+    "INR": ("₹", True, False), "AED": ("AED", False, True), "SAR": ("SAR", False, True), "QAR": ("QAR", False, True),
+    "KWD": ("KWD", False, True), "OMR": ("OMR", False, True), "BHD": ("BHD", False, True), "USD": ("$", False, False),
+    "GBP": ("£", False, False), "EUR": ("€", False, False), "SGD": ("S$", False, False), "MYR": ("RM", False, True),
+    "LKR": ("Rs", False, True),
+}
+
+
+def currency_of(code):
+    return CURRENCIES.get(str(code or "INR").strip().upper(), CURRENCIES["INR"])
+
+
+def indian(n):
+    s = str(abs(int(round(n))))
+    if len(s) > 3:
+        last, rest, parts = s[-3:], s[:-3], []
+        while len(rest) > 2:
+            parts.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            parts.insert(0, rest)
+        s = ",".join(parts) + "," + last
+    return ("-" if n < 0 else "") + s
+
+
+def money(n, code):
+    sym, ind, spaced = currency_of(code)
+    digits = indian(n) if ind else format(int(round(n)), ",")
+    return ("%s %s" if spaced else "%s%s") % (sym, digits)
+
+
+def number_format(code):
+    sym, ind, spaced = currency_of(code)
+    sym = sym.replace('"', "")
+    return '"%s%s"#,##0' % (sym, " " if spaced else "")
 
 
 def ordinal(n):
@@ -41,6 +77,8 @@ def style(ws, widths, freeze="A2"):
 def main(out, d):
     sm, sy = int(d.get("startMonth") or 1), int(d.get("startYear") or date.today().year)
     share, fine = int(d.get("share") or 0), int(d.get("fine") or 0)
+    cur = d.get("currency") or "INR"
+    fmt = number_format(cur)
     slots = int(d.get("slots") or 0)
     months = sorted(d.get("months") or [], key=lambda m: m.get("n", 0))
     people = {p.get("id"): p.get("name", "") for p in d.get("people") or []}
@@ -67,7 +105,7 @@ def main(out, d):
                    (" / ".join(slot_names.get(won, [])) + " (slot %d)" % won) if won else ""])
     for row in ws.iter_rows(min_row=2, min_col=2, max_col=4):
         for c in row:
-            c.number_format = RUPEE
+            c.number_format = fmt
     style(ws, [12, 13, 12, 12, 30])
 
     ws = wb.create_sheet("Ledger")
@@ -87,7 +125,7 @@ def main(out, d):
             row.append(cell)
         ws.append(row)
     for r in range(2, ws.max_row + 1):
-        ws.cell(row=r, column=3).number_format = RUPEE
+        ws.cell(row=r, column=3).number_format = fmt
     style(ws, [7, 22, 10], freeze="D2")
     for i in range(len(months)):
         ws.column_dimensions[get_column_letter(4 + i)].width = 12
@@ -98,13 +136,13 @@ def main(out, d):
     ws["A1"].font = Font(bold=True, size=13)
     cd, ld = int(d.get("collectDay") or 20), int(d.get("lastDay") or 25)
     lines = [
-        "%d slots at ₹%s a month." % (slots, format(share, ",")),
+        "%d slots at %s a month." % (slots, money(share, cur)),
         "Collection on the %s. Last date is midnight on the %s%s." % (ordinal(cd), ordinal(ld), " of the next month" if ld < cd else ""),
     ]
     if fine:
-        lines.append("A late payment costs ₹%s, which goes into that month's pot." % format(fine, ","))
+        lines.append("A late payment costs %s, which goes into that month's pot." % money(fine, cur))
     lines += [
-        "One slot takes the whole ₹%s pot each month." % format(share * slots, ","),
+        "One slot takes the whole %s pot each month." % money(share * slots, cur),
         "A slot that has taken the pot keeps paying but is out of the draw.",
         "",
         "Figures as of %s." % (d.get("updated") or date.today().isoformat()),
