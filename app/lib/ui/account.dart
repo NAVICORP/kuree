@@ -38,23 +38,63 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _delete() async {
-    final ok = await confirm(
-      context,
-      title: 'Delete your account?',
-      text: 'Your Kuree account and name are deleted. Chits you own pass to their next admin. Chits only you run are deleted for good, with their history and members\' links. This cannot be undone.',
-      yes: 'Delete account',
-      danger: true,
-    );
-    if (!ok || !mounted) return;
+    final choice = await _askDelete();
+    if (choice == null || !mounted) return;
     setState(() => deleting = true);
     try {
-      await Api.instance.deleteAccount();
+      await Api.instance.deleteAccount(skifiLogin: choice);
     } on ApiError catch (e) {
       if (mounted) {
         setState(() => deleting = false);
         toast(context, e.message, bad: true);
       }
     }
+  }
+
+  /// The delete confirmation, with the choice to delete the SkiFi login too.
+  /// Null when cancelled; otherwise whether to delete the login.
+  Future<bool?> _askDelete() {
+    var login = false;
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, set) => AlertDialog(
+          title: const Text('Delete your account?'),
+          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Your Kuree account and name are deleted. Chits you own pass to their next admin. Chits only you run are deleted for good, with their history and members\' links. This cannot be undone.'),
+            const SizedBox(height: 14),
+            InkWell(
+              onTap: () => set(() => login = !login),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Checkbox(
+                    value: login,
+                    onChanged: (v) => set(() => login = v ?? false),
+                    activeColor: K.bad,
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('Also delete my SkiFi login', style: T.bodyStrong),
+                      Text('The number or email you sign in with. Other SkiFi apps you use with it lose it too.', style: T.small),
+                    ]),
+                  ),
+                ]),
+              ),
+            ),
+          ]),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          actions: [
+            KButton(label: 'Cancel', kind: KButtonKind.ghost, small: true, onPressed: () => Navigator.of(ctx).pop()),
+            KButton(label: 'Delete account', kind: KButtonKind.danger, small: true, onPressed: () => Navigator.of(ctx).pop(login)),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
