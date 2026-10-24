@@ -2,6 +2,14 @@
    paid, the feature cards come in as they scroll into view, and the bottle
    draw plays when it is seen. */
 document.documentElement.classList.add("js");
+
+/* The store links. Leave a link empty while the app is not out on that
+   store: its button then shows "Coming soon" under it. */
+var STORE = {
+  play: "https://play.google.com/store/apps/details?id=co.skifi.kuree",
+  ios: ""
+};
+
 (function () {
   "use strict";
   var MEN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -40,6 +48,35 @@ document.documentElement.classList.add("js");
     $$("[data-month]").forEach(function (el) { el.textContent = MEN[now.getMonth()] + " " + now.getFullYear(); });
     $$("[data-mon]").forEach(function (el) { el.textContent = MSH[now.getMonth()]; });
     $$("[data-mname]").forEach(function (el) { el.textContent = MEN[now.getMonth()]; });
+
+    /* the store buttons take their links from STORE */
+    $$("[data-store]").forEach(function (a) {
+      var url = STORE[a.getAttribute("data-store")];
+      var soon = $('[data-store-soon="' + a.getAttribute("data-store") + '"]', a.parentNode);
+      if (url) {
+        a.href = url; a.target = "_blank"; a.rel = "noopener";
+        a.setAttribute("aria-label", a.getAttribute("aria-label").replace(", coming soon", ""));
+        if (soon) soon.remove();
+      } else {
+        a.removeAttribute("href");
+        a.classList.add("is-soon");
+      }
+    });
+
+    /* on phones a slim bar with "Get the app" shows once the hero is gone,
+       and steps aside when the last call is on screen */
+    var bar = $("#getbar"), heroEl = $(".hero"), getEl = $("#get");
+    if (bar && heroEl && getEl && "IntersectionObserver" in window) {
+      var heroIn = true, getIn = false;
+      var upd = function () {
+        var on = !heroIn && !getIn;
+        bar.classList.toggle("on", on);
+        bar.setAttribute("aria-hidden", on ? "false" : "true");
+        $("a", bar).tabIndex = on ? 0 : -1;
+      };
+      new IntersectionObserver(function (es) { heroIn = es[0].isIntersecting; upd(); }, { threshold: 0 }).observe($(".hero__get", heroEl) || heroEl);
+      new IntersectionObserver(function (es) { getIn = es[0].isIntersecting; upd(); }, { threshold: 0.1 }).observe(getEl);
+    }
 
     /* the bar at the top gets a line once the page moves */
     var nav = $("#nav");

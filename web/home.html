@@ -55,6 +55,8 @@
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></symbol>
 <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></symbol>
+<symbol id="i-gplay" viewBox="0 0 24 24"><path fill="#00C3FF" d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l9.3-9.7Z"/><path fill="#00E676" d="M16.1 8.6 5.2 2.4c-.6-.3-1.2-.4-1.6-.1l9.3 9.7Z"/><path fill="#FF3D44" d="M3.6 21.7c.4.3 1 .2 1.6-.1l10.9-6.2-3.2-3.4Z"/><path fill="#FFD500" d="m16.1 15.4 3.6-2c1-.6 1-1.5 0-2.1l-3.6-2.1-3.2 2.8Z"/></symbol>
 <symbol id="i-wand" viewBox="0 0 24 24"><path d="m15 4 1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z"/><path d="m3 21 12-12"/></symbol>
 </defs></svg>
 
@@ -64,10 +66,10 @@
     <nav class="nav__links" aria-label="Sections">
       <a href="#features">Features</a>
       <a href="#draw">The draw</a>
-      <a href="#reminders">Reminders</a>
+      <a href="#link">Members</a>
       <a href="#faq">Questions</a>
     </nav>
-    <a class="btn btn--ink btn--sm" href="/k/demo">See the demo</a>
+    <a class="btn btn--ink btn--sm" href="#get">Get the app</a>
   </div>
 </header>
 
@@ -77,13 +79,15 @@
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="wrap hero__grid">
     <div class="hero__copy">
-      <p class="pill pill--glass rise"><span class="dot" aria-hidden="true"></span>Coming soon to iPhone and Android</p>
       <h1 id="hero-h" class="rise">Run your chit from your phone.</h1>
-      <p class="lead rise">Payments, fines, the monthly draw and WhatsApp reminders in one app. Members follow along from a link.</p>
-      <div class="hero__cta rise">
-        <a class="btn btn--sun" href="/k/demo">See a members' page<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <a class="btn btn--glass" href="#how">How it works</a>
+      <p class="lead rise">Track payments and fines, draw who takes the pot, and remind everyone on WhatsApp.</p>
+      <div class="hero__get rise">
+      <div class="stores">
+        <div class="store-wrap"><a class="store" data-store="play" href="https://play.google.com/store/apps/details?id=co.skifi.kuree" target="_blank" rel="noopener" aria-label="Get it on Google Play"><svg aria-hidden="true"><use href="#i-gplay"/></svg><span class="store__txt"><small>GET IT ON</small><b>Google Play</b></span></a></div>
+        <div class="store-wrap"><a class="store" data-store="ios" aria-label="Download on the App Store, coming soon"><svg aria-hidden="true"><use href="#i-apple"/></svg><span class="store__txt"><small>Download on the</small><b>App Store</b></span></a><span class="store__soon" data-store-soon="ios">Coming soon</span></div>
       </div>
+      </div>
+      <a class="hero__link rise" href="/k/demo">See what members see<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
 
     <div class="stage" aria-hidden="true">
@@ -145,14 +149,6 @@
     </div>
   </div>
 
-  <div class="wrap">
-    <ul class="strip">
-      <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>No login for members</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-msg"/></svg>WhatsApp reminders in one tap</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg>Draw saved as a video</li>
-      <li><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg>Excel in one tap</li>
-    </ul>
-  </div>
 </section>
 
 <!-- ============================================================ features -->
@@ -182,9 +178,10 @@
         </div>
       </article>
 
+      <div class="bento__more">
       <article class="card reveal">
         <div class="viz viz--late" aria-hidden="true">
-          <div class="vrow"><i class="vslot">7</i><span>Salman<small>Paid ₹10,000, late fine ₹200</small></span><span class="vlate"><svg><use href="#i-clock"/></svg>Late</span></div>
+          <div class="vrow"><i class="vslot">7</i><span>Salman<small>Paid ₹10,000</small><small>Late fine ₹200</small></span><span class="vlate"><svg><use href="#i-clock"/></svg>Late</span></div>
         </div>
         <div class="card__copy"><h3>Late? One tap adds the fine.</h3></div>
       </article>
@@ -227,6 +224,7 @@
         </div>
         <div class="card__copy"><h3>Excel in one tap.</h3><p>Every month and every payment, as a spreadsheet.</p></div>
       </article>
+      </div>
     </div>
   </div>
 </section>
@@ -321,21 +319,6 @@
   </div>
 </section>
 
-<!-- ============================================================ how it works -->
-<section class="sec" id="how" aria-labelledby="h-h">
-  <div class="wrap">
-    <div class="sec__head reveal">
-      <p class="kicker">How it works</p>
-      <h2 id="h-h">Three steps, every month.</h2>
-    </div>
-    <ol class="steps">
-      <li class="step reveal"><span class="step__n">1</span><h3>Set up the chit</h3><p>Members, share amount, slots and dates.</p></li>
-      <li class="step reveal"><span class="step__n">2</span><h3>Mark who paid</h3><p>Fines and totals add up as you go.</p></li>
-      <li class="step reveal"><span class="step__n">3</span><h3>Draw and share</h3><p>Pick who takes the pot and send the list.</p></li>
-    </ol>
-  </div>
-</section>
-
 <!-- ============================================================ questions -->
 <section class="sec" id="faq" aria-labelledby="q-h">
   <div class="wrap faq">
@@ -346,31 +329,35 @@
     <div class="faq__list reveal">
       <details><summary>Does Kuree hold any money?<i aria-hidden="true"></i></summary><p>No. Kuree only keeps the record. Members pay each other the way they always have.</p></details>
       <details><summary>Do members need to install anything?<i aria-hidden="true"></i></summary><p>No. They open the link you share, in any browser. Only admins use the app.</p></details>
-      <details><summary>Who can make changes?<i aria-hidden="true"></i></summary><p>Only admins. The owner can add co-admins by WhatsApp number or email.</p></details>
       <details><summary>What can members see?<i aria-hidden="true"></i></summary><p>Names, who paid, fines, who took the pot and what comes next. Phone numbers stay with the admins.</p></details>
       <details><summary>Is the draw fair?<i aria-hidden="true"></i></summary><p>Every slot still waiting for the pot goes into the bottle once, and the phone's secure random numbers pick one. You can save the whole draw as a video for the group.</p></details>
-      <details><summary>What if I mark something wrong?<i aria-hidden="true"></i></summary><p>Undo before you save, or bring back any earlier version from History.</p></details>
-      <details><summary>When can I get it?<i aria-hidden="true"></i></summary><p>Kuree is coming soon to the App Store and Google Play.</p></details>
     </div>
   </div>
 </section>
 
 <!-- ============================================================ last call -->
-<section class="sec sec--tight">
+<section class="sec sec--tight" id="get">
   <div class="wrap">
     <div class="cta reveal">
       <div class="cta__glow" aria-hidden="true"></div>
       <img src="/assets/brand/icon-192.png" alt="" width="88" height="88" loading="lazy">
       <h2>Your chit, sorted.</h2>
-      <p>Coming soon to the App Store and Google Play.</p>
-      <div class="cta__btns">
-        <a class="btn btn--sun" href="/k/demo">See a members' page<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <a class="btn btn--glass" href="mailto:contact@skifi.co?subject=Kuree"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>Email us</a>
+      <p>Get Kuree on your phone.</p>
+      <div class="stores">
+        <div class="store-wrap"><a class="store" data-store="play" href="https://play.google.com/store/apps/details?id=co.skifi.kuree" target="_blank" rel="noopener" aria-label="Get it on Google Play"><svg aria-hidden="true"><use href="#i-gplay"/></svg><span class="store__txt"><small>GET IT ON</small><b>Google Play</b></span></a></div>
+        <div class="store-wrap"><a class="store" data-store="ios" aria-label="Download on the App Store, coming soon"><svg aria-hidden="true"><use href="#i-apple"/></svg><span class="store__txt"><small>Download on the</small><b>App Store</b></span></a><span class="store__soon" data-store-soon="ios">Coming soon</span></div>
       </div>
+      <a class="cta__link" href="/k/demo">See what members see<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
 </section>
 </main>
+
+<div class="getbar" id="getbar" aria-hidden="true">
+  <img src="/assets/brand/icon-64.png" alt="" width="40" height="40">
+  <p><b>Kuree</b><span>The chit tracker app</span></p>
+  <a class="btn btn--sun btn--sm" href="#get" tabindex="-1">Get the app</a>
+</div>
 
 <footer class="foot">
   <div class="wrap foot__in">
