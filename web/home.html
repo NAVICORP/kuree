@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kuree: run your kuri from your phone</title>
+<meta name="description" content="Payments, fines, the monthly bottle draw and WhatsApp reminders for your kuri, in one app. Members follow along from a private link, no login.">
+<meta name="theme-color" content="#032A09">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/brand/touch-180.png">
+<link rel="canonical" href="https://kuree.skifi.co/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kuree">
+<meta property="og:url" content="https://kuree.skifi.co/">
+<meta property="og:title" content="Kuree: run your kuri from your phone">
+<meta property="og:description" content="Payments, fines, the bottle draw and WhatsApp reminders in one app. Members follow along from a link.">
+<meta property="og:image" content="https://kuree.skifi.co/assets/brand/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/home.css">
+<script src="/assets/home.js"></script>
+<script src="/assets/draw.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></symbol>
+<symbol id="i-prev" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="i-bottle" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M10.5 2v4.2c0 .8-.5 1.5-1.2 1.9C7.3 9.2 6 11.3 6 13.7V20a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6.3c0-2.4-1.3-4.5-3.3-5.6-.7-.4-1.2-1.1-1.2-1.9V2"/><path d="M9 15h6"/></symbol>
+<symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.1"/><circle cx="15.5" cy="15.5" r="1.1"/><circle cx="15.5" cy="8.5" r="1.1"/><circle cx="8.5" cy="15.5" r="1.1"/></symbol>
+<symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+<symbol id="i-video" viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="3"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5-12-7.5Z"/></symbol>
+<symbol id="i-replay" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></symbol>
+<symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6M16 9l6 6"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-sheet" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+<symbol id="i-split" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-wand" viewBox="0 0 24 24"><path d="m15 4 1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z"/><path d="m3 21 12-12"/></symbol>
+</defs></svg>
+
+<header class="nav" id="nav">
+  <div class="nav__in">
+    <a class="brand" href="/" aria-label="Kuree home"><img src="/assets/brand/icon-64.png" alt="" width="34" height="34"><span>Kuree</span></a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#draw">The draw</a>
+      <a href="#reminders">Reminders</a>
+      <a href="#faq">Questions</a>
+    </nav>
+    <a class="btn btn--ink btn--sm" href="/k/demo">See the demo</a>
+  </div>
+</header>
+
+<main>
+<!-- ============================================================ hero -->
+<section class="hero" aria-labelledby="hero-h">
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="wrap hero__grid">
+    <div class="hero__copy">
+      <p class="pill pill--glass rise"><span class="dot" aria-hidden="true"></span>Coming soon to iPhone and Android</p>
+      <h1 id="hero-h" class="rise">Run your kuri from your phone.</h1>
+      <p class="lead rise">Payments, fines, the monthly draw and WhatsApp reminders in one app. Members follow along from a link.</p>
+      <div class="hero__cta rise">
+        <a class="btn btn--sun" href="/k/demo">See a members' page<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn--glass" href="#how">How it works</a>
+      </div>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <div class="phone phone--hero">
+        <div class="phone__screen">
+          <div class="scr" id="heroScreen">
+            <div class="scr__status"><b>9:41</b><i class="scr__island"></i><span class="scr__sys"><i></i><i></i><i></i></span></div>
+            <div class="scr__bar">
+              <div><small>Riverside</small><b>10K Kuri</b></div>
+              <div class="scr__icons"><svg><use href="#i-link"/></svg><svg><use href="#i-more"/></svg></div>
+            </div>
+            <div class="scr__hero">
+              <div class="scr__mrow">
+                <i class="scr__cb"><svg><use href="#i-prev"/></svg></i>
+                <span><svg><use href="#i-trophy"/></svg>Month 5, <span data-month>October 2026</span><svg><use href="#i-down"/></svg></span>
+                <i class="scr__cb"><svg><use href="#i-next"/></svg></i>
+              </div>
+              <div class="scr__amt" id="hAmt">₹85,000</div>
+              <div class="scr__of">of ₹1,20,000 collected</div>
+              <div class="scr__prog"><i id="hProg" style="width:70.8%"></i></div>
+              <div class="scr__row"><span><b id="hPaid">9</b> of 13 paid</span><span id="hLeft">4 to go</span></div>
+              <div class="scr__note"><svg><use href="#i-clock"/></svg><span>Collection 1 <span data-mon>Oct</span>, pay by 10 <span data-mon>Oct</span></span></div>
+            </div>
+            <div class="scr__card scr__pot" id="hPot">
+              <i class="scr__potic"><svg><use href="#i-trophy"/></svg></i>
+              <div class="scr__potw"><small>Takes the pot this month</small><b id="hPotName">Not decided yet</b></div>
+            </div>
+            <div class="scr__btns" id="hBtns"><span class="scr__b scr__b--sun"><svg><use href="#i-bottle"/></svg>Bottle draw</span><span class="scr__b"><svg><use href="#i-hand"/></svg>Choose</span></div>
+            <div class="scr__listwrap">
+              <div class="scr__list" id="hList">
+                <div class="scr__m" data-p="s5"><i class="scr__slot">5</i><div><b>Vishnu</b><small>Pending ₹10,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m is-paid"><i class="scr__slot">6</i><div><b>Ann Mary</b><small>Paid ₹10,000</small><em><svg><use href="#i-trophy"/></svg>Month 1</em></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m is-paid"><i class="scr__slot">7</i><div><b>Salman</b><small>Paid ₹10,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m is-paid"><i class="scr__slot">8</i><div><b>Meera</b><small>Paid ₹10,000</small><em><svg><use href="#i-trophy"/></svg>Month 4</em></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m" data-p="s9"><i class="scr__slot">9</i><div><b>Anand</b><small>Pending ₹10,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m is-paid"><i class="scr__slot">10</i><div><b>Riya <u>½ share</u></b><small>Paid ₹5,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m" data-p="s11"><i class="scr__slot">10</i><div><b>Jaseem <u>½ share</u></b><small>Pending ₹5,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m is-paid"><i class="scr__slot">11</i><div><b>Aswathy</b><small>Paid ₹10,000</small><em><svg><use href="#i-trophy"/></svg>Month 3</em></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+                <div class="scr__m" data-p="s13"><i class="scr__slot">12</i><div><b>Faisal</b><small>Pending ₹10,000</small></div><span class="scr__late"><svg><use href="#i-clock"/></svg>Late</span><i class="scr__tick"><svg><use href="#i-check"/></svg></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="float float--msg">
+        <p class="float__head"><svg class="ic"><use href="#i-msg"/></svg>Reminder to Anand</p>
+        <p class="float__bubble">Hi Anand, a reminder from Riverside: your 10K Kuri payment of ₹10,000 for month 5 is due by midnight on the 10th.</p>
+      </div>
+      <div class="float float--win" id="hWin">
+        <div class="slip"><i class="slip__n">3</i><b>Jibin</b></div>
+        <p>Takes the pot, ₹1,20,000</p>
+      </div>
+      <div class="float float--fine">
+        <i class="float__dot"><svg class="ic"><use href="#i-clock"/></svg></i>
+        <div><b>Late fine added</b><small>Salman, ₹200</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <ul class="strip">
+      <li><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>No login for members</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-msg"/></svg>Malayalam or English messages</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg>Draw saved as a video</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-sheet"/></svg>Excel in one tap</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ features -->
+<section class="sec" id="features" aria-labelledby="f-h">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <p class="kicker">Features</p>
+      <h2 id="f-h">Everything your kuri runs on.</h2>
+    </div>
+
+    <div class="bento">
+      <article class="card card--big reveal">
+        <div class="card__copy">
+          <h3>Tap when they pay.</h3>
+          <p>The total, what's left and who is late, worked out as you go.</p>
+        </div>
+        <div class="viz viz--pay" aria-hidden="true">
+          <div class="vpay__hero">
+            <small>Month 5</small>
+            <b class="vpay__amt">₹85,000</b>
+            <div class="vpay__bar"><i></i></div>
+          </div>
+          <div class="vrow is-on"><i class="vslot">1</i><span>Rahul</span><i class="vtick"><svg><use href="#i-check"/></svg></i></div>
+          <div class="vrow is-on"><i class="vslot">2</i><span>Fathima</span><i class="vtick"><svg><use href="#i-check"/></svg></i></div>
+          <div class="vrow vrow--a"><i class="vslot">5</i><span>Vishnu</span><i class="vtick"><svg><use href="#i-check"/></svg></i></div>
+          <div class="vrow vrow--b"><i class="vslot">9</i><span>Anand</span><i class="vtick"><svg><use href="#i-check"/></svg></i></div>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="viz viz--late" aria-hidden="true">
+          <div class="vrow"><i class="vslot">7</i><span>Salman<small>Paid ₹10,000, late fine ₹200</small></span><span class="vlate"><svg><use href="#i-clock"/></svg>Late</span></div>
+        </div>
+        <div class="card__copy"><h3>Late? One tap adds the fine.</h3></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="viz viz--split" aria-hidden="true">
+          <div class="vsplit"><i class="vslot">10</i><div><span>Riya</span><span>Jaseem</span></div><div class="vsplit__parts"><u>½ share</u><u>½ share</u></div></div>
+        </div>
+        <div class="card__copy"><h3>Two people, one slot.</h3><p>Split a slot into half shares or any parts.</p></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="viz viz--hist" aria-hidden="true">
+          <ol>
+            <li><i></i><b>Anand marked paid</b><small>Just now</small></li>
+            <li><i></i><b>Month 4: Meera took the pot</b><small>Last week</small></li>
+            <li><i></i><b>Number added for Faisal</b><small>Last month</small></li>
+          </ol>
+        </div>
+        <div class="card__copy"><h3>Every change kept.</h3><p>Undo, or bring back any earlier version.</p></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="viz viz--admins" aria-hidden="true">
+          <div class="vavs"><i>R</i><i>F</i><i>S</i><i class="vavs__add"><svg><use href="#i-plus"/></svg></i></div>
+          <p class="vchip"><svg><use href="#i-check"/></svg>Fathima is now an admin</p>
+        </div>
+        <div class="card__copy"><h3>Run it together.</h3><p>Add co-admins by WhatsApp number or email.</p></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="viz viz--sheet" aria-hidden="true">
+          <div class="vsheet">
+            <span class="h">Slot</span><span class="h">Jun</span><span class="h">Jul</span><span class="h">Aug</span><span class="h">Sep</span>
+            <span>1</span><span class="ok"></span><span class="ok"></span><span class="ok"></span><span class="ok"></span>
+            <span>2</span><span class="ok"></span><span class="win"></span><span class="ok"></span><span class="ok"></span>
+            <span>3</span><span class="ok"></span><span class="ok"></span><span class="ok"></span><span class="late"></span>
+            <span>4</span><span class="ok"></span><span class="ok"></span><span class="ok"></span><span class="ok"></span>
+          </div>
+        </div>
+        <div class="card__copy"><h3>Excel in one tap.</h3><p>Every month and every payment, as a spreadsheet.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ the draw -->
+<section class="draw" id="draw" aria-labelledby="d-h">
+  <div class="wrap draw__grid">
+    <div class="draw__copy reveal">
+      <p class="pill pill--glass"><svg class="ic" aria-hidden="true"><use href="#i-bottle"/></svg>The bottle draw</p>
+      <h2 id="d-h">Who takes the pot? The bottle decides.</h2>
+      <p class="lead">Every waiting slot goes in as a slip. Every slip has the same chance.</p>
+      <ul class="ticks">
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-dice"/></svg></i>Picked by the phone's secure random numbers</li>
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-music"/></svg></i>Music and sound, about 15 seconds</li>
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-video"/></svg></i>Saved as a video for the group</li>
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-wand"/></svg></i>Or choose by hand, or draw all the months at once</li>
+      </ul>
+      <div class="draw__ctl">
+        <button class="btn btn--sun" type="button" id="drawPlay"><svg class="ic" aria-hidden="true"><use href="#i-sound"/></svg>Play with sound</button>
+        <button class="btn btn--glass" type="button" id="drawAgain"><svg class="ic" aria-hidden="true"><use href="#i-replay"/></svg>Draw again</button>
+      </div>
+    </div>
+    <div class="draw__stage reveal">
+      <div class="vframe">
+        <canvas id="drawCanvas" width="540" height="960" role="img" aria-label="The bottle draw: name slips drop into a glass bottle, it is shaken and tipped, and one slip comes out with who takes the pot."></canvas>
+      </div>
+      <p class="draw__note" id="drawNote" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ reminders -->
+<section class="sec" id="reminders" aria-labelledby="r-h">
+  <div class="wrap split">
+    <div class="split__visual reveal">
+      <div class="chat">
+        <div class="chat__top">
+          <i class="chat__av"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></i>
+          <div><b>Riverside 10K Kuri</b><small>13 members</small></div>
+          <div class="seg" role="group" aria-label="Message language">
+            <button type="button" class="seg__b is-on" data-lang="ml" aria-pressed="true">മലയാളം</button>
+            <button type="button" class="seg__b" data-lang="en" aria-pressed="false">English</button>
+          </div>
+        </div>
+        <div class="chat__body">
+          <div class="bubble" id="groupMsg">
+            <p class="bubble__h"><span data-mon>Oct</span> : <span class="ml" data-t="paid">പണമടച്ചവർ</span></p>
+            <p>✅ Rahul</p><p>✅ Fathima</p><p>✅ Jibin</p><p>✅ Shabna</p><p>✅ Ann Mary</p><p>✅ Salman</p><p>✅ Meera</p><p>✅ Riya</p><p>✅ Aswathy</p>
+            <p class="bubble__h"><span data-mon>Oct</span> : <span class="ml" data-t="due">പണമടക്കാത്തവർ</span></p>
+            <p>❌ Vishnu</p><p>❌ Anand</p><p>❌ Jaseem</p><p>❌ Faisal</p>
+            <p class="bubble__link">https://kuree.skifi.co/k/demo</p>
+            <span class="bubble__t">7:31 pm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="split__copy reveal">
+      <p class="kicker">Reminders</p>
+      <h2 id="r-h">Reminders without the typing.</h2>
+      <p class="lead">Send who paid and who hasn't to the group in one tap. Or a reminder to each person on WhatsApp.</p>
+      <div class="remind">
+        <div class="remind__row"><i class="vav">V</i><div><b>Vishnu</b><small>₹10,000 due, month 5</small></div><span class="mini mini--ink"><svg class="ic" aria-hidden="true"><use href="#i-msg"/></svg>Remind</span></div>
+        <div class="remind__row"><i class="vav">A</i><div><b>Anand</b><small>₹10,000 due, month 5</small></div><span class="mini mini--ink"><svg class="ic" aria-hidden="true"><use href="#i-msg"/></svg>Remind</span></div>
+        <div class="remind__row"><i class="vav">F</i><div><b>Faisal</b><small>No number yet</small></div><span class="mini"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg>Add number</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ members' link -->
+<section class="sec sec--mint" id="link" aria-labelledby="l-h">
+  <div class="wrap split split--rev">
+    <div class="split__copy reveal">
+      <p class="kicker">For members</p>
+      <h2 id="l-h">Members just open the link.</h2>
+      <p class="lead">No app, no login. They see who paid, who took the pot and what comes next.</p>
+      <ul class="ticks ticks--dark">
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></i>Phone numbers stay with the admins</li>
+        <li><i><svg class="ic" aria-hidden="true"><use href="#i-link"/></svg></i>Make a new link any time, the old one stops working</li>
+      </ul>
+      <div class="split__cta"><a class="btn btn--ink" href="/k/demo">Open the demo<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+    </div>
+    <div class="split__visual reveal">
+      <a class="phone phone--link" href="/k/demo" aria-label="Open the demo members' page">
+        <div class="phone__screen">
+          <div class="browserbar"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>kuree.skifi.co</div>
+          <div class="scroller"><img src="/assets/members.webp" alt="The members' page for Riverside 10K Kuri: this month's collection, who paid, and the months ahead" width="600" height="3046" loading="lazy" decoding="async"></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ how it works -->
+<section class="sec" id="how" aria-labelledby="h-h">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <p class="kicker">How it works</p>
+      <h2 id="h-h">Three steps, every month.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step reveal"><span class="step__n">1</span><h3>Set up the kuri</h3><p>Members, share amount, slots and dates.</p></li>
+      <li class="step reveal"><span class="step__n">2</span><h3>Mark who paid</h3><p>Fines and totals add up as you go.</p></li>
+      <li class="step reveal"><span class="step__n">3</span><h3>Draw and share</h3><p>Pick who takes the pot and send the list.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ story -->
+<section class="sec sec--tight" aria-labelledby="s-h">
+  <div class="wrap">
+    <div class="story reveal">
+      <img src="/assets/brand/icon-192.png" alt="" width="96" height="96" loading="lazy">
+      <div>
+        <h2 id="s-h">Born in a real kuri.</h2>
+        <p>Kuree started as the app behind the Boystown 5K Kuri in Blathur, Kerala. Now any group can run theirs on it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ questions -->
+<section class="sec" id="faq" aria-labelledby="q-h">
+  <div class="wrap faq">
+    <div class="sec__head reveal">
+      <p class="kicker">Questions</p>
+      <h2 id="q-h">Good to know.</h2>
+    </div>
+    <div class="faq__list reveal">
+      <details><summary>Does Kuree hold any money?<i aria-hidden="true"></i></summary><p>No. Kuree only keeps the record. Members pay each other the way they always have.</p></details>
+      <details><summary>Do members need to install anything?<i aria-hidden="true"></i></summary><p>No. They open the link you share, in any browser. Only admins use the app.</p></details>
+      <details><summary>Who can make changes?<i aria-hidden="true"></i></summary><p>Only admins. The owner can add co-admins by WhatsApp number or email.</p></details>
+      <details><summary>What can members see?<i aria-hidden="true"></i></summary><p>Names, who paid, fines, who took the pot and what comes next. Phone numbers stay with the admins.</p></details>
+      <details><summary>Is the draw fair?<i aria-hidden="true"></i></summary><p>Every slot still waiting for the pot goes into the bottle once, and the phone's secure random numbers pick one. You can save the whole draw as a video for the group.</p></details>
+      <details><summary>What if I mark something wrong?<i aria-hidden="true"></i></summary><p>Undo before you save, or bring back any earlier version from History.</p></details>
+      <details><summary>When can I get it?<i aria-hidden="true"></i></summary><p>Kuree is coming soon to the App Store and Google Play.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ last call -->
+<section class="sec sec--tight">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div class="cta__glow" aria-hidden="true"></div>
+      <img src="/assets/brand/icon-192.png" alt="" width="88" height="88" loading="lazy">
+      <h2>Your kuri, sorted.</h2>
+      <p>Coming soon to the App Store and Google Play.</p>
+      <div class="cta__btns">
+        <a class="btn btn--sun" href="/k/demo">See a members' page<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn--glass" href="mailto:contact@skifi.co?subject=Kuree"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>Email us</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <a class="brand" href="/"><img src="/assets/brand/icon-64.png" alt="" width="30" height="30" loading="lazy"><span>Kuree</span></a>
+    <nav aria-label="Footer"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/delete-account">Delete an account</a><a href="mailto:contact@skifi.co">Contact</a></nav>
+    <p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p>
+  </div>
+</footer>
+</body>
+</html>
