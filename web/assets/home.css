@@ -1,4 +1,4 @@
-/* kuree.skifi.co: the landing page. Boystown greens, Manrope and Bricolage. */
+/* kureeapp.com: the landing page. Boystown greens, Manrope and Bricolage. */
 @font-face{font-family:"Manrope";font-weight:400 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manrope.woff2) format("woff2")}
 @font-face{font-family:"Bricolage Grotesque";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/bricolage.woff2) format("woff2")}
 
@@ -334,7 +334,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .phone--link:hover .scroller img{animation-play-state:paused}
 @keyframes scrollshot{0%,8%{transform:translateY(0)}92%,100%{transform:translateY(calc(-100% + 100cqh))}}
 
-/* ------------------------------------------------------------ steps, story */
+/* ------------------------------------------------------------ steps */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
 .step{display:grid;gap:10px;align-content:start;padding:32px;border-radius:32px;background:#fff;box-shadow:0 0 0 1px var(--line)}
 .step__n{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--deep);color:var(--sun);font-family:var(--fh);font-size:26px;font-weight:800;margin-bottom:10px}
@@ -343,10 +343,6 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .step:nth-child(2){transition-delay:.08s}
 .step:nth-child(3){transition-delay:.16s}
 
-.story{display:flex;align-items:center;gap:28px;max-width:860px;margin:0 auto;padding:30px 34px;border-radius:32px;background:#fff;box-shadow:0 0 0 1px var(--line)}
-.story img{width:96px;height:96px;border-radius:26px;flex:none;box-shadow:0 16px 30px -18px rgba(3,42,9,.7)}
-.story h2{font-size:clamp(28px,3vw,38px)!important}
-.story p{color:var(--muted);font-size:17.5px;margin-top:6px}
 
 /* ------------------------------------------------------------ questions */
 .faq{max-width:860px}
@@ -432,7 +428,6 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
   .vpay__amt{font-size:42px}
   .chat__top{padding:12px}
   .chat__av{width:36px;height:36px}
-  .story{flex-direction:column;text-align:center;padding:30px 22px}
   .cta{padding:60px 20px;border-radius:30px}
   .foot__in{justify-content:center;text-align:center}
   .foot nav{justify-content:center}

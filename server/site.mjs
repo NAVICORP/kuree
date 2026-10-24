@@ -1,11 +1,15 @@
 /*
- * kuree.skifi.co: the members' pages, the spreadsheets, the plain pages, and
+ * kureeapp.com: the members' pages, the spreadsheets, the plain pages, and
  * the door to the Kuree API.
  *
  * /k/<token>              a kuri as its members see it (read only, no numbers)
  * /k/<token>/report.xlsx  the same kuri as a spreadsheet, made fresh when it changes
  * /, /privacy, /terms, /delete-account
  * /rest/v1, /auth/v1, /functions/v1, /storage/v1, /platform  passed to the API
+ *
+ * Pages asked for on an old address (kuree.skifi.co, www.kureeapp.com) move
+ * to kureeapp.com with a permanent redirect, so links already shared keep
+ * working. API calls are answered on every address.
  *
  * Plain Node, no packages. Text goes out compressed (brotli or gzip).
  */
@@ -24,7 +28,10 @@ const API = (process.env.API_INTERNAL || 'http://kuree-api:8000').replace(/\/$/,
 const PORT = Number(process.env.PORT || 8000);
 const TOOLS = path.resolve(process.env.TOOLS_DIR || path.join(import.meta.dirname, '..', 'tools'));
 const CACHE = process.env.XLSX_CACHE || '/tmp/kuree-xlsx';
-const ORIGIN = (process.env.SITE_URL || 'https://kuree.skifi.co').replace(/\/$/, '');
+const ORIGIN = (process.env.SITE_URL || 'https://kureeapp.com').replace(/\/$/, '');
+const HOST = new URL(ORIGIN).host;
+const MOVED = new Set([`www.${HOST}`, ...(process.env.OLD_HOSTS || 'kuree.skifi.co').split(',')]
+  .map((h) => h.trim().toLowerCase()).filter((h) => h && h !== HOST));
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -297,6 +304,11 @@ async function handle(req, res) {
   const p = url.pathname;
   if (p === '/health') return sendBody(req, res, 200, TYPES['.json'], '{"ok":true}', { 'cache-control': 'no-store' });
   if (API_PATHS.test(p)) return proxy(req, res);
+  const host = String(req.headers.host || '').toLowerCase().replace(/:\d+$/, '');
+  if (MOVED.has(host) && (req.method === 'GET' || req.method === 'HEAD')) {
+    res.writeHead(301, { location: ORIGIN + req.url, 'cache-control': 'public, max-age=86400' });
+    return res.end();
+  }
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { allow: 'GET, HEAD' });
     return res.end();

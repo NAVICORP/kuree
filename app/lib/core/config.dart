@@ -1,6 +1,6 @@
 /// Where the Kuree server lives. Builds can point elsewhere with
 /// --dart-define=KUREE_API=https://example.com
-const String kApiBase = String.fromEnvironment('KUREE_API', defaultValue: 'https://kuree.skifi.co');
+const String kApiBase = String.fromEnvironment('KUREE_API', defaultValue: 'https://kureeapp.com');
 
 /// The private link members open from WhatsApp.
 String shareUrl(String token) => '$kApiBase/k/$token';

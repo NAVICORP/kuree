@@ -64,7 +64,7 @@ Future<void> settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 600));
 }
 
-/// The demo kuri, the same one as kuree.skifi.co/k/demo (server/demo.mjs):
+/// The demo kuri, the same one as kureeapp.com/k/demo (server/demo.mjs):
 /// Riverside 10K Kuri, made-up names. Month 5 is this month, collected two
 /// days ago, with a few days left to pay.
 KuriRecord riverside() {

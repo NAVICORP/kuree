@@ -1,4 +1,4 @@
-# Kuree on SkiFi's own server (kuree.skifi.co), on the shared SkiFi app base:
+# Kuree on SkiFi's own server (kureeapp.com), on the shared SkiFi app base:
 # the database API, sign-in through SkAuth and the server functions in
 # supabase/functions. The same image runs twice (deploy/docker-compose.yml):
 # as the API, and as the site in front of it (server/site.mjs).

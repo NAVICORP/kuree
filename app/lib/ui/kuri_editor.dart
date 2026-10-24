@@ -284,7 +284,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               _field('Name', _name, hint: '5K Kuri', caps: TextCapitalization.words),
               const SizedBox(height: 14),
-              _field('Group', _group, hint: 'Boystown', caps: TextCapitalization.words),
+              _field('Group', _group, hint: 'Riverside', caps: TextCapitalization.words),
             ]),
           ),
           const SectionTitle('Money'),

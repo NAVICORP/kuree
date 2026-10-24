@@ -1,7 +1,8 @@
 # Kuree on one server: Postgres, the Kuree API, and the site in front of it.
 # Deployed with Dokploy from this repository (GitHub provider, compose path
 # ./deploy/docker-compose.yml), which builds the image on the server itself.
-# The domain kuree.skifi.co goes to service `site`, port 8000.
+# The domains kureeapp.com, www.kureeapp.com and kuree.skifi.co go to service
+# `site`, port 8000. The site moves pages on the old addresses to kureeapp.com.
 #
 # Passwords: the first start makes random ones inside the `secrets` volume.
 # Sign-in (WhatsApp codes, email codes) is SkAuth at account.skifi.co, where
@@ -62,8 +63,10 @@ services:
         condition: service_healthy
     environment:
       DB_NAME: kuree
+      # How SkAuth knows Kuree (its `api` in SKAUTH_APPS): keep it as it is, or
+      # sign-in stops until SKAUTH_APPS changes too. Members never see it.
       API_URL: https://kuree.skifi.co
-      SITE_URL: https://kuree.skifi.co
+      SITE_URL: https://kureeapp.com
       AUTH_MODE: app
       AUTH_PROVIDER_URL: https://account.skifi.co
       APP_ID: kuree
@@ -95,7 +98,7 @@ services:
       - "8000"
     environment:
       API_INTERNAL: http://kuree-api:8000
-      SITE_URL: https://kuree.skifi.co
+      SITE_URL: https://kureeapp.com
     depends_on:
       - api
     healthcheck:

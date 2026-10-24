@@ -1,4 +1,4 @@
-/* kuree.skifi.co: the landing page. The phone in the hero ticks off who
+/* kureeapp.com: the landing page. The phone in the hero ticks off who
    paid, the feature cards come in as they scroll into view, and the bottle
    draw plays when it is seen. */
 document.documentElement.classList.add("js");

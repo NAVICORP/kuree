@@ -4,10 +4,10 @@
 
 1. **SkAuth knows Kuree.** On the SkAuth service in Dokploy, add Kuree to `SKAUTH_APPS`:
    `{"id":"kuree","name":"Kuree","site":"https://kuree.skifi.co","api":"https://kuree.skifi.co","color":"#032A09"}`
-   and redeploy SkAuth.
-2. **Dokploy compose.** New compose `kuree` from GitHub `NAVICORP/kuree`, branch `main`, compose path `./deploy/docker-compose.yml`. Domain `kuree.skifi.co` to service `site`, port 8000, HTTPS on. Deploy.
-3. **DNS.** In Cloudflare, `kuree` A record to the VPS (179.198.218.204), proxied like the other subdomains.
-4. Open https://kuree.skifi.co/health. It says `{"ok":true}`.
+   and redeploy SkAuth. (SkAuth knows Kuree by its first address, kuree.skifi.co; members and admins only see kureeapp.com.)
+2. **Dokploy compose.** New compose `kuree` from GitHub `NAVICORP/kuree`, branch `main`, compose path `./deploy/docker-compose.yml`. Domains `kureeapp.com`, `www.kureeapp.com` and `kuree.skifi.co` to service `site`, port 8000, HTTPS on. Deploy.
+3. **DNS.** kureeapp.com is on Cloudflare: A records for `@` and `www` to the VPS (179.198.218.204). The old `kuree` record on skifi.co stays, so links already shared still work; the site moves them to kureeapp.com.
+4. Open https://kureeapp.com/health. It says `{"ok":true}`.
 5. **Boystown.** Sign in to the app as Ishaque (email ishaque@skifi.co, or WhatsApp if that email is on the same SkiFi account). The home screen offers "Bring in the Boystown 5K Kuri". Tap it once. Anees is added as an admin.
 
 ## 2. Accounts (once)
@@ -26,9 +26,9 @@
 4. Play Console > Create app: name **Kuree**, package `co.skifi.kuree`, free, app.
 5. Upload the .aab to **Internal testing** first, then Closed testing (and production when allowed).
 6. App content:
-   - Privacy policy: https://kuree.skifi.co/privacy
+   - Privacy policy: https://kureeapp.com/privacy
    - App access: give the review account (section 5).
-   - Ads: none. Data safety: collects phone number or email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kuree.skifi.co/delete-account.
+   - Ads: none. Data safety: collects phone number or email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kureeapp.com/delete-account.
    - Financial features: Kuree only keeps records; it does not move money.
 
 ## 4. iPhone
@@ -46,7 +46,7 @@ On the Mac, with Xcode and Flutter:
 Both stores need a way in without a WhatsApp code. Make an email account with a password once (an address you can open, for example review@skifi.co):
 
 ```
-curl -X POST https://kuree.skifi.co/auth/v1/signup -H 'apikey: public' -H 'content-type: application/json' \
+curl -X POST https://kureeapp.com/auth/v1/signup -H 'apikey: public' -H 'content-type: application/json' \
   -d '{"email":"review@skifi.co","password":"choose-a-long-one"}'
 ```
 
@@ -56,4 +56,4 @@ Confirm the email it sends, sign in once in the app with Email > Use a password,
 
 - Name: Kuree. Icon: `app/assets/brand/icon.png` (1024 x 1024).
 - Screenshots: the `screens` branch has a picture of every screen after each build (phone size).
-- Support email: contact@skifi.co. Website: https://kuree.skifi.co
+- Support email: contact@skifi.co. Website: https://kureeapp.com
