@@ -1,0 +1,237 @@
+/* Malayalam in Manjari (SIL Open Font License, assets/fonts/Manjari-OFL.txt) */
+@font-face{font-family:"Manjari";font-weight:400;font-style:normal;font-display:swap;src:url(/assets/fonts/manjari-regular.woff2) format("woff2");size-adjust:112%;unicode-range:U+0D00-0D7F,U+200C-200D,U+25CC}
+@font-face{font-family:"Manjari";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manjari-bold.woff2) format("woff2");size-adjust:112%;unicode-range:U+0D00-0D7F,U+200C-200D,U+25CC}
+/* Boystown, the new look for every public page. Loaded after app.css.
+   Titles in Bricolage Grotesque, text in Manrope, rounded cards, the
+   sunny yellow and the crew's own photos. Motion lives in motion.js. */
+:root{
+  --deep:#032A09; --green:#24592B; --leaf:#3E9E58; --sun:#FFD84D;
+  --c-sun:#FBF0B8; --c-mint:#DDEEDF; --c-peach:#F6E3D5; --c-sky:#E0E8F3;
+  --paper:#FAFAF5; --ink:#0F2413; --ink-2:#4A5E4F;
+  --bg:var(--paper); --text:var(--ink); --text-2:var(--ink-2);
+  --accent:var(--green); --brand-600:#24592B;
+  --fh:"Bricolage Grotesque","Manrope","Manjari",system-ui,sans-serif;
+  --f:"Manrope","Manjari",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --e:cubic-bezier(.2,.8,.2,1);
+  --r:22px; --r-lg:28px;
+}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtout .28s ease both}
+::view-transition-new(root){animation:vtin .5s var(--e) both}
+@keyframes vtout{to{opacity:0;transform:translateY(-10px)}}
+@keyframes vtin{from{opacity:0;transform:translateY(16px)}}
+
+body{font-family:var(--f);background:var(--paper)}
+h1,h2,h3,h4,.card h3,.sechead h2,.empty h3{font-family:var(--fh);font-weight:600;letter-spacing:0}
+::selection{background:var(--sun);color:var(--deep)}
+
+/* ---------- scroll progress ---------- */
+.mprog{position:fixed;left:0;top:0;z-index:200;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));
+  background:linear-gradient(90deg,var(--leaf),var(--sun));pointer-events:none}
+
+/* ---------- menu bar: links in one glass pill, a yellow button, and the bar
+   floats as a rounded strip once the page scrolls ---------- */
+:root{--nav-h:80px}
+.nav{top:0;padding:calc(env(safe-area-inset-top) + 14px) var(--gap) 0;border-bottom:0 !important;transition:transform .38s var(--e)}
+.nav.nav--hide{transform:translateY(calc(-100% - 20px))}
+.nav,.nav.solid{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;box-shadow:none !important}
+.nav__bar{min-height:54px;margin-top:12px;gap:12px;border-radius:999px;transition:background .3s ease,box-shadow .3s ease,padding .3s var(--e),transform .3s var(--e)}
+/* floating bar sits 22px below the top edge; the nav keeps its height so nothing under it jumps */
+.nav.solid .nav__bar{transform:translateY(-4px)}
+@media(min-width:1200px){.nav__bar{padding-inline:28px 10px}}
+.nav.solid .nav__bar{background:rgba(250,250,245,.86);-webkit-backdrop-filter:saturate(170%) blur(18px);backdrop-filter:saturate(170%) blur(18px);
+  box-shadow:0 0 0 1px rgba(15,36,19,.06),0 14px 34px -22px rgba(3,42,9,.55);padding-inline:20px 8px}
+@media(min-width:900px){
+  .navlinks{position:absolute;left:50%;transform:translateX(-50%);gap:2px;margin:0;padding:5px;border-radius:999px;
+    background:rgba(15,36,19,.05);border:1px solid rgba(15,36,19,.06)}
+  .nav--onDark:not(.solid) .navlinks{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.14);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+  .nav__bar{position:relative}
+}
+.navlink{min-height:38px;padding-inline:16px;font-size:14px;font-weight:600;transition:background .25s var(--e),color .2s}
+.navlink[aria-current="page"]::after{display:none}
+.navlink[aria-current="page"]{background:var(--deep);color:#fff}
+.nav--onDark:not(.solid) .navlink[aria-current="page"]{background:#fff;color:var(--deep)}
+.navlink:not([aria-current="page"]):hover{background:rgba(15,36,19,.06)}
+.nav--onDark:not(.solid) .navlink:not([aria-current="page"]):hover{background:rgba(255,255,255,.12)}
+.navcta{display:inline-flex;align-items:center;gap:10px;min-height:42px;padding:3px 3px 3px 18px;margin-left:auto;border-radius:999px;
+  background:var(--sun);color:var(--deep);font-weight:700;font-size:14.5px;text-decoration:none;flex:none;
+  box-shadow:0 10px 24px -14px rgba(242,197,61,.9);transition:transform .25s var(--e),background .2s}
+.navcta i{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--deep);color:#fff;transition:transform .35s var(--e)}
+.navcta i .icon{width:17px;height:17px}
+@media (hover:hover) and (pointer:fine){.navcta:hover{background:#FFE170;transform:translateY(-1px)}}
+@media (hover:hover) and (pointer:fine){.navcta:hover i{transform:rotate(-12deg) scale(1.06)}}
+.navcta:focus-visible{outline:3px solid var(--leaf);outline-offset:3px}
+.brand{margin-right:0}
+@media(max-width:899px){.navcta{margin-left:auto}}
+@media(max-width:520px){.navcta span{display:none}.navcta{padding:4px}}
+.iconbtn{border-radius:50%;width:42px;height:42px}
+/* the wordmark, compact */
+.word{height:22px}
+@media(min-width:768px){.word{height:24px}}
+.word--foot{height:28px}
+
+/* ---------- buttons ---------- */
+.btn{border-radius:999px;font-weight:700;transition:transform .25s var(--e),box-shadow .25s ease,background .2s ease,border-color .2s ease,color .2s ease}
+@media (hover:hover) and (pointer:fine){.btn:hover{transform:translateY(-2px)}}
+.btn:active{transform:scale(.97)}
+.btn--p{background:var(--deep);color:#fff;box-shadow:0 12px 26px -16px rgba(3,42,9,.8)}
+.btn--p:hover{background:var(--green)}
+.btn--glass{border-radius:999px}
+.btn .icon{transition:transform .3s var(--e)}
+@media (hover:hover) and (pointer:fine){.btn:hover .icon.arrow,.btn:hover .icon:last-child:not(:first-child){transform:translateX(3px)}}
+
+/* ---------- page headers: a rounded card with the crew's own photo ---------- */
+/* a rounded card with a little paper above and around it, as on the home page */
+.phead{margin:calc(var(--gap) - var(--nav-h) - env(safe-area-inset-top)) var(--gap) 0;border-radius:var(--box-r);background:var(--deep)}
+.phead__bg{overflow:hidden}
+.phead__bg img{transform:scale(calc(1.06 + var(--hp,0) * .08)) translateY(calc(var(--hp,0) * 30px));animation:phzoom 1.8s var(--e) both}
+@keyframes phzoom{from{opacity:0;scale:1.12}to{opacity:1;scale:1}}
+.phead--photo::before{background:
+  linear-gradient(180deg,rgba(3,42,9,.6) 0%,rgba(3,42,9,.15) 38%,rgba(3,42,9,.78) 100%),
+  linear-gradient(100deg,rgba(3,42,9,.9) 0%,rgba(3,42,9,.5) 45%,rgba(3,42,9,0) 80%)}
+.phead h1{font-family:var(--fh);font-weight:600;font-size:clamp(40px,8vw,76px);line-height:.98;-webkit-font-smoothing:antialiased}
+.phead .wrap>*{animation:phup .95s var(--e) both}
+.phead .wrap>*:nth-child(2){animation-delay:.08s}
+.phead .wrap>*:nth-child(3){animation-delay:.16s}
+.phead .wrap>*:nth-child(4){animation-delay:.24s}
+.phead .wrap>*:nth-child(5){animation-delay:.32s}
+@keyframes phup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.phead .eyebrow{color:var(--sun)}
+.phead p{color:rgba(255,255,255,.86)}
+
+/* ---------- section titles ---------- */
+.eyebrow{text-transform:none;font-size:14px;font-weight:600;color:var(--green)}
+.sechead h2{font-size:clamp(32px,5vw,54px);line-height:1.02;font-weight:600;color:var(--deep)}
+.sechead p{color:var(--ink-2)}
+
+/* ---------- cards ---------- */
+.card{border-radius:var(--r-lg);border-color:rgba(15,36,19,.07);box-shadow:none;transition:transform .45s var(--e),box-shadow .45s var(--e),border-color .3s}
+@media (hover:hover) and (pointer:fine){a.card:hover{transform:translateY(-6px);box-shadow:0 26px 50px -32px rgba(3,42,9,.55)}}
+.card--muted{background:#F3F5EF}
+.ico{border-radius:16px;background:var(--c-mint);color:var(--green);transition:transform .5s var(--e)}
+@media (hover:hover) and (pointer:fine){a.card:hover .ico{transform:rotate(-10deg) scale(1.08)}}
+.grid>.card:nth-child(4n+1) .ico{background:var(--c-sun)}
+.grid>.card:nth-child(4n+2) .ico{background:var(--c-mint)}
+.grid>.card:nth-child(4n+3) .ico{background:var(--c-peach)}
+.grid>.card:nth-child(4n+4) .ico{background:var(--c-sky)}
+.metric{border-radius:18px;border-color:rgba(15,36,19,.07)}
+.metric dd{font-family:var(--fh);font-weight:600}
+.empty{border-radius:var(--r-lg);background:var(--c-mint);border:1px dashed rgba(36,89,43,.25)}
+.badge--wait{background:var(--c-sun);color:#7A5A05}
+
+/* ---------- tables ---------- */
+.mtable tbody tr{transition:background .2s ease}
+.mtable tbody tr:hover{background:var(--c-mint)}
+
+/* ---------- back to top ---------- */
+.totop{border-radius:50%;background:var(--sun);color:var(--deep);border:0;box-shadow:0 14px 30px -14px rgba(3,42,9,.6)}
+.totop:hover{background:#FFE170}
+.totop{-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* ---------- footer ---------- */
+.foot{background:#F1F4EE}
+.foot a:hover{color:var(--green)}
+
+/* ---------- every section a rounded box on a soft frame, the footer too.
+   One gap everywhere: above the first box, between boxes, around the footer. ---------- */
+:root{--frame:#ECEFE6;--gap:12px;--box-r:28px}
+@media(min-width:768px){:root{--gap:16px;--box-r:34px}}
+body{background:var(--frame)}
+main .sec{margin:var(--gap) var(--gap) 0;border-radius:var(--box-r);background:var(--paper)}
+main .sec .sec{margin:0;border-radius:0}
+/* every box gets the same inner air; a joined block continues the box above it */
+main .sec{display:flow-root;padding-block:clamp(48px,7vw,96px)}
+main .sec .sec{padding-block:0}
+main .sec:has(+ .sec--joined){padding-bottom:20px;border-bottom-left-radius:0;border-bottom-right-radius:0}
+main .sec--joined{margin-top:0;padding-top:0;border-top-left-radius:0;border-top-right-radius:0}
+p,li,dd,small{text-wrap:pretty}
+.foot{margin:var(--gap);border-radius:var(--box-r);border:0;background:#F6F8F2}
+/* the 5K numbers, in their own box under the header */
+/* iPhone turns some numbers into underlined links on its own; keep every number the same */
+a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font:inherit!important}
+.mgroup+.mgroup{margin-top:clamp(48px,7vw,80px)}
+.mgroup .sechead{margin-bottom:20px}
+.mgroup .sechead h2{font-size:clamp(28px,4vw,40px)}
+main .ksum{width:auto;max-width:none;margin:var(--gap) var(--gap) 0;padding:20px;border-radius:var(--box-r);background:var(--paper)}
+main .ksum .metrics{max-width:1120px;margin:0 auto}
+
+/* ---------- motion helpers (set by motion.js) ---------- */
+.js [data-m]{opacity:0;transform:translateY(24px);transition:opacity .7s var(--e),transform .85s var(--e);transition-delay:var(--md,0s)}
+.js [data-m].m-in{opacity:1;transform:none}
+@media (hover:hover) and (pointer:fine){.js a[data-m].m-in.card:hover{transform:translateY(-6px)}}
+[data-tilt]{transform-style:preserve-3d;will-change:transform}
+
+@media(prefers-reduced-motion:reduce){
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+  .phead__bg img,.phead .wrap>*{animation:none;transform:none}
+  .js [data-m]{opacity:1;transform:none;transition:none}
+  .nav.nav--hide{transform:none}
+  .mprog{display:none}
+}
+
+/* ---------- the phone menu: a floating rounded card, links as rounded tiles ---------- */
+.msheet__scrim{background:rgba(3,30,10,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.msheet__panel{inset:calc(var(--gap) + env(safe-area-inset-top)) var(--gap) auto var(--gap);padding:6px 16px 16px;border:0;border-radius:var(--box-r);
+  background:var(--paper);-webkit-backdrop-filter:none;backdrop-filter:none;
+  box-shadow:0 30px 70px -30px rgba(3,42,9,.6),0 0 0 1px rgba(15,36,19,.05);
+  max-height:calc(100dvh - 2 * var(--gap) - env(safe-area-inset-top));
+  transform-origin:90% 0;transform:translateY(-14px) scale(.96);opacity:0;
+  transition:transform .45s var(--e),opacity .25s ease}
+.msheet.open .msheet__panel{transform:none;opacity:1}
+.msheet__panel>.wrap{padding-inline:0}
+.msheet__top{min-height:64px}
+.msheet__top .word{height:24px}
+.msheet__top .word__on{opacity:0}.msheet__top .word__off{opacity:1}
+#menuclose{border-radius:50%;width:44px;height:44px;background:var(--c-mint);border:0;color:var(--deep);transition:transform .35s var(--e),background .2s}
+#menuclose:hover{background:var(--c-sun)}
+.msheet.open #menuclose{transform:rotate(90deg)}
+.mlinks{gap:8px;padding:6px 0 14px}
+.mlink{min-height:58px;padding:0 8px 0 20px;border:0;border-radius:20px;font-family:var(--fh);font-weight:600;font-size:19px;color:var(--deep);
+  opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .5s var(--e),background .2s}
+.mlink:nth-child(5n+1){background:var(--c-mint)}
+.mlink:nth-child(5n+2){background:var(--c-sun)}
+.mlink:nth-child(5n+3){background:var(--c-sky)}
+.mlink:nth-child(5n+4){background:var(--c-peach)}
+.mlink:nth-child(5n+5){background:#E9EDE4}
+.mlink .icon{display:grid;place-items:center;width:42px;height:42px;padding:12px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.7);color:var(--deep);
+  transition:transform .35s var(--e)}
+@media (hover:hover) and (pointer:fine){.mlink:hover .icon,.mlink:active .icon{transform:rotate(-45deg)}}
+.mlink:active{transform:scale(.98)}
+.mlink[aria-current="page"]{background:var(--deep);color:#fff}
+.mlink[aria-current="page"] .icon{background:var(--sun);color:var(--deep)}
+.msheet.open .mlink{opacity:1;transform:none}
+.msheet.open .mlink:nth-child(1){transition-delay:.06s}
+.msheet.open .mlink:nth-child(2){transition-delay:.11s}
+.msheet.open .mlink:nth-child(3){transition-delay:.16s}
+.msheet.open .mlink:nth-child(4){transition-delay:.21s}
+.msheet.open .mlink:nth-child(5){transition-delay:.26s}
+.msheet__foot{gap:8px;padding:0;opacity:0;transform:translateY(10px);transition:opacity .4s ease .3s,transform .5s var(--e) .3s}
+.msheet.open .msheet__foot{opacity:1;transform:none}
+.msheet__foot .btn{flex:1;justify-content:center;min-height:50px;border:0;border-radius:999px;background:#E9EDE4;color:var(--deep)}
+.msheet__foot .btn:first-child{background:var(--sun)}
+@media(prefers-reduced-motion:reduce){
+  .msheet__panel,.mlink,.msheet__foot,#menuclose{transition:none;transform:none}
+  .mlink,.msheet__foot{opacity:1}
+}
+
+/* footer bottom line: one row on wide screens, stacked and left-aligned on phones */
+.foot__note{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;line-height:1.5;text-align:left}
+.foot__note>span{display:block;margin:0;padding:0}
+
+/* signed in: photo or initials in place of the login arrow */
+.navcta--me i{overflow:hidden;font-size:14px;font-weight:800;font-style:normal;color:#fff}
+.navcta--me i img{width:100%;height:100%;object-fit:cover;display:block}
+/* signed-in menu under the profile photo */
+.memenu{position:absolute;right:16px;top:calc(100% + 8px);z-index:60;width:min(260px,calc(100vw - 32px));padding:8px;border-radius:22px;background:#fff;color:var(--text,#0C1A0F);
+  box-shadow:0 18px 50px -12px rgba(3,42,9,.35),0 0 0 1px rgba(15,36,19,.06);display:grid;gap:2px;animation:mmin .18s ease-out}
+.memenu[hidden]{display:none}
+@keyframes mmin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.memenu__who{display:grid;gap:1px;margin:0;padding:8px 12px 10px;border-bottom:1px solid rgba(15,36,19,.08);margin-bottom:4px}
+.memenu__who b{font-size:15px;font-weight:800}
+.memenu__who small{font-size:12.5px;color:var(--muted,#53665B);overflow-wrap:anywhere}
+.memenu a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:14px;color:inherit;text-decoration:none;font-size:15px;font-weight:700}
+.memenu a:hover,.memenu a:focus-visible{background:#F1F5F2;outline:0}
+.memenu .icon{width:18px;height:18px;color:var(--accent,#1F6B33)}
+@media(prefers-reduced-motion:reduce){.memenu{animation:none}}
+.nav__bar{position:relative}

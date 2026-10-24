@@ -1,0 +1,53 @@
+# The Kuree server: the database rules (with their tests), the site and the
+# spreadsheet tool, checked on every push that touches them.
+name: Server
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "supabase/**"
+      - "server/**"
+      - "tools/**"
+      - "web/**"
+      - "Dockerfile"
+      - "deploy/**"
+      - ".github/workflows/server.yml"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: kuree
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: test
+      PGDATABASE: kuree
+    steps:
+      - uses: actions/checkout@v5
+      - name: The shared platform pieces (auth schema and roles)
+        run: |
+          curl -fsSL -H "Authorization: Bearer ${{ secrets.PLATFORM_READ_TOKEN }}" \
+            "https://raw.githubusercontent.com/NAVICORP/farmi-life/main/backend/db/platform.sql" -o /tmp/platform.sql \
+            || cp supabase/tests/platform.sql /tmp/platform.sql
+          psql -v ON_ERROR_STOP=1 -q -f /tmp/platform.sql
+      - name: Migrations
+        run: for f in supabase/migrations/*.sql; do echo "$f"; psql -v ON_ERROR_STOP=1 -q -f "$f"; done
+      - name: Database tests
+        run: |
+          set -o pipefail
+          for t in supabase/tests/*_test.sql; do echo "== $t"; psql -v ON_ERROR_STOP=1 -q -f "$t" 2>&1 | grep -E "NOTICE|ERROR"; done
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: node --check server/site.mjs
+      - run: pip install openpyxl && python3 -c "import ast,sys; ast.parse(open('tools/xlsx.py').read())"

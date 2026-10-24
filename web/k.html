@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex,nofollow">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESC}}">
+<meta name="theme-color" content="#032A09">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/assets/brand/touch-180.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kuree">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:image" content="{{ORIGIN}}/assets/brand/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/manrope.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/kuri.css">
+<link rel="stylesheet" href="/assets/kuree.css">
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+<symbol id="i-prev" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></symbol>
+<symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+</defs></svg>
+<header class="phead">
+<div class="wrap">
+<div class="kbar"><a class="kbar__mark" href="/" aria-label="Kuree"><img src="/assets/brand/icon-64.png" alt="" width="32" height="32">Kuree</a><span class="kbar__upd">{{UPDATED}}</span></div>
+<p class="eyebrow"><span class="badge badge--live"><span class="dot" aria-hidden="true"></span>Live</span><span class="khead__group">{{GROUP}}</span></p>
+<h1>{{NAME}}</h1>
+<p>{{LEAD}}</p>
+<div class="phead__cta"><a class="btn btn--glass" href="{{REPORT}}" download>
+<svg class="icon" aria-hidden="true"><use href="#i-down"/></svg>Download Report</a></div>
+</div></header>
+<main id="main"><div id="kapp"></div></main>
+<footer class="kfoot"><p>Run with <a href="/">Kuree</a></p></footer>
+<script id="seed" type="application/json">{{SEED}}</script>
+<script src="/assets/k.js" defer></script>
+</body>
+</html>
