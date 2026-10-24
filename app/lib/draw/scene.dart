@@ -94,7 +94,7 @@ class BottleScene {
   })  : rng = SeededRandom(seed),
         plan = DrawPlan.forCount(order.length) {
     const hues = [C.paper, Color(0xFFFFF7E0), Color(0xFFF7FBF6), Color(0xFFFFF9EC)];
-    slips = [for (var i = 0; i < order.length; i++) _Slip(order[i], i, (rng.next() - 0.5) * 0.6, hues[i % 4])];
+    _slips = [for (var i = 0; i < order.length; i++) _Slip(order[i], i, (rng.next() - 0.5) * 0.6, hues[i % 4])];
   }
 
   static const double W = 1080, H = 1920;
@@ -106,12 +106,15 @@ class BottleScene {
   final DateTime? when;
   final SeededRandom rng;
   final DrawPlan plan;
-  late final List<_Slip> slips;
-  final List<_Bit> confetti = [];
+  late final List<_Slip> _slips;
+  final List<_Bit> _confetti = [];
+
+  /// How many bits of confetti are in the air.
+  int get confettiCount => _confetti.length;
   bool _burst = false;
   double simT = -DrawPlan.countdown;
 
-  DrawEntry get picked => slips[pickIndex].e;
+  DrawEntry get picked => _slips[pickIndex].e;
 
   /// The whole run, countdown to the end of the video, in ms.
   double get length => DrawPlan.countdown + plan.end + DrawPlan.tail;
@@ -214,7 +217,7 @@ class BottleScene {
     _pose(t);
     final p = plan;
     // A slip that has flown into the neck drops in.
-    for (final s in slips) {
+    for (final s in _slips) {
       if (s.mode != 'wait') continue;
       if ((t - p.writeAt[s.i]) / p.writeD < 1) continue;
       final mouth = _toWorld(0, -_bh / 2 - _shoulder - _neckH - 30);
@@ -229,7 +232,7 @@ class BottleScene {
     }
     // The picked slip slides to the neck and out.
     if (t >= p.pick && t < p.reveal) {
-      final ch = slips[pickIndex];
+      final ch = _slips[pickIndex];
       final pk = (t - p.pick) / p.pickD;
       if (ch.mode == 'in' && pk > 0.32) {
         ch.mode = 'out';
@@ -243,7 +246,7 @@ class BottleScene {
       _burst = true;
       _spray(W / 2, 800);
     }
-    for (final b in confetti) {
+    for (final b in _confetti) {
       b.vy += 1500 * dt;
       b.vx *= math.pow(0.99, dt * 60).toDouble();
       b.x += b.vx * dt;
@@ -251,12 +254,12 @@ class BottleScene {
       b.r += b.vr * dt;
       b.life -= dt * 0.18;
     }
-    confetti.removeWhere((b) => b.life <= 0 || b.y > H + 60);
+    _confetti.removeWhere((b) => b.life <= 0 || b.y > H + 60);
   }
 
   void _physics(double dt, String mode, double kick) {
     final gx = math.sin(-_ba) * 2600, gy = math.cos(-_ba) * 2600;
-    final inside = slips.where((s) => s.mode == 'in').toList();
+    final inside = _slips.where((s) => s.mode == 'in').toList();
     final damp = math.pow(0.995, dt * 60).toDouble(), dampA = math.pow(0.985, dt * 60).toDouble(), k = kick * dt * 60;
     for (final s in inside) {
       // How far the rolled slip reaches at its angle, so its ends stay inside the glass too.
@@ -340,7 +343,7 @@ class BottleScene {
     const cols = [C.sun, C.leaf, C.mint, Color(0xFFFFFFFF), C.peach, Color(0xFF7FD18F)];
     for (var i = 0; i < 170; i++) {
       final a = rng.next() * math.pi * 2, sp = 500 + rng.next() * 1200;
-      confetti.add(_Bit(x, y, math.cos(a) * sp, math.sin(a) * sp - 700, rng.next() * 6, (rng.next() - 0.5) * 14,
+      _confetti.add(_Bit(x, y, math.cos(a) * sp, math.sin(a) * sp - 700, rng.next() * 6, (rng.next() - 0.5) * 14,
           12 + rng.next() * 14, 6 + rng.next() * 10, cols[i % cols.length]));
     }
   }
@@ -377,7 +380,7 @@ class BottleScene {
     final p = plan;
     final top = <void Function()>[];
     // Writing, rolling and dropping each slip.
-    for (final s in slips) {
+    for (final s in _slips) {
       if (s.mode == 'in' || s.mode == 'out' || t < p.writeAt[s.i]) continue;
       final k = (t - p.writeAt[s.i]) / p.writeD;
       const sx = W / 2, sy = 520.0;
@@ -411,7 +414,7 @@ class BottleScene {
     g.scale(1 / _bs, 1 / _bs);
     g.rotate(-_ba);
     g.translate(-(_bx + _box), -_by);
-    for (final s in slips) {
+    for (final s in _slips) {
       if (s.mode != 'in') continue;
       final wp = _toWorld(s.x, s.y);
       _slipRolled(g, wp.dx, wp.dy, _ba + s.ang, s, _bs);
@@ -424,8 +427,8 @@ class BottleScene {
     if (t < 1500) {
       _caption(g, 'Writing every name', 'One slip for every slot still waiting for the pot');
     } else if (t < lastEnd) {
-      final cur = [for (final s in slips) if (t >= p.writeAt[s.i]) s].length;
-      _caption(g, 'Into the bottle', '$cur of ${slips.length}');
+      final cur = [for (final s in _slips) if (t >= p.writeAt[s.i]) s].length;
+      _caption(g, 'Into the bottle', '$cur of ${_slips.length}');
     } else if (t < p.shake) {
       _caption(g, 'Closing the bottle', null);
     } else if (t < p.shake + p.shakeD) {
@@ -439,7 +442,7 @@ class BottleScene {
     }
 
     // The picked slip on its way out.
-    final ch = slips[pickIndex];
+    final ch = _slips[pickIndex];
     if (ch.mode == 'out' && t < p.reveal) {
       final pk = (t - p.pick) / p.pickD;
       final e = ((pk - 0.32) / 0.3).clamp(0.0, 1.0);
@@ -508,7 +511,7 @@ class BottleScene {
 
     // Confetti
     final bit = Paint();
-    for (final b in confetti) {
+    for (final b in _confetti) {
       g.save();
       g.translate(b.x, b.y);
       g.rotate(b.r);
@@ -551,7 +554,7 @@ class BottleScene {
 
   void _footer(Canvas g) {
     final at = when;
-    _text(g, '${slips.length} names in the bottle. ${at != null ? 'Drawn ${stamp(at)}' : stamp(DateTime.now())}', W / 2, H - 70,
+    _text(g, '${_slips.length} names in the bottle. ${at != null ? 'Drawn ${stamp(at)}' : stamp(DateTime.now())}', W / 2, H - 70,
         size: 30, weight: FontWeight.w600, color: const Color(0xB3DDEEDF));
   }
 

@@ -169,7 +169,7 @@ class _KuriScreenState extends State<KuriScreen> {
   Future<void> _drawRest() async {
     final now = doc.currentMonth();
     final order = await showDrawRestSheet(context, doc, now);
-    if (order == null) return;
+    if (order == null || !mounted) return;
     _change(() {
       order.forEach((n, slot) => doc.months[n - 1].winner = slot);
     });
@@ -342,7 +342,7 @@ class _KuriScreenState extends State<KuriScreen> {
         ),
         bottomNavigationBar: AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
-          transitionBuilder: (c, a) => SizeTransition(sizeFactor: a, axisAlignment: -1, child: c),
+          transitionBuilder: (c, a) => SizeTransition(sizeFactor: a, child: c),
           child: dirty ? _saveBar() : const SizedBox.shrink(),
         ),
       ),

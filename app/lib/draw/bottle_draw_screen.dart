@@ -188,7 +188,7 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
     const vw = 720, vh = 1280, fps = 30;
     final s2 = _scene(pickIndex, seed, when);
     final plan = s2.plan, sd = seed;
-    final pcm = samples ?? await Isolate.run(() => Soundtrack.render(plan, sd));
+    final Int16List pcm = samples ?? await Isolate.run<Int16List>(() => Soundtrack.render(plan, sd));
     final dir = await getTemporaryDirectory();
     final path = '${dir.path}/${widget.title.replaceAll(RegExp(r'[^A-Za-z0-9]+'), '-').toLowerCase()}-month-${widget.month}-draw.mp4';
     final old = File(path);

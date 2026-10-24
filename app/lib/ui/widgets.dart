@@ -362,8 +362,8 @@ class SectionTitle extends StatelessWidget {
 // ---------------------------------------------------------------- sheets and dialogs
 
 /// A rounded sheet from the bottom with a title and a close button.
-Future<T?> showKSheet<T>(BuildContext context, {required String title, required Widget Function(BuildContext) builder, bool scroll = true}) {
-  return showModalBottomSheet<T>(
+Future<R?> showKSheet<R>(BuildContext context, {required String title, required Widget Function(BuildContext) builder, bool scroll = true}) {
+  return showModalBottomSheet<R>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,

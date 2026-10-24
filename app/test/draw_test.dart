@@ -35,7 +35,7 @@ void main() {
     }
     b.advanceTo(a.simT);
     expect(a.simT, b.simT);
-    expect(a.confetti.length, b.confetti.length);
+    expect(a.confettiCount, b.confettiCount);
     expect(a.picked.slot, 5);
   });
 
