@@ -1,0 +1,52 @@
+/* Kuree: the members' page and the site pages, on the Boystown styles
+   (app.css, site.css, kuri.css). Fonts are served from here. */
+@font-face{font-family:"Manrope";font-weight:400 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manrope.woff2) format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/bricolage.woff2) format("woff2")}
+
+:root{--nav-h:0px}
+*{letter-spacing:0}
+
+/* the header box: deep green, no photo */
+.phead{margin:var(--gap) var(--gap) 0;position:relative;overflow:hidden;isolation:isolate;height:auto;min-height:0}
+.phead::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(520px 320px at 100% -10%,rgba(127,209,143,.30),transparent 62%),
+    radial-gradient(420px 300px at -10% 115%,rgba(255,216,77,.14),transparent 60%),
+    var(--deep)}
+.phead .wrap{padding-top:calc(env(safe-area-inset-top) + 34px);padding-bottom:30px}
+@media(min-width:768px){.phead .wrap{padding-top:64px;padding-bottom:54px}}
+.phead h1{color:#fff}
+.phead .eyebrow{color:var(--sun);font-weight:700}
+.khead__group{color:var(--sun)}
+.badge--live{color:var(--brand-300);background:rgba(127,193,148,.16)}
+
+/* the mark at the very top */
+.kbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 26px}
+.kbar__mark{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:var(--fh);font-weight:700;font-size:20px}
+.kbar__mark img{width:32px;height:32px;border-radius:9px}
+.kbar__upd{font-size:13px;font-weight:600;color:rgba(255,255,255,.7)}
+
+/* footer */
+.kfoot{padding:34px var(--gap) calc(30px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:14px}
+.kfoot a{color:var(--green);font-weight:700;text-decoration:none}
+.kfoot a:hover{text-decoration:underline}
+.kfoot p+p{margin-top:6px}
+
+/* plain pages: privacy, terms, deleting an account, the home page */
+.kpage{max-width:760px;margin:0 auto;padding:28px 20px 60px}
+.kpage h1{font-family:var(--fh);font-weight:700;font-size:clamp(34px,7vw,52px);line-height:1.02;margin:10px 0 14px}
+.kpage h2{font-family:var(--fh);font-weight:700;font-size:23px;margin:30px 0 8px}
+.kpage p,.kpage li{color:var(--text-2);font-size:16.5px;line-height:1.65}
+.kpage p+p{margin-top:10px}
+.kpage ul{padding-left:20px;margin:8px 0}
+.kpage a{color:var(--green);font-weight:700}
+.kpage .lead{font-size:18px;color:var(--muted)}
+.kpage__top{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--fh);font-weight:700;font-size:22px}
+.kpage__top img{width:36px;height:36px;border-radius:10px}
+.khero{display:grid;justify-items:center;text-align:center;gap:14px;padding:70px 20px 40px}
+.khero img{width:112px;height:112px;border-radius:28px;box-shadow:0 22px 50px -24px rgba(3,42,9,.7)}
+.khero h1{font-family:var(--fh);font-weight:700;font-size:clamp(46px,10vw,76px);line-height:1;margin:6px 0 0}
+.khero p{font-size:19px;color:var(--muted);max-width:30ch}
+.kgone{display:grid;justify-items:center;text-align:center;gap:12px;padding:90px 20px}
+.kgone h1{font-family:var(--fh);font-weight:700;font-size:34px}
+.kgone p{color:var(--muted);max-width:36ch}
