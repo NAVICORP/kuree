@@ -218,7 +218,7 @@ void main() {
     sized(tester);
     await tester.pumpWidget(phone(KuriEditorScreen(record: boystown())));
     await settle(tester);
-    await tester.drag(find.byType(ListView).first, const Offset(0, -1100));
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1170));
     await shot(tester, '11-edit-slots');
     await tester.drag(find.byType(ListView).first, const Offset(0, -1300));
     await shot(tester, '12-edit-numbers');

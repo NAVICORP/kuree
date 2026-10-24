@@ -423,73 +423,80 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   Widget _slotRow(int i, S s, Currency cur) {
     final r = rows[i];
     final split = r.length > 1;
+    Widget name(int j) => TextField(
+          controller: r[j].name,
+          textCapitalization: TextCapitalization.words,
+          style: T.bodyStrong,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            hintText: split ? s.nameN(j + 1) : s.fieldName,
+            isDense: true,
+            suffixIcon: split
+                ? IconButton(
+                    tooltip: s.remove,
+                    onPressed: () => _unsplit(i, j),
+                    icon: const Icon(Icons.close_rounded, size: 20, color: K.muted),
+                  )
+                : null,
+          ),
+        );
     return KCard(
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 8, 6),
+      padding: EdgeInsetsDirectional.fromSTEB(12, 12, split ? 12 : 4, split ? 6 : 12),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 38)),
         const SizedBox(width: Sp.md - 2),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            for (var j = 0; j < r.length; j++)
-              Padding(
-                padding: EdgeInsets.only(bottom: j < r.length - 1 ? Sp.sm : 0),
-                child: Row(children: [
-                  Expanded(
-                    child: TextField(
-                      controller: r[j].name,
-                      textCapitalization: TextCapitalization.words,
-                      style: T.bodyStrong,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(hintText: split ? s.nameN(j + 1) : s.fieldName, isDense: true),
-                    ),
-                  ),
-                  if (split) ...[
-                    const SizedBox(width: 6),
-                    SizedBox(
-                      width: cur.symbol.length > 1 ? 120 : 100,
-                      child: TextField(
-                        controller: r[j].amount,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
-                        style: T.bodyStrong,
-                        decoration: InputDecoration(
-                          prefixText: cur.symbol.length > 1 ? '${cur.symbol} ' : cur.symbol,
-                          prefixStyle: T.bodyStrong.copyWith(color: K.muted),
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+          child: split
+              // A shared slot: one line per person, each with their part.
+              ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  for (var j = 0; j < r.length; j++)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Sp.sm),
+                      child: Row(children: [
+                        Expanded(child: name(j)),
+                        const SizedBox(width: Sp.sm),
+                        SizedBox(
+                          width: cur.symbol.length > 1 ? 120 : 104,
+                          child: TextField(
+                            controller: r[j].amount,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
+                            style: T.bodyStrong,
+                            decoration: InputDecoration(
+                              prefixText: cur.symbol.length > 1 ? '${cur.symbol} ' : cur.symbol,
+                              prefixStyle: T.bodyStrong.copyWith(color: K.muted),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                            ),
+                          ),
                         ),
+                      ]),
+                    ),
+                  if (r.length < 4)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton.icon(
+                        onPressed: () => _split(i),
+                        style: TextButton.styleFrom(
+                          foregroundColor: K.green,
+                          minimumSize: const Size(0, 44),
+                          padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
+                          shape: const StadiumBorder(),
+                          textStyle: T.label,
+                        ),
+                        icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
+                        label: Text(s.addPerson),
                       ),
                     ),
-                    IconButton(
-                      tooltip: s.remove,
-                      constraints: const BoxConstraints.tightFor(width: 44, height: 48),
-                      padding: EdgeInsets.zero,
-                      onPressed: () => _unsplit(i, j),
-                      icon: const Icon(Icons.close_rounded, size: 20, color: K.muted),
-                    ),
-                  ],
-                ]),
-              ),
-            if (r.length < 4)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  onPressed: () => _split(i),
-                  style: TextButton.styleFrom(
-                    foregroundColor: K.green,
-                    minimumSize: const Size(0, 44),
-                    padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
-                    shape: const StadiumBorder(),
-                    textStyle: T.label,
-                  ),
-                  icon: const Icon(Icons.group_add_outlined, size: 18),
-                  label: Text(split ? s.addPerson : s.splitSlot),
-                ),
-              )
-            else
-              const SizedBox(height: 6),
-          ]),
+                ])
+              : name(0),
         ),
+        if (!split)
+          IconButton(
+            tooltip: s.splitSlot,
+            onPressed: () => _split(i),
+            icon: const Icon(Icons.group_add_outlined, color: K.green),
+          ),
       ]),
     );
   }

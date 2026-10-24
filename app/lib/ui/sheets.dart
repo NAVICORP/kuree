@@ -162,28 +162,31 @@ Future<void> showRemindersSheet(BuildContext context, KuriDoc doc, Month m, Stri
                 ]),
               ),
               const SizedBox(width: Sp.sm),
-              if (d.person.phone.isEmpty)
-                KButton(
-                  label: s.addNumber,
-                  icon: Icons.phone_outlined,
-                  kind: KButtonKind.secondary,
-                  small: true,
-                  onPressed: () async {
-                    await onAddNumber(d.person);
-                    setState(() {});
-                  },
-                )
-              else
-                KButton(
-                  label: sent.contains(d.person.id) ? s.sent : s.remind,
-                  icon: sent.contains(d.person.id) ? Icons.check_rounded : Icons.chat_outlined,
-                  kind: sent.contains(d.person.id) ? KButtonKind.ghost : KButtonKind.primary,
-                  small: true,
-                  onPressed: () {
-                    setState(() => sent.add(d.person.id));
-                    _open(ctx, whatsApp(reminderFor(doc, m, d), phone: d.person.phone));
-                  },
-                ),
+              // Capped, so a long label shrinks instead of squeezing the name.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 150),
+                child: d.person.phone.isEmpty
+                    ? KButton(
+                        label: s.addNumber,
+                        icon: Icons.phone_outlined,
+                        kind: KButtonKind.secondary,
+                        small: true,
+                        onPressed: () async {
+                          await onAddNumber(d.person);
+                          setState(() {});
+                        },
+                      )
+                    : KButton(
+                        label: sent.contains(d.person.id) ? s.sent : s.remind,
+                        icon: sent.contains(d.person.id) ? Icons.check_rounded : Icons.chat_outlined,
+                        kind: sent.contains(d.person.id) ? KButtonKind.ghost : KButtonKind.primary,
+                        small: true,
+                        onPressed: () {
+                          setState(() => sent.add(d.person.id));
+                          _open(ctx, whatsApp(reminderFor(doc, m, d), phone: d.person.phone));
+                        },
+                      ),
+              ),
             ]),
           ),
       ]);

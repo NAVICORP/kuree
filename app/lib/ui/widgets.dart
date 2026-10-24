@@ -49,12 +49,13 @@ class KButton extends StatelessWidget {
         else if (icon != null)
           Icon(icon, size: small ? 18 : 20, color: fg),
         if (busy || icon != null) SizedBox(width: small ? 6 : 8),
+        // A long label (Malayalam runs long) shrinks a little to fit
+        // rather than losing its end.
         Flexible(
-          child: Text(label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: T.button.copyWith(color: fg, fontSize: small ? 14 : 15.5)),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label, maxLines: 1, textAlign: TextAlign.center, style: T.button.copyWith(color: fg, fontSize: small ? 14 : 15.5)),
+          ),
         ),
       ],
     );

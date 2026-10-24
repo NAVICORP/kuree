@@ -286,7 +286,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Text.rich(
       TextSpan(style: T.body.copyWith(color: K.ink2), children: [
         TextSpan(text: parts.first),
-        TextSpan(text: ltrValue ? '⁦$to⁩' : to, style: const TextStyle(fontWeight: FontWeight.w800)),
+        TextSpan(text: ltrValue ? '\u2066$to\u2069' : to, style: const TextStyle(fontWeight: FontWeight.w800)),
         if (parts.length > 1) TextSpan(text: parts.sublist(1).join(to)),
       ]),
     );

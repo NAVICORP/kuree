@@ -364,19 +364,24 @@ class _KuriScreenState extends State<KuriScreen> {
             const Icon(Icons.edit_note_rounded, color: K.warn),
             const SizedBox(width: Sp.sm),
             Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
-            KButton(
-              label: s.undo,
-              kind: KButtonKind.ghost,
-              small: true,
-              onPressed: saving
-                  ? null
-                  : () => setState(() {
-                        doc = rec.doc.copy();
-                        dirty = false;
-                      }),
+            Flexible(
+              child: KButton(
+                label: s.undo,
+                kind: KButtonKind.ghost,
+                small: true,
+                onPressed: saving
+                    ? null
+                    : () => setState(() {
+                          doc = rec.doc.copy();
+                          dirty = false;
+                        }),
+              ),
             ),
-            const SizedBox(width: 4),
-            KButton(label: s.save, icon: Icons.check_rounded, busy: saving, onPressed: () => _save()),
+            const SizedBox(width: Sp.xs),
+            Flexible(
+              flex: 2,
+              child: KButton(label: s.save, icon: Icons.check_rounded, busy: saving, onPressed: () => _save()),
+            ),
           ]),
         ),
       ),
