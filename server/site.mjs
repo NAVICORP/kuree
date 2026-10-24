@@ -17,6 +17,8 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import zlib from 'node:zlib';
 
+import { demoKuri } from './demo.mjs';
+
 const ROOT = path.resolve(process.env.SITE_ROOT || path.join(import.meta.dirname, '..', 'web'));
 const API = (process.env.API_INTERNAL || 'http://kuree-api:8000').replace(/\/$/, '');
 const PORT = Number(process.env.PORT || 8000);
@@ -87,7 +89,7 @@ function verOf(rel) {
   ver.set(rel, { m: st.mtimeMs, v });
   return v;
 }
-const stampAssets = (html) => html.replace(/(href|src)="(\/assets\/[\w./-]+\.(?:js|css|png|woff2))"/g, (all, attr, rel) => {
+const stampAssets = (html) => html.replace(/(href|src|srcset)="(\/assets\/[\w./-]+\.(?:js|css|png|jpg|webp|svg))"/g, (all, attr, rel) => {
   const v = verOf(rel);
   return v ? `${attr}="${rel}?v=${v}"` : all;
 });
@@ -160,7 +162,6 @@ ${body}
 }
 
 const PAGES = {
-  '/': ['Kuree', 'pages/home.html', true],
   '/privacy': ['Privacy | Kuree', 'pages/privacy.html'],
   '/terms': ['Terms | Kuree', 'pages/terms.html'],
   '/delete-account': ['Deleting an account | Kuree', 'pages/delete-account.html'],
@@ -179,14 +180,14 @@ async function sharedKuri(token) {
   return j && j.data ? j : null;
 }
 
-function kuriPage(token, k) {
+function kuriPage(token, k, { live = true } = {}) {
   const d = k.data;
   const group = String(d.group || '').trim();
   const name = String(d.name || 'Kuri').trim();
   const cd = Number(d.collectDay) || 20, ld = Number(d.lastDay) || 25, fine = Number(d.fine) || 0;
   const lead = `Collection on the ${ordinal(cd)} of every month.<br>Pay by midnight on the ${ordinal(ld)}${ld < cd ? ' of the next month' : ''}` +
     (fine ? `, ${esc(money(fine))} fine after that.` : '.');
-  const seed = JSON.stringify({ data: d, updated_at: k.updated_at, token })
+  const seed = JSON.stringify({ data: d, updated_at: k.updated_at, token: live ? token : '' })
     .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   const title = group ? `${group} ${name}` : name;
   const fill = {
@@ -197,6 +198,7 @@ function kuriPage(token, k) {
     LEAD: lead,
     REPORT: `/k/${token}/report.xlsx`,
     UPDATED: '',
+    BADGE: live ? 'Live' : 'Demo',
     ORIGIN,
     SEED: seed,
   };
@@ -298,6 +300,29 @@ async function handle(req, res) {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { allow: 'GET, HEAD' });
     return res.end();
+  }
+
+  if (p === '/') {
+    return sendBody(req, res, 200, TYPES['.html'], stampAssets(read('home.html')),
+      { 'cache-control': 'public, max-age=300', 'content-security-policy': CSP });
+  }
+
+  // The demo kuri: the real members' page, with made-up names.
+  if (p === '/k/demo' || p === '/k/demo/' || p === '/k/demo/report.xlsx') {
+    const k = demoKuri();
+    if (p.endsWith('.xlsx')) {
+      try {
+        return await report(req, res, 'demo', k);
+      } catch (e) {
+        console.error('demo report', e.message);
+        return sendBody(req, res, 503, TYPES['.txt'], 'The spreadsheet could not be made just now. Try again in a minute.', { 'cache-control': 'no-store' });
+      }
+    }
+    return sendBody(req, res, 200, TYPES['.html'], kuriPage('demo', k, { live: false }), {
+      'cache-control': 'no-store',
+      'x-robots-tag': 'noindex, nofollow',
+      'content-security-policy': CSP,
+    });
   }
 
   const t = p.match(TOKEN);

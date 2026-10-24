@@ -112,9 +112,9 @@ void main() {
           'Hi Naif, a reminder from Boystown: your 5K Kuri payment of ₹5,000 for month 5 (October 2026) is due by midnight on the 25th. '
           'After that there is a late fine of ₹200. Thank you.');
       final g = groupList(k, m, 'abc123abc123abc123');
-      expect(g.split('\n').first, 'October : പണമടച്ചവർ');
+      expect(g.split('\n').first, 'October : Paid');
       expect(g.contains('✅ Ishaque'), isTrue);
-      expect(g.contains('October : പണമടക്കാത്തവർ\n❌ Naif'), isTrue);
+      expect(g.contains('October : Not paid yet\n❌ Naif'), isTrue);
       expect(g.endsWith('\n\nhttps://kuree.skifi.co/k/abc123abc123abc123'), isTrue);
       expect(whatsApp('✅ hi', phone: '9072150276').toString(), startsWith('https://api.whatsapp.com/send?phone=919072150276&text='));
     });
