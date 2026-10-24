@@ -186,7 +186,7 @@
       "</dl></section>");
 
     h.push('<section class="sec sec--tight" style="padding-top:44px"><div class="wrap">' +
-      '<div class="sechead"><h2>Months</h2></div><div class="railwrap"><div class="rail" role="tablist" aria-label="Kuri months">');
+      '<div class="sechead"><h2>Months</h2></div><div class="railwrap"><div class="rail" role="tablist" aria-label="Chit months">');
     data.months.forEach(function (x) {
       var st = status(x), lbl = st === "done" ? "Settled" : (st === "open" ? "In progress" : "Upcoming");
       h.push('<button class="chip ' + st + '" role="tab" data-month="' + x.n + '" aria-current="' + (x.n === sel) + '">' +
@@ -279,7 +279,7 @@
     PAYERS.forEach(function (p) {
       h.push('<tr><td class="who">' + p.slot + ". " + esc(p.name) + "</td>");
       lmonths.forEach(function (mm) {
-        if (!mm.b) { h.push('<td><span class="mk n" role="img" title="Outside the kuri" aria-label="Outside the kuri">' + svgi("i-dot") + "</span></td>"); return; }
+        if (!mm.b) { h.push('<td><span class="mk n" role="img" title="Outside the chit" aria-label="Outside the chit">' + svgi("i-dot") + "</span></td>"); return; }
         var x = mm.b, pd = paid(x, p.id), fd = fined(x, p.id), wn = x.winner === p.slot;
         var lb = fd ? "Paid late, fine" : (pd ? "Paid" : "Not paid");
         if (wn) {

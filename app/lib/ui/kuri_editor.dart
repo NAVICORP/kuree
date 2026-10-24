@@ -138,7 +138,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
   KuriDoc _build() {
     final name = _name.text.trim();
-    if (name.isEmpty) throw ApiError('Give the kuri a name, like 5K Kuri.');
+    if (name.isEmpty) throw ApiError('Give the chit a name, like 5K Chit.');
     if (share <= 0) throw ApiError('Enter how much each slot pays a month.');
     final doc = base.copy()
       ..name = name
@@ -202,13 +202,13 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     if (doc.months.length > slots) {
       for (final m in doc.months.sublist(slots)) {
         if (m.paid.isNotEmpty || m.fines.isNotEmpty || m.winner != null) {
-          throw ApiError('Month ${m.n} already has payments or a taker, so the kuri cannot have fewer than ${m.n} slots.');
+          throw ApiError('Month ${m.n} already has payments or a taker, so the chit cannot have fewer than ${m.n} slots.');
         }
       }
     }
     for (final m in doc.months) {
       if (m.winner != null && m.winner! > slots) {
-        throw ApiError('Slot ${m.winner} took the pot in month ${m.n}, so the kuri needs at least ${m.winner} slots.');
+        throw ApiError('Slot ${m.winner} took the pot in month ${m.n}, so the chit needs at least ${m.winner} slots.');
       }
     }
     doc.slots = slots;
@@ -243,7 +243,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       Navigator.of(context).pop(KuriRecord.fromJson(Map<String, dynamic>.from(j as Map)));
     } on ApiError catch (e) {
       if (!mounted) return;
-      setState(() => error = e.isConflict ? 'Another admin saved this kuri a moment ago. Go back, reload it, then make your changes again.' : e.message);
+      setState(() => error = e.isConflict ? 'Another admin saved this chit a moment ago. Go back, reload it, then make your changes again.' : e.message);
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -275,14 +275,14 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   Widget build(BuildContext context) {
     final names = _names;
     return Scaffold(
-      appBar: AppBar(title: Text(isNew ? 'New kuri' : 'Edit kuri')),
+      appBar: AppBar(title: Text(isNew ? 'New chit' : 'Edit chit')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 130),
         children: [
-          const SectionTitle('Kuri'),
+          const SectionTitle('Chit'),
           KCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              _field('Name', _name, hint: '5K Kuri', caps: TextCapitalization.words),
+              _field('Name', _name, hint: '5K Chit', caps: TextCapitalization.words),
               const SizedBox(height: 14),
               _field('Group', _group, hint: 'Riverside', caps: TextCapitalization.words),
             ]),
@@ -362,7 +362,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               if (error != null) ...[Notice(error!), const SizedBox(height: 10)],
-              KButton(label: isNew ? 'Start the kuri' : 'Save changes', icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
+              KButton(label: isNew ? 'Start the chit' : 'Save changes', icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
             ]),
           ),
         ),

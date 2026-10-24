@@ -87,7 +87,7 @@ KuriRecord riverside() {
     'updated_at': now.subtract(const Duration(minutes: 4)).toUtc().toIso8601String(),
     'updated_by': 'Rahul',
     'data': {
-      'name': '10K Kuri', 'group': 'Riverside', 'share': 10000, 'slots': 12, 'startYear': start.year, 'startMonth': start.month,
+      'name': '10K Chit', 'group': 'Riverside', 'share': 10000, 'slots': 12, 'startYear': start.year, 'startMonth': start.month,
       'collectDay': collect, 'lastDay': collect + 5, 'fine': 200, 'people': people, 'payers': payers,
       'months': [
         for (var n = 1; n <= 4; n++)
@@ -110,7 +110,7 @@ KuriRecord family() => KuriRecord.fromJson({
       'role': 'admin',
       'share_token': 'zyxwvutsrqponmlkjihgfedc',
       'data': {
-        'name': 'Family Kuri', 'group': '', 'share': 2000, 'slots': 6, 'startYear': DateTime.now().year, 'startMonth': DateTime.now().month,
+        'name': 'Family Chit', 'group': '', 'share': 2000, 'slots': 6, 'startYear': DateTime.now().year, 'startMonth': DateTime.now().month,
         'collectDay': 5, 'lastDay': 10, 'fine': 0,
         'people': [for (var i = 1; i <= 6; i++) {'id': 'm$i', 'name': ['Amina', 'Joseph', 'Rafeek', 'Divya', 'Thomas', 'Nisha'][i - 1]}],
         'payers': [for (var i = 1; i <= 6; i++) {'id': 'p$i', 'slot': i, 'person': 'm$i', 'amt': 2000}],

@@ -250,7 +250,7 @@ class _SignInScreenState extends State<SignInScreen> {
         _Step.emailCode => 'Check your email for the code.',
         _Step.phone => 'Sign in with your WhatsApp number.',
         _Step.email || _Step.password => 'Sign in with your email.',
-        _Step.start => 'Run your kuri from your phone.',
+        _Step.start => 'Run your chit from your phone.',
       };
 
   Widget _link(String text, String url) => GestureDetector(

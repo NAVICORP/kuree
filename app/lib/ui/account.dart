@@ -33,7 +33,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _signOut() async {
-    if (!await confirm(context, title: 'Sign out?', text: 'Your kuris stay safe on the server. Sign in again to see them.', yes: 'Sign out')) return;
+    if (!await confirm(context, title: 'Sign out?', text: 'Your chits stay safe on the server. Sign in again to see them.', yes: 'Sign out')) return;
     await Api.instance.signOut();
   }
 
@@ -41,7 +41,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final ok = await confirm(
       context,
       title: 'Delete your account?',
-      text: 'Your Kuree account and name are deleted. Kuris you own pass to their next admin. Kuris only you run are deleted for good, with their history and members\' links. This cannot be undone.',
+      text: 'Your Kuree account and name are deleted. Chits you own pass to their next admin. Chits only you run are deleted for good, with their history and members\' links. This cannot be undone.',
       yes: 'Delete account',
       danger: true,
     );
