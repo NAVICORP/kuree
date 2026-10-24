@@ -137,6 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: _create,
               backgroundColor: K.deep,
               foregroundColor: Colors.white,
+              elevation: 2,
+              highlightElevation: 4,
               shape: const StadiumBorder(),
               icon: const Icon(Icons.add_rounded),
               label: Text('New kuri', style: T.button.copyWith(color: Colors.white)),

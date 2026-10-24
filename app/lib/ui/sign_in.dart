@@ -71,7 +71,7 @@ class CountryButton extends StatelessWidget {
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(3),
-                child: Image.asset('assets/flags/${c.$2}.webp', width: 22, height: 16, fit: BoxFit.cover),
+                child: Image.asset('assets/flags/${c.$2}.png', width: 22, height: 16, fit: BoxFit.cover),
               ),
               const SizedBox(width: 8),
               Text('+${c.$1}', style: T.bodyStrong),

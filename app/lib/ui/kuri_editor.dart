@@ -432,7 +432,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 padding: EdgeInsets.only(bottom: j < r.length - 1 ? 8 : 0),
                 child: Row(children: [
                   Expanded(
-                    flex: 3,
                     child: TextField(
                       controller: r[j].name,
                       textCapitalization: TextCapitalization.words,
@@ -442,21 +441,26 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                     ),
                   ),
                   if (split) ...[
-                    const SizedBox(width: 8),
-                    Expanded(
-                      flex: 2,
+                    const SizedBox(width: 6),
+                    SizedBox(
+                      width: 96,
                       child: TextField(
                         controller: r[j].amount,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
                         style: T.bodyStrong,
-                        decoration: const InputDecoration(prefixText: '₹ ', isDense: true),
+                        decoration: const InputDecoration(
+                          prefixText: '₹',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                        ),
                       ),
                     ),
                     IconButton(
                       tooltip: 'Remove',
+                      visualDensity: VisualDensity.compact,
                       onPressed: () => _unsplit(i, j),
-                      icon: const Icon(Icons.close_rounded, size: 20, color: K.muted),
+                      icon: const Icon(Icons.close_rounded, size: 19, color: K.muted),
                     ),
                   ],
                 ]),
@@ -465,7 +469,8 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
         ),
         if (r.length < 4)
           IconButton(
-            tooltip: 'Share this slot',
+            tooltip: 'Share this slot between people',
+            visualDensity: VisualDensity.compact,
             onPressed: () => _split(i),
             icon: const Icon(Icons.call_split_rounded, color: K.green),
           ),

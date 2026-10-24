@@ -57,7 +57,7 @@ String firstName(String name) {
 String initials(String name) {
   final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
   if (parts.isEmpty) return '?';
-  if (parts.length == 1) return parts.first.characters2(2).toUpperCase();
+  if (parts.length == 1) return parts.first.characters2(1).toUpperCase();
   return (parts.first.characters2(1) + parts.last.characters2(1)).toUpperCase();
 }
 

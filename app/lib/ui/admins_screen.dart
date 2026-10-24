@@ -106,6 +106,8 @@ class _AdminsScreenState extends State<AdminsScreen> {
               onPressed: _add,
               backgroundColor: K.deep,
               foregroundColor: Colors.white,
+              elevation: 2,
+              highlightElevation: 4,
               shape: const StadiumBorder(),
               icon: const Icon(Icons.person_add_alt_1_rounded),
               label: Text('Add admin', style: T.button.copyWith(color: Colors.white)),

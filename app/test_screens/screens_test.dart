@@ -152,7 +152,8 @@ void main() {
     await shot(tester, '05-month-members');
     await tester.tap(find.bySemanticsLabel('Paid: Naif'));
     await shot(tester, '06-month-not-saved');
-    await tester.drag(find.byType(ListView).first, const Offset(0, 700));
+    await tester.drag(find.byType(ListView).first, const Offset(0, 3000));
+    await tester.pump(const Duration(milliseconds: 400));
     await tester.tap(find.text('Reminders'));
     await shot(tester, '07-reminders');
   });
@@ -171,6 +172,24 @@ void main() {
     await settle(tester);
     await tester.tap(find.byTooltip('Members\' link'));
     await shot(tester, '09-link');
+  });
+
+  testWidgets('draw the rest', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await settle(tester);
+    await tester.tap(find.byTooltip('More'));
+    await settle(tester);
+    await tester.tap(find.text('Draw the rest'));
+    await shot(tester, '09b-draw-the-rest');
+  });
+
+  testWidgets('choose who takes the pot', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await settle(tester);
+    await tester.tap(find.text('Choose'));
+    await shot(tester, '09c-choose');
   });
 
   testWidgets('new kuri', (tester) async {

@@ -70,7 +70,6 @@ class KButton extends StatelessWidget {
           child: Container(
             height: h,
             padding: EdgeInsets.symmetric(horizontal: small ? 14 : 20),
-            alignment: Alignment.center,
             child: child,
           ),
         ),

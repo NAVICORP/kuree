@@ -291,10 +291,15 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
         child: Container(
           margin: const EdgeInsets.all(12),
           constraints: BoxConstraints(maxWidth: 480, maxHeight: MediaQuery.of(context).size.height * 0.62),
-          decoration: BoxDecoration(color: K.paper, borderRadius: BorderRadius.circular(28), boxShadow: const [
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(28), boxShadow: const [
             BoxShadow(color: Color(0x66000000), blurRadius: 40, offset: Offset(0, 16)),
           ]),
-          child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 18), child: child),
+          child: Material(
+            color: K.paper,
+            borderRadius: BorderRadius.circular(28),
+            clipBehavior: Clip.antiAlias,
+            child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 18), child: child),
+          ),
         ),
       ),
     );
