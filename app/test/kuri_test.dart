@@ -115,7 +115,7 @@ void main() {
       expect(g.split('\n').first, 'October : Paid');
       expect(g.contains('✅ Ishaque'), isTrue);
       expect(g.contains('October : Not paid yet\n❌ Naif'), isTrue);
-      expect(g.endsWith('\n\nhttps://kuree.skifi.co/k/abc123abc123abc123'), isTrue);
+      expect(g.endsWith('\n\nhttps://kureeapp.com/k/abc123abc123abc123'), isTrue);
       expect(whatsApp('✅ hi', phone: '9072150276').toString(), startsWith('https://api.whatsapp.com/send?phone=919072150276&text='));
     });
   });

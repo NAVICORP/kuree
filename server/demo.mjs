@@ -1,4 +1,4 @@
-/* The demo kuri behind kuree.skifi.co/k/demo: a made-up group, so the
+/* The demo kuri behind kureeapp.com/k/demo: a made-up group, so the
    landing page can show the real members' page without anyone's real names.
    It is built fresh around today, so month 5 is always the current month:
    months 1 to 4 are paid and drawn, month 5 is part paid and waiting for

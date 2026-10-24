@@ -7,11 +7,11 @@ Everything to paste into Google Play Console and App Store Connect. The pictures
 - App name: **Kuree: Kuri Tracker** (if the name is free; otherwise **Kuree Kuri Manager**)
 - Developer: SkiFi (SKIFI GROUP LLC)
 - Category: **Finance** (App Store secondary: Productivity)
-- Website: https://kuree.skifi.co
+- Website: https://kureeapp.com
 - Support email: contact@skifi.co
-- Privacy policy: https://kuree.skifi.co/privacy
-- Terms: https://kuree.skifi.co/terms
-- Account deletion: https://kuree.skifi.co/delete-account (also in the app: Account > Delete account)
+- Privacy policy: https://kureeapp.com/privacy
+- Terms: https://kureeapp.com/terms
+- Account deletion: https://kureeapp.com/delete-account (also in the app: Account > Delete account)
 - Price: free, no in-app purchases, no ads
 
 ## Google Play
@@ -78,7 +78,7 @@ Sign in with a code on WhatsApp or by email.
 | Other user-generated content (the kuri: member names, payments, and member phone numbers the admin adds for reminders) | Yes | No | App functionality | No |
 
 - Data is encrypted in transit: Yes.
-- Users can ask for their data to be deleted: Yes (in the app, and https://kuree.skifi.co/delete-account).
+- Users can ask for their data to be deleted: Yes (in the app, and https://kureeapp.com/delete-account).
 - No location, contacts, photos, files, audio, device IDs, analytics or crash data are collected. Saving the draw video writes to the phone's gallery only.
 
 **App access** (for review): sign in with Email > Use a password, with the review account in `docs/RELEASE.md` section 5. It opens a sample kuri.
@@ -103,7 +103,7 @@ To sign in: Email > Use a password, with the review account below. It has a samp
 
 The bottle draw picks which member receives this month's pot (their own group's savings). Nothing is staked or won from the app.
 
-Members see the kuri on a read-only web page from a link the admin shares, for example https://kuree.skifi.co/k/demo
+Members see the kuri on a read-only web page from a link the admin shares, for example https://kureeapp.com/k/demo
 ```
 
 ## Pictures
