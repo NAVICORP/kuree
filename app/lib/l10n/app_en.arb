@@ -942,5 +942,13 @@
   "frNoteHint": "For example: coming in the next update",
   "frSaved": "Saved.",
   "frFrom": "From",
-  "frSignedOut": "Account deleted"
+  "frSignedOut": "Account deleted",
+  "tabChits": "Chits",
+  "tabCollect": "To collect",
+  "tabProfile": "Profile",
+  "collectIntro": "Still to pay this month, across your chits.",
+  "nothingToCollect": "Everyone has paid this month, in every chit.",
+  "secPreferences": "Preferences",
+  "secHelp": "Help",
+  "secLegal": "Legal"
 }

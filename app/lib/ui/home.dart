@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../core/api.dart';
-import '../core/format.dart';
 import '../core/kuri.dart';
 import '../l10n/strings.dart';
 import 'account.dart';
+import 'collect_screen.dart';
 import 'kuri_editor.dart';
 import 'kuri_screen.dart';
 import 'theme.dart';
@@ -103,10 +103,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// The footer tab on show: 0 chits, 1 to collect, 2 profile.
+  int tab = 0;
+
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final name = (me?['display'] as String?) ?? '';
+    return Scaffold(
+      body: IndexedStack(index: tab, children: [_chitsTab(s), _collectTab(s), _profileTab()]),
+      bottomNavigationBar: KNavBar(
+        index: tab,
+        onTap: (i) => setState(() => tab = i),
+        items: [
+          KNavItem(Icons.savings_outlined, Icons.savings_rounded, s.tabChits),
+          KNavItem(Icons.payments_outlined, Icons.payments_rounded, s.tabCollect),
+          KNavItem(Icons.person_outline_rounded, Icons.person_rounded, s.tabProfile),
+        ],
+      ),
+    );
+  }
+
+  Widget _chitsTab(S s) {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: Sp.xl,
@@ -115,38 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 10),
           const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 21, fontWeight: FontWeight.w600, color: K.ink, letterSpacing: 0)),
         ]),
-        actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 10),
-            child: Tooltip(
-              message: s.account,
-              child: Semantics(
-                button: true,
-                label: s.account,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () async {
-                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(me: me ?? const {})));
-                    _load();
-                  },
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
-                        child: Text(initials(name.isEmpty ? 'K' : name), style: T.label.copyWith(color: K.heroText, fontWeight: FontWeight.w800)),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       floatingActionButton: kuris == null || kuris!.isEmpty
           ? null
@@ -162,6 +147,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
       body: _body(s),
     );
+  }
+
+  Widget _collectTab(S s) {
+    return Scaffold(
+      appBar: AppBar(titleSpacing: Sp.xl, title: Text(s.tabCollect)),
+      body: kuris == null
+          ? (error != null ? LoadFailed(message: error!, onRetry: _load) : const Loading())
+          : CollectList(kuris: kuris!, onOpen: _open, onRefresh: _load),
+    );
+  }
+
+  /// Name, language, help, legal and the account, as a tab. Rebuilt when the
+  /// person's details come back from the server.
+  Widget _profileTab() {
+    final who = me;
+    if (who == null) return const Scaffold(body: Loading());
+    return AccountScreen(key: ValueKey(who), me: who, tab: true);
   }
 
   Widget _body(S s) {

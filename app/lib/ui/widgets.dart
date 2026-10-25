@@ -558,6 +558,71 @@ void toast(BuildContext context, String text, {bool bad = false}) {
 }
 
 /// A full-screen spinner while something loads.
+/// One tab in the footer: its icon (outlined, and filled when chosen) and name.
+class KNavItem {
+  const KNavItem(this.icon, this.iconOn, this.label);
+  final IconData icon;
+  final IconData iconOn;
+  final String label;
+}
+
+/// The footer with the app's main tabs: the chosen one sits in a soft green
+/// pill, like the other SkiFi apps.
+class KNavBar extends StatelessWidget {
+  const KNavBar({super.key, required this.items, required this.index, required this.onTap});
+  final List<KNavItem> items;
+  final int index;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(color: K.surface, border: Border(top: BorderSide(color: K.border))),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 64,
+          child: Row(children: [
+            for (var i = 0; i < items.length; i++)
+              Expanded(
+                child: Semantics(
+                  button: true,
+                  selected: i == index,
+                  label: items[i].label,
+                  child: InkWell(
+                    onTap: () {
+                      if (i != index) HapticFeedback.selectionClick();
+                      onTap(i);
+                    },
+                    child: ExcludeSemantics(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 56,
+                          height: 30,
+                          decoration: BoxDecoration(color: i == index ? K.brand100 : Colors.transparent, borderRadius: BorderRadius.circular(999)),
+                          child: Icon(i == index ? items[i].iconOn : items[i].icon, size: 22, color: i == index ? K.brand600 : K.muted),
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(items[i].label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: T.tiny.copyWith(fontSize: 12, color: i == index ? K.ink : K.muted, fontWeight: i == index ? FontWeight.w700 : FontWeight.w600)),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ),
+              ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
 class Loading extends StatelessWidget {
   const Loading({super.key});
   @override
