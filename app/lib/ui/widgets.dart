@@ -429,10 +429,12 @@ class KChoice extends StatelessWidget {
 
 // ---------------------------------------------------------------- sheets and dialogs
 
-/// A rounded sheet from the bottom with a title and a close button.
+/// A rounded sheet from the bottom with a title and a close button. It opens
+/// over the whole app, the footer too, from any tab.
 Future<R?> showKSheet<R>(BuildContext context, {required String title, required Widget Function(BuildContext) builder, bool scroll = true}) {
   return showModalBottomSheet<R>(
     context: context,
+    useRootNavigator: true,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: K.paper,
@@ -574,6 +576,12 @@ class KNavBar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onTap;
 
+  static const double _bar = 64;
+
+  /// How much of the screen the footer takes above the phone's own bottom
+  /// inset: the bar and the line along its top.
+  static const double height = _bar + 1;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -581,7 +589,7 @@ class KNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 64,
+          height: _bar,
           child: Row(children: [
             for (var i = 0; i < items.length; i++)
               Expanded(

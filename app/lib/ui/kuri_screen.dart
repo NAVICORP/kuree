@@ -135,7 +135,8 @@ class _KuriScreenState extends State<KuriScreen> {
       return;
     }
     final month = m;
-    await Navigator.of(context).push(MaterialPageRoute(
+    // The draw fills the whole screen, over the footer.
+    await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
       fullscreenDialog: true,
       builder: (_) => BottleDrawScreen(
         title: doc.fullName,
