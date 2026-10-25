@@ -43,7 +43,7 @@ Why Finance first: people look for chit apps there, Google Play has it there too
 Run your chit from your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.
 ```
 
-**Description** (1,632 of 4,000)
+**Description** (1,808 of 4,000)
 
 ```
 Kuree keeps your chit in one place: who paid, who is late, who takes the pot and what comes next.
@@ -77,6 +77,10 @@ RUN IT TOGETHER
 - Every change is kept. Undo, or bring back any earlier version.
 - Download every month and every payment as an Excel sheet.
 
+YOUR LANGUAGE, YOUR CURRENCY
+- Use Kuree in English, Arabic, Hindi, Malayalam, Tamil or Kannada.
+- Pick the currency for each chit: rupees, dirhams, riyals, dollars and more.
+
 Sign in with a code on WhatsApp or by email. Delete your account any time from the Account screen.
 
 Privacy: https://kureeapp.com/privacy
@@ -95,11 +99,11 @@ No app names or trademarks go in keywords (Review Guideline 2.3.7), so WhatsApp 
 |---|---|
 | Support URL | https://kureeapp.com/support (Claude adds this page on the day; until then https://kureeapp.com/#faq) |
 | Marketing URL | https://kureeapp.com |
-| Version | 1.0.0 |
+| Version | 1.0.0 (App Store Connect suggests 1.0; change it to match the build) |
 | Copyright | `2026 SKIFI GROUP LLC` |
 | What's New | `The first version of Kuree.` (not shown for the first version, but harmless) |
 
-**Screenshots**: the iPhone 6.9 inch display slot takes 1290 x 2796. Upload `store/ios/1.png` to `store/ios/7.png` from the `store-pictures` branch, in order. They are RGB with no transparency, as Apple requires. Smaller iPhones reuse them automatically. The app is iPhone only, so no iPad screenshots are needed. No app preview video (previews may only show footage captured from the app; the launch reel isn't that).
+**Screenshots**: App Store Connect now asks for the "iPhone with Dynamic Island (medium display)" slot, which takes 1206 x 2622 (or 1179 x 2556) and rejects 1290 x 2796. The 1290 x 2796 files in `store/ios/1.png` to `7.png` on the `store-pictures` branch were resized to 1206 x 2622 (scaled to 2622 high, 2 px trimmed from each side) and uploaded in order, 25 Oct 2026. RGB, no transparency. The app is iPhone only, so no iPad screenshots are needed. No app preview video (previews may only show footage captured from the app; the launch reel isn't that).
 
 **Build**: pick the build that the TestFlight workflow uploaded (step 6 of the plan).
 
