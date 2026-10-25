@@ -111,9 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         titleSpacing: Sp.xl,
         title: Row(children: [
-          ClipRRect(borderRadius: BorderRadius.circular(9), child: Image.asset('assets/brand/icon.png', width: 32, height: 32)),
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/brand/icon.png', width: 28, height: 28)),
           const SizedBox(width: 10),
-          const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 24, fontWeight: FontWeight.w700, color: K.ink, letterSpacing: 0)),
+          const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 21, fontWeight: FontWeight.w600, color: K.ink, letterSpacing: 0)),
         ]),
         actions: [
           Padding(
@@ -250,7 +250,7 @@ class KuriCard extends StatelessWidget {
         Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Expanded(
             child: Wrap(crossAxisAlignment: WrapCrossAlignment.end, spacing: 6, children: [
-              Text(k.money(got), style: T.h2.copyWith(fontSize: 24).merge(T.tabular)),
+              Text(k.money(got), style: T.h2.merge(T.tabular)),
               Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(s.ofAmount(k.money(k.pot)), style: T.small),

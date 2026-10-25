@@ -347,7 +347,7 @@ class _SignInScreenState extends State<SignInScreen> {
             textDirection: TextDirection.ltr,
             autofillHints: const [AutofillHints.oneTimeCode],
             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
-            style: const TextStyle(fontFamily: 'Manrope', fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: 0).merge(T.tabular),
+            style: const TextStyle(fontFamily: 'Manrope', fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 0).merge(T.tabular),
             decoration: const InputDecoration(hintText: '000000'),
             onChanged: (v) {
               if (v.length == 6) _verify();

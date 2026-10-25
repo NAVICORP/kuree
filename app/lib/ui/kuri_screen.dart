@@ -311,7 +311,7 @@ class _KuriScreenState extends State<KuriScreen> {
           title: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (doc.group.trim().isNotEmpty)
               Text(doc.group, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
-            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 19)),
+            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 17)),
           ]),
           actions: [
             IconButton(tooltip: s.membersLink, icon: const Icon(Icons.link_rounded), onPressed: _link),
@@ -672,7 +672,7 @@ class _MemberRow extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 6, runSpacing: 2, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(doc.nameOf(payer), style: T.bodyStrong.copyWith(fontSize: 16)),
+              Text(doc.nameOf(payer), style: T.bodyStrong),
               if (part != null) Pill(part),
             ]),
             const SizedBox(height: 2),
@@ -711,14 +711,14 @@ class _Tick extends StatelessWidget {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: on ? K.green : K.surface,
             shape: BoxShape.circle,
             border: Border.all(color: on ? K.green : K.border2, width: 2),
           ),
-          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 24),
+          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 21),
         ),
       ),
     );
@@ -749,7 +749,7 @@ class _LateButton extends StatelessWidget {
           child: Center(
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 160),
-              height: 36,
+              height: 32,
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: on ? K.badBg : K.surface,
@@ -757,9 +757,9 @@ class _LateButton extends StatelessWidget {
                 border: Border.all(color: on ? K.badBg : K.border),
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.schedule_rounded, size: 15, color: on ? K.bad : K.muted),
+                Icon(Icons.schedule_rounded, size: 14, color: on ? K.bad : K.muted),
                 const SizedBox(width: 4),
-                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 13, color: on ? K.bad : K.muted)),
+                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 12, color: on ? K.bad : K.muted)),
               ]),
             ),
           ),

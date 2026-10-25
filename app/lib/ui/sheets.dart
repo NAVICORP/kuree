@@ -285,7 +285,7 @@ Future<int?> pickMonth(BuildContext context,
                   child: InkWell(
                     onTap: ok ? () => Navigator.of(ctx).pop(k) : null,
                     child: SizedBox(
-                      height: 52,
+                      height: 46,
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
@@ -328,7 +328,7 @@ Future<int?> pickDay(BuildContext context, {required String title, required int 
     title: title,
     builder: (ctx) {
       Widget cell(int d) {
-        if (d > 31) return const Expanded(child: SizedBox(height: 48));
+        if (d > 31) return const Expanded(child: SizedBox(height: 40));
         final on = d == selected;
         return Expanded(
           child: Center(
@@ -343,8 +343,8 @@ Future<int?> pickDay(BuildContext context, {required String title, required int 
                 child: InkWell(
                   onTap: () => Navigator.of(ctx).pop(d),
                   child: SizedBox(
-                    width: 44,
-                    height: 44,
+                    width: 40,
+                    height: 40,
                     child: Center(
                       child: Text('$d', style: T.bodyStrong.merge(T.tabular).copyWith(color: on ? Colors.white : (d > 28 ? K.muted : K.ink))),
                     ),

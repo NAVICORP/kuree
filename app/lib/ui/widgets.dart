@@ -39,7 +39,7 @@ class KButton extends StatelessWidget {
       KButtonKind.sun => (K.sun, K.deep, BorderSide.none),
     };
     final enabled = onPressed != null && !busy;
-    final h = small ? 44.0 : 52.0;
+    final h = small ? 40.0 : 46.0;
     final child = Row(
       mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -47,14 +47,14 @@ class KButton extends StatelessWidget {
         if (busy)
           SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2.4, color: fg))
         else if (icon != null)
-          Icon(icon, size: small ? 18 : 20, color: fg),
+          Icon(icon, size: small ? 16 : 18, color: fg),
         if (busy || icon != null) SizedBox(width: small ? 6 : 8),
         // A long label (Malayalam runs long) shrinks a little to fit
         // rather than losing its end.
         Flexible(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(label, maxLines: 1, textAlign: TextAlign.center, style: T.button.copyWith(color: fg, fontSize: small ? 14 : 15.5)),
+            child: Text(label, maxLines: 1, textAlign: TextAlign.center, style: T.button.copyWith(color: fg, fontSize: small ? 13.5 : 14.5)),
           ),
         ),
       ],
@@ -74,7 +74,7 @@ class KButton extends StatelessWidget {
               : null,
           child: Container(
             height: h,
-            padding: EdgeInsets.symmetric(horizontal: small ? 16 : 22),
+            padding: EdgeInsets.symmetric(horizontal: small ? 14 : 18),
             child: child,
           ),
         ),
@@ -85,7 +85,7 @@ class KButton extends StatelessWidget {
 
 /// A white card with a hairline border and a soft shadow.
 class KCard extends StatelessWidget {
-  const KCard({super.key, required this.child, this.padding = const EdgeInsets.all(Sp.lg + 2), this.onTap, this.color = K.surface});
+  const KCard({super.key, required this.child, this.padding = const EdgeInsets.all(Sp.lg), this.onTap, this.color = K.surface});
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
@@ -160,7 +160,7 @@ class HeroCard extends StatelessWidget {
 
 /// A slot number in a circle.
 class SlotBadge extends StatelessWidget {
-  const SlotBadge(this.text, {super.key, this.size = 42, this.style = SlotBadgeStyle.plain});
+  const SlotBadge(this.text, {super.key, this.size = 34, this.style = SlotBadgeStyle.plain});
   final String text;
   final double size;
   final SlotBadgeStyle style;
@@ -274,13 +274,13 @@ class KSegmented<V> extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 constraints: const BoxConstraints(minHeight: 40),
                 alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
                   color: v == value ? K.surface : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                   boxShadow: v == value ? const [BoxShadow(color: Color(0x1A032A09), blurRadius: 6, offset: Offset(0, 2))] : null,
                 ),
-                child: Text(label, style: T.label.copyWith(color: v == value ? K.deep : K.muted, fontSize: 13.5)),
+                child: Text(label, style: T.label.copyWith(color: v == value ? K.deep : K.muted)),
               ),
             ),
           ),
@@ -292,7 +292,7 @@ class KSegmented<V> extends StatelessWidget {
 /// A round icon button on dark or light backgrounds. The circle can be
 /// small, but the place to tap is always at least 48 across.
 class RoundIcon extends StatelessWidget {
-  const RoundIcon(this.icon, {super.key, this.onTap, this.dark = false, this.tooltip, this.size = 40});
+  const RoundIcon(this.icon, {super.key, this.onTap, this.dark = false, this.tooltip, this.size = 36});
   final IconData icon;
   final VoidCallback? onTap;
   final bool dark;
@@ -340,10 +340,10 @@ class EmptyState extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: Sp.xl),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
-          width: 60,
-          height: 60,
+          width: 52,
+          height: 52,
           decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rMd + 2)),
-          child: Icon(icon, color: K.green, size: 28),
+          child: Icon(icon, color: K.green, size: 24),
         ),
         const SizedBox(height: Sp.md + 2),
         Text(text, textAlign: TextAlign.center, style: T.body.copyWith(color: K.muted)),
@@ -372,7 +372,7 @@ class Notice extends StatelessWidget {
           child: Icon(bad ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded, size: 18, color: fg),
         ),
         const SizedBox(width: Sp.sm),
-        Expanded(child: Text(text, style: T.small.copyWith(color: fg, fontSize: 13.5))),
+        Expanded(child: Text(text, style: T.small.copyWith(color: fg))),
       ]),
     );
   }
@@ -387,7 +387,7 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(4, 24, 4, 10),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 20, 4, 8),
       child: Row(children: [
         Expanded(child: Text(text, style: T.h3)),
         if (trailing != null) ...[const SizedBox(width: Sp.sm), trailing!],
@@ -409,9 +409,9 @@ class KChoice extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 14, 14),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
         child: Row(children: [
-          if (icon != null) ...[Icon(icon, color: K.ink2, size: 22), const SizedBox(width: 14)],
+          if (icon != null) ...[Icon(icon, color: K.ink2, size: 20), const SizedBox(width: 12)],
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(label, style: T.small),
@@ -450,7 +450,7 @@ Future<R?> showKSheet<R>(BuildContext context, {required String title, required 
               padding: const EdgeInsetsDirectional.fromSTEB(22, 10, 8, 4),
               child: Row(children: [
                 Expanded(child: Text(title, style: T.h2)),
-                RoundIcon(Icons.close_rounded, tooltip: S.of(ctx).close, onTap: () => Navigator.of(ctx).pop(), size: 38),
+                RoundIcon(Icons.close_rounded, tooltip: S.of(ctx).close, onTap: () => Navigator.of(ctx).pop(), size: 34),
               ]),
             ),
             Flexible(
@@ -496,15 +496,15 @@ Future<PickOption<V>?> showPicker<V>(BuildContext context,
               child: InkWell(
                 onTap: () => Navigator.of(ctx).pop(o),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(14, 12, 14, 12),
+                  padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
                   child: Row(children: [
-                    if (o.badge != null) ...[SlotBadge(o.badge!, size: 38), const SizedBox(width: Sp.md)],
+                    if (o.badge != null) ...[SlotBadge(o.badge!, size: 32), const SizedBox(width: Sp.md)],
                     if (o.icon != null) ...[
                       Container(
-                        width: 38,
-                        height: 38,
+                        width: 32,
+                        height: 32,
                         decoration: const BoxDecoration(color: K.surface2, shape: BoxShape.circle),
-                        child: Icon(o.icon, size: 19, color: K.ink2),
+                        child: Icon(o.icon, size: 17, color: K.ink2),
                       ),
                       const SizedBox(width: Sp.md),
                     ],

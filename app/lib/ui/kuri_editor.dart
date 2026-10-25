@@ -467,9 +467,9 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
           ),
         );
     return KCard(
-      padding: EdgeInsetsDirectional.fromSTEB(12, 12, split ? 12 : 4, split ? 6 : 12),
+      padding: EdgeInsetsDirectional.fromSTEB(10, 10, split ? 10 : 2, split ? 4 : 10),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 38)),
+        Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 32)),
         const SizedBox(width: Sp.md - 2),
         Expanded(
           child: split
