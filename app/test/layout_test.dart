@@ -109,16 +109,17 @@ void main() {
         expect(find.byType(KNavBar), findsOneWidget);
         if (code == 'ar') expect(Directionality.of(tester.element(find.byType(KNavBar))), TextDirection.rtl);
         expect(tester.getRect(find.byType(KuriScreen)).bottom, moreOrLessEquals(tester.getRect(find.byType(KNavBar)).top));
-        await scrollThrough(tester);
         expect(tester.takeException(), isNull);
         // An unsaved change: the Save bar sits above the footer.
         final naif = find.bySemanticsLabel(s.semPaid('Naif'));
         await tester.ensureVisible(naif);
         await tester.pump();
+        final at = tester.getRect(naif);
         await tester.tap(naif, warnIfMissed: false);
         await settle(tester);
-        expect(find.text(s.notSavedYet), findsOneWidget);
+        expect(find.text(s.notSavedYet), findsOneWidget, reason: 'tick at $at, chit at ${tester.getRect(find.byType(KuriScreen))}');
         expect(tester.getRect(find.text(s.notSavedYet)).bottom, lessThanOrEqualTo(tester.getRect(find.byType(KNavBar)).top));
+        await scrollThrough(tester);
         expect(tester.takeException(), isNull);
       });
 
