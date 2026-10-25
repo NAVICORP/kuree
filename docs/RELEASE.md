@@ -30,6 +30,7 @@
    - App access: give the review account (section 5).
    - Ads: none. Data safety: collects phone number or email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kureeapp.com/delete-account.
    - Financial features: Kuree only keeps records; it does not move money.
+7. **Updates.** Raise `version:` in `app/pubspec.yaml` (1.0.1, 1.0.2, ...) in the PR. The version code is the App run number, so every build on main is higher than the last. After the merge, the App run on main builds the bundle. Then Actions > Google Play drafts > Run workflow saves the bundle, the release notes, the pictures and the listing text as drafts (setup in [STORE.md](STORE.md), "Publishing from GitHub"). Check them in Play Console and press Send changes for review on the Publishing overview. Don't send while an earlier release is still in review: Google may put the app at the back of the review queue.
 
 ## 4. iPhone
 
