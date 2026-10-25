@@ -28,20 +28,24 @@
 
 /* footer */
 .kfoot{padding:34px var(--gap) calc(30px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:14px}
-.kfoot a{color:var(--green);font-weight:700;text-decoration:none}
+.kfoot a{display:inline-block;padding:10px 0;color:var(--green);font-weight:700;text-decoration:none}
+.kpage+.kfoot p:first-child a{padding:10px 5px}
 .kfoot a:hover{text-decoration:underline}
-.kfoot p+p{margin-top:6px}
+.kfoot p+p{margin-top:0}
 
 /* plain pages: privacy, terms, deleting an account, the home page */
-.kpage{max-width:760px;margin:0 auto;padding:28px 20px 60px}
-.kpage h1{font-family:var(--fh);font-weight:700;font-size:clamp(34px,7vw,52px);line-height:1.02;margin:10px 0 14px}
-.kpage h2{font-family:var(--fh);font-weight:700;font-size:23px;margin:30px 0 8px}
+body:has(>.kpage){background:#FAFAF5}
+.kpage{max-width:720px;margin:0 auto;padding:30px 22px 72px}
+.kpage h1{font-family:var(--fh);font-weight:700;font-size:clamp(36px,7vw,54px);line-height:1.02;margin:0 0 16px;text-wrap:balance}
+.kpage h2{font-family:var(--fh);font-weight:700;font-size:24px;line-height:1.2;margin:40px 0 10px}
 .kpage p,.kpage li{color:var(--text-2);font-size:16.5px;line-height:1.65}
 .kpage p+p{margin-top:10px}
-.kpage ul{padding-left:20px;margin:8px 0}
-.kpage a{color:var(--green);font-weight:700}
-.kpage .lead{font-size:18px;color:var(--muted)}
-.kpage__top{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--fh);font-weight:700;font-size:22px}
+.kpage ul{padding-left:22px;margin:10px 0}
+.kpage li+li{margin-top:6px}
+.kpage li::marker{color:var(--leaf,#3E9E58)}
+.kpage a{color:var(--green);font-weight:700;text-underline-offset:3px}
+.kpage .lead{font-size:18.5px;line-height:1.6;color:var(--muted);max-width:46ch}
+.kpage__top{display:flex;align-items:center;gap:10px;width:max-content;margin:0 0 44px;padding:4px 0;text-decoration:none;color:var(--ink);font-family:var(--fh);font-weight:700;font-size:22px}
 .kpage__top img{width:36px;height:36px;border-radius:10px}
 .khero{display:grid;justify-items:center;text-align:center;gap:14px;padding:70px 20px 40px}
 .khero img{width:112px;height:112px;border-radius:28px;box-shadow:0 22px 50px -24px rgba(3,42,9,.7)}
