@@ -8,6 +8,7 @@
   --fh:"Bricolage Grotesque","Manrope",system-ui,sans-serif;
   --fb:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
   --ease:cubic-bezier(.2,.75,.2,1);
+  --sec:120px; /* the space between sections: 120 on desktop, 96 on tablets, 72 on phones */
 }
 *,*::before,*::after{box-sizing:border-box;letter-spacing:0}
 html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
@@ -21,7 +22,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ic{width:20px;height:20px;flex:none}
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
-:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:12px}
+:focus-visible{outline:3px solid var(--green);outline-offset:3px;border-radius:12px}
+/* yellow on the dark green cards, green on the light page, so the focus ring always shows */
+.hero :focus-visible,.draw :focus-visible,.cta :focus-visible,.card--big :focus-visible,.getbar :focus-visible{outline-color:var(--sun)}
 
 /* ------------------------------------------------------------ buttons, pills */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 24px;border-radius:999px;border:0;
@@ -35,7 +38,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .btn--glass:hover{background:rgba(255,255,255,.15)}
 .btn--ink{background:var(--ink);color:#fff;box-shadow:0 12px 26px -14px rgba(15,36,19,.7)}
 .btn--ink:hover{background:var(--deep2)}
-.btn--sm{height:42px;padding:0 18px;font-size:14.5px}
+.btn--sm{height:44px;padding:0 18px;font-size:14.5px}
 .btn .ic{width:19px;height:19px}
 
 .pill{display:inline-flex;align-items:center;gap:9px;padding:8px 15px;border-radius:999px;font-size:14px;font-weight:700;width:max-content;max-width:100%}
@@ -72,7 +75,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .hero h1{font-size:clamp(50px,6.6vw,94px);line-height:.97;max-width:10.5ch}
 .lead{font-size:20px;line-height:1.55;color:rgba(221,238,223,.86);max-width:34ch;text-wrap:balance}
 .hero__get{margin-top:8px}
-.hero__link,.cta__link{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--sun);text-decoration:none}
+.hero__link,.cta__link{display:inline-flex;align-items:center;gap:8px;padding:12px 4px;margin:-12px -4px;font-weight:800;font-size:16px;color:var(--sun);text-decoration:none}
 .hero__link .ic,.cta__link .ic{width:18px;height:18px;transition:transform .25s var(--ease)}
 .hero__link:hover .ic,.cta__link:hover .ic{transform:translateX(3px)}
 
@@ -83,6 +86,7 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 a.store:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 20px 34px -18px rgba(0,0,0,.85)}
 a.store:active{transform:translateY(0) scale(.98)}
 .store svg{width:29px;height:29px;flex:none;stroke:none}
+.store[data-store="ios"] svg{width:38px;height:38px;margin:-5px -2px -2px -5px}
 .store__txt{display:grid;text-align:left;line-height:1}
 .store__txt small{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.92)}
 .store__txt b{font-size:20.5px;font-weight:700;margin-top:4px;white-space:nowrap}
@@ -197,8 +201,8 @@ a.store:active{transform:translateY(0) scale(.98)}
 .float--fine small{display:block;font-size:13px;color:var(--muted);font-weight:600}
 
 /* ------------------------------------------------------------ sections */
-.sec{padding:120px 0}
-.sec--tight{padding:30px 0}
+.sec{padding:var(--sec) 0}
+.sec--tight{padding:0 0 30px}
 .sec--mint{margin:0 12px;border-radius:40px;background:linear-gradient(180deg,#E9F3EA,#DDEEDF)}
 .sec__head{text-align:center;display:grid;justify-items:center;gap:12px;margin-bottom:56px}
 .sec h2,.draw h2{font-size:clamp(38px,4.8vw,66px);line-height:1.02}
@@ -216,7 +220,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 .card h3{font-size:26px;line-height:1.1}
 /* the same height in every small card, text from the top, so the titles in a row line up */
 .card__copy{display:grid;gap:8px;align-content:start;min-height:88px}
-.card__copy p{color:var(--muted);font-size:16.5px;line-height:1.5}
+.card__copy p{color:var(--muted);font-size:16.5px;line-height:1.5;text-wrap:pretty}
 .card--big{grid-column:span 2;grid-row:span 2;color:#fff;display:grid;grid-template-columns:1fr 1.05fr;align-items:start;gap:32px;padding:40px;
   background:radial-gradient(110% 90% at 90% 0%,#195425 0%,var(--deep) 55%,#021A05 100%)}
 .card--big .card__copy{align-self:start}
@@ -281,7 +285,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 .vsheet .late{background:var(--peach)}
 
 /* ------------------------------------------------------------ the draw */
-.draw{position:relative;margin:0 12px;border-radius:40px;overflow:hidden;isolation:isolate;color:#fff;padding:110px 0;
+.draw{position:relative;margin:0 12px;border-radius:40px;overflow:hidden;isolation:isolate;color:#fff;padding:calc(var(--sec) - 8px) 0;
   background:radial-gradient(90% 80% at 75% 50%,#0E4A1A 0%,var(--deep) 55%,#021A05 100%)}
 .draw::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(500px 400px at 15% 10%,rgba(255,216,77,.08),transparent 65%)}
 .draw__grid{display:grid;grid-template-columns:1fr 400px;gap:60px;align-items:center}
@@ -358,7 +362,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 .faq summary i::after{transform:rotate(90deg)}
 .faq details[open] summary i{background:var(--sun);transform:rotate(180deg)}
 .faq details[open] summary i::after{transform:rotate(0)}
-.faq details p{padding:0 24px 22px;color:var(--muted);font-size:16.5px;max-width:62ch}
+.faq details p{padding:0 24px 22px;color:var(--muted);font-size:16.5px;max-width:62ch;text-wrap:pretty}
 
 /* ------------------------------------------------------------ last call, footer */
 .cta{position:relative;overflow:hidden;isolation:isolate;display:grid;justify-items:center;text-align:center;gap:16px;padding:80px 24px;border-radius:40px;color:#fff;
@@ -368,7 +372,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 .cta h2{font-size:clamp(40px,5.4vw,72px);line-height:1}
 .cta p{color:rgba(221,238,223,.86);font-size:19px}
 .cta .stores{justify-content:center;margin-top:10px}
-.cta__link{margin-top:8px}
+.cta__link{margin-top:-4px}
 
 .getbar{display:none}
 
@@ -376,7 +380,8 @@ a.store:active{transform:translateY(0) scale(.98)}
 .foot__in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 30px}
 .foot .brand{font-size:20px}
 .foot .brand img{width:30px;height:30px;border-radius:9px}
-.foot nav{display:flex;flex-wrap:wrap;gap:6px 22px}
+.foot nav{display:flex;flex-wrap:wrap;gap:0 10px;margin:0 -8px}
+.foot nav a{padding:12px 8px}
 .foot nav a,.foot p{font-size:15px;font-weight:700;color:var(--muted);text-decoration:none}
 .foot nav a:hover{color:var(--ink)}
 .foot p a{color:var(--green);text-decoration:none}
@@ -392,7 +397,10 @@ a.store:active{transform:translateY(0) scale(.98)}
   .split{gap:48px}
 }
 @media (max-width:900px){
+  :root{--sec:96px}
   .bento{grid-template-columns:1fr 1fr}
+  .bento__more>.card:last-child{grid-column:span 2}
+  .split__copy .ticks{justify-self:center}
   .card--big{grid-column:span 2;grid-row:auto;grid-template-columns:1fr}
   .draw__grid,.split{grid-template-columns:1fr}
   .draw__copy,.split__copy{justify-items:center;text-align:center}
@@ -408,7 +416,7 @@ a.store:active{transform:translateY(0) scale(.98)}
   .brand{font-size:21px}
   .brand img{width:32px;height:32px}
   .btn{height:52px;padding:0 20px;font-size:16px}
-  .btn--sm{height:40px;padding:0 16px;font-size:14.5px}
+  .btn--sm{height:44px;padding:0 16px;font-size:14.5px}
 
   /* hero: the headline, one line, the store buttons, then the phone */
   .hero{margin:0 8px;border-radius:30px;padding:34px 0 0}
@@ -421,6 +429,7 @@ a.store:active{transform:translateY(0) scale(.98)}
   .stores{gap:10px;width:100%;justify-content:center;flex-wrap:nowrap}
   .store{flex:1 1 0;width:auto;min-width:0;max-width:200px;height:54px;gap:9px;padding:0 10px;border-radius:13px}
   .store svg{width:25px;height:25px}
+  .store[data-store="ios"] svg{width:32px;height:32px;margin:-3px -2px -2px -4px}
   .store__txt small{font-size:10.5px}
   .store__txt b{font-size:17px;margin-top:3px}
   .hero__link{font-size:15px}
@@ -431,8 +440,8 @@ a.store:active{transform:translateY(0) scale(.98)}
   .float{display:none}
 
   /* sections */
-  .sec{padding:72px 0}
-  .sec--tight{padding:16px 0}
+  :root{--sec:72px}
+  .sec--tight{padding:0 0 16px}
   .sec--mint,.draw{margin:0 8px;border-radius:30px}
   .sec__head{margin-bottom:28px;gap:8px}
   .sec h2,.draw h2{font-size:clamp(32px,9.2vw,42px);line-height:1.04}
@@ -448,10 +457,12 @@ a.store:active{transform:translateY(0) scale(.98)}
   .card--big .card__copy{min-height:0}
   .viz--pay .vrow.is-on:not(.vrow--a):not(.vrow--b){display:none}
   .vpay__amt{font-size:40px}
-  .bento__more{display:flex;align-items:flex-start;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 14px;scroll-padding:0 18px;
+  .bento__more{display:flex;align-items:stretch;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 14px;scroll-padding:0 18px;
     -webkit-overflow-scrolling:touch;scrollbar-width:none}
   .bento__more::-webkit-scrollbar{display:none}
   .bento__more .card{flex:0 0 86%;scroll-snap-align:start;min-height:0;justify-content:flex-start;padding:22px;gap:18px;border-radius:26px}
+  /* every picture gets the same space, so the titles line up and no card has a hole */
+  .bento__more .viz{min-height:140px;display:grid;align-content:center}
   .viz--late .vrow{padding:12px;gap:10px}
   .viz--late small{font-size:12.5px;white-space:nowrap}
   .bento__more .card h3{font-size:22px}
@@ -459,7 +470,6 @@ a.store:active{transform:translateY(0) scale(.98)}
   .bento__more .card__copy p{font-size:15px}
 
   /* the draw: the phone right after the headline */
-  .draw{padding:64px 0}
   .draw__grid{display:flex;flex-direction:column;align-items:center;gap:0}
   .draw__copy{display:contents}
   .draw__copy>.pill{order:1;margin-bottom:16px}
@@ -469,7 +479,7 @@ a.store:active{transform:translateY(0) scale(.98)}
   .draw__ctl{order:5;justify-content:center;margin-top:18px;gap:10px;flex-wrap:nowrap}
   .draw__ctl .btn{height:46px;padding:0 16px;font-size:15px;gap:8px}
   .draw__ctl .ic{width:17px;height:17px}
-  .ticks{order:6;margin-top:26px}
+  .draw .ticks{order:6;margin-top:26px}
   .draw .ticks{grid-template-columns:1fr 1fr;gap:10px;width:100%}
   .draw .ticks li{flex-direction:column;align-items:flex-start;gap:10px;padding:14px;border-radius:20px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);font-size:14px;line-height:1.35}
   .draw .ticks i{width:36px;height:36px}
@@ -480,8 +490,8 @@ a.store:active{transform:translateY(0) scale(.98)}
   .chat{border-radius:26px}
   .chat__top{padding:12px}
   .chat__av{width:36px;height:36px}
-  .chat__body{min-height:0;max-height:300px;overflow:hidden;padding:18px 14px;
-    -webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+  .chat__body{min-height:0;max-height:356px;overflow:hidden;padding:18px 14px;
+    -webkit-mask-image:linear-gradient(#000 80%,transparent);mask-image:linear-gradient(#000 80%,transparent)}
   .bubble{font-size:14.5px}
   .remind__row:nth-child(3){display:none}
   .remind__row small{white-space:nowrap}
@@ -498,8 +508,9 @@ a.store:active{transform:translateY(0) scale(.98)}
   .cta p{font-size:17px}
 
   .foot{padding:32px 0 104px}
-  .foot__in{justify-content:center;text-align:center}
-  .foot nav{justify-content:center}
+  .foot__in{justify-content:center;text-align:center;gap:6px 30px}
+  .foot nav{justify-content:center;gap:0;margin:0}
+  .foot nav a{padding:12px 7px;font-size:14px}
 
   /* the bar at the bottom with "Get the app" */
   .getbar{position:fixed;z-index:60;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:11px;
@@ -516,11 +527,13 @@ a.store:active{transform:translateY(0) scale(.98)}
 @media (max-width:370px){
   .store{gap:7px;padding:0 8px}
   .store svg{width:22px;height:22px}
+  .store[data-store="ios"] svg{width:30px;height:30px;margin:-3px -2px -2px -3px}
   .store__txt small{font-size:10px}
   .store__txt b{font-size:15.5px}
   .bento__more .card{flex-basis:90%}
   .remind__row small{font-size:12.5px}
   .mini{padding:0 12px}
+  .foot nav a{padding:12px 5px;font-size:13.5px}
 }
 
 /* the 3D pieces: decoration only, never over text or buttons */
@@ -559,9 +572,9 @@ body{overflow-x:clip}
 @media (max-width:640px){
   .d3 img{filter:drop-shadow(0 14px 16px rgba(0,0,0,.3))}
   .d3--hbottle{width:76px;left:max(10px,calc(50% - 178px));top:36px}
-  .d3--hpot{width:94px;left:auto;right:max(10px,calc(50% - 184px));bottom:auto;top:250px}
+  .d3--hpot{width:86px;left:auto;right:max(2px,calc(50% - 192px));bottom:auto;top:332px}
   .d3--hslip1{width:46px;right:max(12px,calc(50% - 168px));top:40px}
-  .d3--hslip2{width:40px;left:max(12px,calc(50% - 176px));top:240px}
+  .d3--hslip2{width:36px;left:max(4px,calc(50% - 184px));top:206px}
   .d3--fcal{width:70px;left:0;top:-52px}
   .d3--fbook{width:92px;right:0;top:-46px}
   .d3--dslip1{width:40px;left:0;top:1%}
