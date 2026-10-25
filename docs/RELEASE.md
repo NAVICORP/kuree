@@ -33,13 +33,7 @@
 
 ## 4. iPhone
 
-On the Mac, with Xcode and Flutter:
-
-1. `cd app && flutter pub get && open ios/Runner.xcworkspace`
-2. Runner > Signing & Capabilities: pick your team. Bundle id `co.skifi.kuree`.
-3. App Store Connect > New app: Kuree, bundle id `co.skifi.kuree`, SKU `kuree`.
-4. Back in the terminal: `flutter build ipa`, then open `build/ios/archive/Runner.xcarchive` and Distribute App > App Store Connect. Or Product > Archive in Xcode.
-5. TestFlight first, then submit. Privacy policy URL and the review account as below. Encryption: the app only uses standard HTTPS (already set in Info.plist).
+No Mac needed: GitHub Actions builds the app and uploads it to TestFlight. The step-by-step plan is in [IOS-LAUNCH.md](IOS-LAUNCH.md), and every App Store Connect field is in [APPSTORE.md](APPSTORE.md).
 
 ## 5. The review account
 
@@ -50,7 +44,7 @@ curl -X POST https://kureeapp.com/auth/v1/signup -H 'apikey: public' -H 'content
   -d '{"email":"review@skifi.co","password":"choose-a-long-one"}'
 ```
 
-Confirm the email it sends, sign in once in the app with Email > Use a password, and make a sample kuri. Give that email and password to both stores.
+Confirm the email it sends, sign in once in the app with Email > Use a password, and make a sample chit. Give that email and password to both stores.
 
 ## 6. Store listing
 

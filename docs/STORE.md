@@ -85,26 +85,7 @@ Sign in with a code on WhatsApp or by email.
 
 ## App Store
 
-- **Subtitle** (30 max): `Payments, fines and the draw`
-- **Promotional text** (170 max): `Run your chit from your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.`
-- **Keywords** (100 max): `chit,chit fund,kuri,savings group,rotating savings,committee,monthly draw,pot,fines,whatsapp`
-- **Description**: the Google Play full description above.
-- **What's New** (first version): `The first version of Kuree.`
-- Age rating: 4+ (no gambling: see the content rating note above). Made for Kids: No.
-- Copyright: `2026 SKIFI GROUP LLC`
-- **App Privacy**: Contact Info (Name, Email Address, Phone Number) and User Content (Other User Content), all linked to the user, used for App Functionality only. No tracking. No third-party advertising or analytics.
-- Sign in with Apple: not needed (the app has no Google, Facebook or other social sign-in).
-- Review notes:
-
-```
-Kuree is for the admins of a chit, an informal rotating savings group common in India (also called a kuri): each month every member pays a share and one member takes the whole pot, until everyone has had it once. The app keeps the record only and never holds or moves money. It is not a chit fund company and offers no financial service.
-
-To sign in: Email > Use a password, with the review account below. It has a sample chit ready.
-
-The bottle draw picks which member receives this month's pot (their own group's savings). Nothing is staked or won from the app.
-
-Members see the chit on a read-only web page from a link the admin shares, for example https://kureeapp.com/k/demo
-```
+Everything for App Store Connect, field by field, is in [APPSTORE.md](APPSTORE.md). The plan for publishing on iPhone is in [IOS-LAUNCH.md](IOS-LAUNCH.md).
 
 ## Pictures
 
