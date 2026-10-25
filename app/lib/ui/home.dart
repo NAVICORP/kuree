@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../core/api.dart';
@@ -73,13 +75,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _open(KuriRecord k) async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => KuriScreen(record: k)));
+  /// Opens a chit inside a footer tab (Chits unless told otherwise), so the
+  /// footer stays below it. The list refreshes when it closes.
+  Future<void> _open(KuriRecord k, [int inTab = 0]) async {
+    final nav = _navs[inTab].currentState;
+    if (nav == null) return;
+    await nav.push(MaterialPageRoute<void>(builder: (_) => KuriScreen(record: k)));
     _load();
   }
 
   Future<void> _create() async {
-    final made = await Navigator.of(context).push<KuriRecord>(MaterialPageRoute(builder: (_) => const KuriEditorScreen()));
+    final nav = _navs[0].currentState;
+    if (nav == null) return;
+    final made = await nav.push<KuriRecord>(MaterialPageRoute(builder: (_) => const KuriEditorScreen()));
     if (made == null || !mounted) return;
     await _open(made);
   }
@@ -106,19 +114,58 @@ class _HomeScreenState extends State<HomeScreen> {
   /// The footer tab on show: 0 chits, 1 to collect, 2 profile.
   int tab = 0;
 
+  /// Each footer tab has its own pile of open screens, like the tab bar on an
+  /// iPhone: a chit opened from a tab opens inside it, with the footer still
+  /// below, and the tab keeps it open while another tab is looked at.
+  final List<GlobalKey<NavigatorState>> _navs = List.generate(3, (i) => GlobalKey<NavigatorState>(debugLabel: 'tab $i'));
+
+  /// Another tab: shows it as it was left. The tab already on show: back to
+  /// its first screen. A chit with unsaved changes asks before it closes.
+  void _tap(int i) {
+    if (i != tab) {
+      setState(() => tab = i);
+      return;
+    }
+    final nav = _navs[i].currentState;
+    if (nav == null || !nav.canPop()) return;
+    nav.popUntil((r) => r.isFirst || r.popDisposition == RoutePopDisposition.doNotPop);
+    if (nav.canPop()) nav.maybePop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    return Scaffold(
-      body: IndexedStack(index: tab, children: [_chitsTab(s), _collectTab(s), _profileTab()]),
-      bottomNavigationBar: KNavBar(
+    return _TabShell(
+      body: IndexedStack(
         index: tab,
-        onTap: (i) => setState(() => tab = i),
+        sizing: StackFit.expand,
+        children: [_stack(0, _chitsTab(s)), _stack(1, _collectTab(s)), _stack(2, _profileTab())],
+      ),
+      footer: KNavBar(
+        index: tab,
+        onTap: _tap,
         items: [
           KNavItem(Icons.savings_outlined, Icons.savings_rounded, s.tabChits),
           KNavItem(Icons.payments_outlined, Icons.payments_rounded, s.tabCollect),
           KNavItem(Icons.person_outline_rounded, Icons.person_rounded, s.tabProfile),
         ],
+      ),
+    );
+  }
+
+  /// One tab's own navigator. Its first screen is a page, so it is rebuilt
+  /// whenever the chits or the person change. The phone's back button and the
+  /// back swipe close the tab's open screens first, then leave the app.
+  Widget _stack(int i, Widget first) {
+    return NavigatorPopHandler<Object?>(
+      enabled: i == tab,
+      onPopWithResult: (_) {
+        if (i == tab) _navs[i].currentState?.maybePop();
+      },
+      child: Navigator(
+        key: _navs[i],
+        pages: [MaterialPage<void>(key: ValueKey('tab-$i'), child: first)],
+        onDidRemovePage: (_) {},
       ),
     );
   }
@@ -154,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(titleSpacing: Sp.xl, title: Text(s.tabCollect)),
       body: kuris == null
           ? (error != null ? LoadFailed(message: error!, onRetry: _load) : const Loading())
-          : CollectList(kuris: kuris!, onOpen: _open, onRefresh: _load),
+          : CollectList(kuris: kuris!, onOpen: (k) => _open(k, 1), onRefresh: _load),
     );
   }
 
@@ -213,6 +260,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// The tab on show above, the footer below. Not a Scaffold: each screen in a
+/// tab is its own Scaffold, so its messages still pop up just above its own
+/// bottom bar (Save, Start the chit). The screens are told that the footer
+/// takes the phone's bottom inset, and that the keyboard, which slides up
+/// over the footer, covers only as much as rises above it.
+class _TabShell extends StatelessWidget {
+  const _TabShell({required this.body, required this.footer});
+  final Widget body;
+  final Widget footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final under = KNavBar.height + mq.padding.bottom;
+    final inner = mq.removePadding(removeBottom: true).copyWith(
+          viewInsets: mq.viewInsets.copyWith(bottom: math.max(0.0, mq.viewInsets.bottom - under)),
+        );
+    return Material(
+      color: K.paper,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Expanded(child: MediaQuery(data: inner, child: body)),
+        footer,
+      ]),
     );
   }
 }

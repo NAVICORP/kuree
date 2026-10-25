@@ -123,6 +123,16 @@ Future<void> store(WidgetTester tester, String name) async {
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/store-$name.png'));
 }
 
+/// A screen as the app shows it: opened from the Chits tab, with the footer
+/// below it and Chits chosen.
+Future<void> pumpInTab(WidgetTester tester, Widget screen) async {
+  await tester.pumpWidget(phone(HomeScreen(preview: ([riverside(), family()], {'display': 'Rahul', 'name': 'Rahul', 'can_import_boystown': false}))));
+  await tester.pump();
+  final chits = find.descendant(of: find.byType(HomeScreen), matching: find.byType(Navigator)).first;
+  tester.state<NavigatorState>(chits).push(MaterialPageRoute<void>(builder: (_) => screen));
+  await tester.pump();
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -140,7 +150,7 @@ void main() {
 
   testWidgets('store: the month', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: riverside())));
+    await pumpInTab(tester, KuriScreen(record: riverside()));
     await store(tester, 'month');
     await tester.drag(find.byType(ListView).first, const Offset(0, -620));
     await store(tester, 'members');
@@ -148,7 +158,7 @@ void main() {
 
   testWidgets('store: reminders', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: riverside())));
+    await pumpInTab(tester, KuriScreen(record: riverside()));
     await settle(tester);
     await tester.tap(find.text('Reminders'));
     await store(tester, 'reminders');
@@ -156,7 +166,7 @@ void main() {
 
   testWidgets('store: members link', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: riverside())));
+    await pumpInTab(tester, KuriScreen(record: riverside()));
     await settle(tester);
     await tester.tap(find.byTooltip('Members\' link'));
     await store(tester, 'link');
@@ -164,7 +174,7 @@ void main() {
 
   testWidgets('store: draw the rest', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: riverside())));
+    await pumpInTab(tester, KuriScreen(record: riverside()));
     await settle(tester);
     await tester.tap(find.byTooltip('More'));
     await settle(tester);
@@ -180,7 +190,7 @@ void main() {
 
   testWidgets('store: slots', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriEditorScreen(record: riverside())));
+    await pumpInTab(tester, KuriEditorScreen(record: riverside()));
     await settle(tester);
     await tester.drag(find.byType(ListView).first, const Offset(0, -1320)); // past the money card, which now starts with the currency
     await store(tester, 'slots-a');

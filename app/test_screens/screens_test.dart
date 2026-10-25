@@ -132,6 +132,16 @@ Future<void> shot(WidgetTester tester, String name) async {
   await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/$name.png'));
 }
 
+/// A screen as the app shows it: opened from the Chits tab, with the footer
+/// below it and Chits chosen.
+Future<void> pumpInTab(WidgetTester tester, Widget screen, [String? code]) async {
+  await tester.pumpWidget(phone(HomeScreen(preview: ([boystown(), small()], {'display': 'Ishaque', 'name': 'Ishaque', 'can_import_boystown': false})), code));
+  await tester.pump();
+  final chits = find.descendant(of: find.byType(HomeScreen), matching: find.byType(Navigator)).first;
+  tester.state<NavigatorState>(chits).push(MaterialPageRoute<void>(builder: (_) => screen));
+  await tester.pump();
+}
+
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -166,7 +176,7 @@ void main() {
 
   testWidgets('a month', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await shot(tester, '04-month');
     await tester.drag(find.byType(ListView).first, const Offset(0, -700));
     await shot(tester, '05-month-members');
@@ -180,7 +190,7 @@ void main() {
 
   testWidgets('menu', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await settle(tester);
     await tester.tap(find.byTooltip('More'));
     await shot(tester, '08-menu');
@@ -188,7 +198,7 @@ void main() {
 
   testWidgets('members link', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await settle(tester);
     await tester.tap(find.byTooltip('Members\' link'));
     await shot(tester, '09-link');
@@ -196,7 +206,7 @@ void main() {
 
   testWidgets('draw the rest', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await settle(tester);
     await tester.tap(find.byTooltip('More'));
     await settle(tester);
@@ -206,7 +216,7 @@ void main() {
 
   testWidgets('choose who takes the pot', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await settle(tester);
     await tester.tap(find.text('Choose'));
     await shot(tester, '09c-choose');
@@ -214,13 +224,13 @@ void main() {
 
   testWidgets('new chit', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await pumpInTab(tester, const KuriEditorScreen());
     await shot(tester, '10-new-chit');
   });
 
   testWidgets('new chit, names one at a time', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await pumpInTab(tester, const KuriEditorScreen());
     await settle(tester);
     final list = find.byType(Scrollable).first;
     for (final (i, n) in [(1, 'Nazil'), (2, 'Ramshad Ac'), (3, 'Anees Muhammed')]) {
@@ -236,7 +246,7 @@ void main() {
 
   testWidgets('first month calendar', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await pumpInTab(tester, const KuriEditorScreen());
     await settle(tester);
     await tester.scrollUntilVisible(find.text('First month'), 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('First month'));
@@ -245,7 +255,7 @@ void main() {
 
   testWidgets('collection day calendar', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await pumpInTab(tester, const KuriEditorScreen());
     await settle(tester);
     await tester.scrollUntilVisible(find.text('Collection day'), 200, scrollable: find.byType(Scrollable).first);
     await tester.tap(find.text('Collection day'));
@@ -254,7 +264,7 @@ void main() {
 
   testWidgets('late fine', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await pumpInTab(tester, KuriScreen(record: boystown()));
     await settle(tester);
     final list = find.byType(Scrollable).first;
     await tester.scrollUntilVisible(find.text('Late fine ₹200'), 200, scrollable: list);
@@ -265,7 +275,7 @@ void main() {
 
   testWidgets('edit chit', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(KuriEditorScreen(record: boystown())));
+    await pumpInTab(tester, KuriEditorScreen(record: boystown()));
     await settle(tester);
     await tester.drag(find.byType(ListView).first, const Offset(0, -1170));
     await shot(tester, '11-edit-slots');
@@ -318,7 +328,7 @@ void main() {
 
     testWidgets('$code: a month', (tester) async {
       sized(tester);
-      await tester.pumpWidget(phone(KuriScreen(record: chit()), code));
+      await pumpInTab(tester, KuriScreen(record: chit()), code);
       await shot(tester, '$code-04-month');
       await tester.drag(find.byType(ListView).first, const Offset(0, -700));
       await shot(tester, '$code-05-month-members');
@@ -330,7 +340,7 @@ void main() {
 
     testWidgets('$code: menu', (tester) async {
       sized(tester);
-      await tester.pumpWidget(phone(KuriScreen(record: chit()), code));
+      await pumpInTab(tester, KuriScreen(record: chit()), code);
       await settle(tester);
       await tester.tap(find.byTooltip(s.more));
       await shot(tester, '$code-08-menu');
@@ -338,7 +348,7 @@ void main() {
 
     testWidgets('$code: new chit', (tester) async {
       sized(tester);
-      await tester.pumpWidget(phone(const KuriEditorScreen(), code));
+      await pumpInTab(tester, const KuriEditorScreen(), code);
       await shot(tester, '$code-10-new-chit');
     });
 
