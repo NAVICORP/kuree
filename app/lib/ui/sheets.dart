@@ -248,6 +248,39 @@ Future<String?> askPhone(BuildContext context, String name, String current) {
   );
 }
 
+// ---------------------------------------------------------------- the late fine
+
+/// The chit's late fine: what each late payment adds to that month's pot.
+/// Returns the new amount (0 for no fine), or null when the sheet is closed.
+Future<int?> askFine(BuildContext context, int current, String currency) {
+  final s = S.of(context);
+  final cur = currencyOf(currency);
+  final c = TextEditingController(text: current > 0 ? '$current' : '');
+  return showKSheet<int>(
+    context,
+    title: s.lateFine,
+    builder: (ctx) {
+      void done() => Navigator.of(ctx).pop(int.tryParse(c.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0);
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(
+          controller: c,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.done,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
+          style: T.bodyStrong,
+          decoration: InputDecoration(hintText: s.fineNone, prefixText: '${cur.symbol} ', prefixStyle: T.bodyStrong.copyWith(color: K.muted)),
+          onSubmitted: (_) => done(),
+        ),
+        const SizedBox(height: Sp.sm),
+        Text(s.fineSheetText, style: T.small),
+        const SizedBox(height: Sp.lg),
+        KButton(label: s.save, icon: Icons.check_rounded, expand: true, onPressed: done),
+      ]);
+    },
+  );
+}
+
 // ---------------------------------------------------------------- the members' link
 
 /// The private link: copy, share, open. Returns true when the admin asks for

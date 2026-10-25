@@ -100,8 +100,10 @@ def main(out, d):
         fines = m.get("fines") or {}
         got = sum(int(p.get("amt") or 0) for p in payers if paid.get(p.get("id")))
         nf = sum(1 for p in payers if fines.get(p.get("id")))
+        # A month keeps the fine it was marked at when the chit's fine changed later.
+        mf = int(m["fineAmt"]) if m.get("fineAmt") is not None else fine
         won = m.get("winner")
-        ws.append([label(i), got, fine * nf, share * slots,
+        ws.append([label(i), got, mf * nf, share * slots,
                    (" / ".join(slot_names.get(won, [])) + " (slot %d)" % won) if won else ""])
     for row in ws.iter_rows(min_row=2, min_col=2, max_col=4):
         for c in row:

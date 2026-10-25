@@ -214,6 +214,33 @@ void main() {
     await shot(tester, '10-new-chit');
   });
 
+  testWidgets('new chit, names one at a time', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await settle(tester);
+    final list = find.byType(Scrollable).first;
+    for (final (i, n) in [(1, 'Nazil'), (2, 'Ramshad Ac'), (3, 'Anees Muhammed')]) {
+      await tester.scrollUntilVisible(find.byKey(ValueKey('slot-$i-1')), 200, scrollable: list);
+      await tester.enterText(find.byKey(ValueKey('slot-$i-1')), n);
+      await tester.pump();
+    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('slot-4-1')), 200, scrollable: list);
+    await tester.drag(list, const Offset(0, -120));
+    await shot(tester, '10b-new-chit-names');
+  });
+
+  testWidgets('late fine', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(KuriScreen(record: boystown())));
+    await settle(tester);
+    final list = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(find.text('Late fine ₹200'), 200, scrollable: list);
+    await shot(tester, '09d-fine-button');
+    await tester.tap(find.text('Late fine ₹200'));
+    await shot(tester, '09e-fine-sheet');
+  });
+
   testWidgets('edit chit', (tester) async {
     sized(tester);
     await tester.pumpWidget(phone(KuriEditorScreen(record: boystown())));

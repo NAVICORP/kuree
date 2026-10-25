@@ -220,6 +220,15 @@ class _KuriScreenState extends State<KuriScreen> {
     }
   }
 
+  /// The chit's late fine, changed here without opening Edit.
+  Future<void> _editFine() async {
+    final value = await askFine(context, doc.fine, doc.currency);
+    if (value == null || value == doc.fine || !mounted) return;
+    _change(() => doc.setFine(value));
+    final s = S.of(context);
+    toast(context, value > 0 ? s.fineChangedPressSave(doc.money(value)) : s.fineOffPressSave);
+  }
+
   Future<void> _edit() async {
     final s = S.of(context);
     if (dirty && !await confirm(context, title: s.saveFirstTitle, text: s.saveFirstText, yes: s.save)) return;
@@ -255,6 +264,7 @@ class _KuriScreenState extends State<KuriScreen> {
       PickOption('report', s.spreadsheet, sub: s.spreadsheetSub, icon: Icons.table_chart_outlined),
       PickOption('history', s.history, sub: s.historySub, icon: Icons.history_rounded),
       PickOption('admins', s.admins, sub: s.adminsSub, icon: Icons.admin_panel_settings_outlined),
+      PickOption('fine', s.lateFine, sub: doc.fine > 0 ? s.fineEach(doc.money(doc.fine)) : s.addLateFine, icon: Icons.schedule_rounded),
       PickOption('edit', s.editChit, sub: s.editChitSub, icon: Icons.tune_rounded),
       if (rec.isOwner) PickOption('delete', s.deleteChit, icon: Icons.delete_outline_rounded),
     ]);
@@ -271,6 +281,8 @@ class _KuriScreenState extends State<KuriScreen> {
         if (restored == true) await _reload();
       case 'admins':
         await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AdminsScreen(record: rec)));
+      case 'fine':
+        await _editFine();
       case 'edit':
         await _edit();
       case 'delete':
@@ -600,7 +612,18 @@ class _KuriScreenState extends State<KuriScreen> {
         ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 10),
-          child: Text(s.tickHelp, style: T.small),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(s.tickHelp, style: T.small),
+            const SizedBox(height: Sp.sm),
+            // The fine a Late adds, and the way to change it.
+            KButton(
+              label: doc.fine > 0 ? s.fineChip(doc.money(doc.fine)) : s.addLateFine,
+              icon: doc.fine > 0 ? Icons.edit_outlined : Icons.add_rounded,
+              kind: KButtonKind.secondary,
+              small: true,
+              onPressed: _editFine,
+            ),
+          ]),
         ),
         const Divider(),
         if (rows.isEmpty)
@@ -629,7 +652,7 @@ class _MemberRow extends StatelessWidget {
     final paid = month.isPaid(payer.id), late = month.isFined(payer.id), won = month.winner == payer.slot;
     final part = doc.partLabel(payer);
     var status = paid ? s.statusPaid(doc.money(payer.amt)) : s.statusPending(doc.money(payer.amt));
-    if (late) status = s.statusLateFine(status, doc.money(doc.fine));
+    if (late) status = s.statusLateFine(status, doc.money(doc.fineFor(month)));
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
