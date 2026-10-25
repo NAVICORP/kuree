@@ -14,7 +14,12 @@ void main() {
     await tester.pumpWidget(app(const FeatureRequestScreen()));
     await tester.pumpAndSettle();
     expect(find.text(FeatureRequestText.introTitle), findsOneWidget);
+    // "Your requests" sits below the form, outside the first screen, so
+    // scroll down to it, then back up to the form.
+    final list = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(find.text(FeatureRequestText.noneYet), 200, scrollable: list);
     expect(find.text(FeatureRequestText.noneYet), findsOneWidget);
+    await tester.scrollUntilVisible(find.text(FeatureRequestText.send), -200, scrollable: list);
 
     await tester.ensureVisible(find.text(FeatureRequestText.send));
     await tester.tap(find.text(FeatureRequestText.send));
