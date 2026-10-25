@@ -434,5 +434,13 @@
   "frNoteHint": "जैसे: अगले अपडेट में आएगा",
   "frSaved": "सेव हो गया।",
   "frFrom": "भेजने वाले",
-  "frSignedOut": "खाता हटा दिया गया"
+  "frSignedOut": "खाता हटा दिया गया",
+  "tabChits": "चिट",
+  "tabCollect": "वसूली बाकी",
+  "tabProfile": "प्रोफ़ाइल",
+  "collectIntro": "इस महीने अभी भुगतान बाकी, आपके सभी चिट में।",
+  "nothingToCollect": "इस महीने हर चिट में सबने भुगतान कर दिया है।",
+  "secPreferences": "पसंद",
+  "secHelp": "मदद",
+  "secLegal": "कानूनी"
 }

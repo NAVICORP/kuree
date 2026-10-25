@@ -89,6 +89,13 @@ void main() {
         await settle(tester);
         await scrollThrough(tester);
         expect(tester.takeException(), isNull);
+        // The footer tabs: who is still to pay, and the profile.
+        await tapText(tester, s.tabCollect);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
+        await tapText(tester, s.tabProfile);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
       });
 
       testWidgets('a month, its members and reminders', (tester) async {

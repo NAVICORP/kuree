@@ -434,5 +434,13 @@
   "frNoteHint": "مثال: قادمة في التحديث القادم",
   "frSaved": "تم الحفظ.",
   "frFrom": "من",
-  "frSignedOut": "حساب محذوف"
+  "frSignedOut": "حساب محذوف",
+  "tabChits": "الجمعيات",
+  "tabCollect": "للتحصيل",
+  "tabProfile": "الملف الشخصي",
+  "collectIntro": "ما زال عليهم الدفع هذا الشهر، في كل جمعياتك.",
+  "nothingToCollect": "دفع الجميع هذا الشهر في كل الجمعيات.",
+  "secPreferences": "التفضيلات",
+  "secHelp": "المساعدة",
+  "secLegal": "قانوني"
 }

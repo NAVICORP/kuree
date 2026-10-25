@@ -12,11 +12,14 @@ import 'language.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Your name, the app's language, feature requests, signing out and deleting
-/// the account.
+/// Your profile: name and sign-in, then the app's language, help, the legal
+/// pages and the account itself, in labelled groups. Shown as the Profile tab.
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key, required this.me});
+  const AccountScreen({super.key, required this.me, this.tab = false});
   final Map<String, dynamic> me;
+
+  /// True when shown as the Profile tab in the footer, not opened on its own.
+  final bool tab;
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -132,7 +135,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final email = me['email'] as String?;
     final name = (me['name'] as String?) ?? '';
     return Scaffold(
-      appBar: AppBar(title: Text(s.account)),
+      appBar: AppBar(titleSpacing: widget.tab ? Sp.xl : null, automaticallyImplyLeading: !widget.tab, title: Text(widget.tab ? s.tabProfile : s.account)),
       body: ListView(padding: const EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40), children: [
         KCard(
           child: Row(children: [
@@ -155,13 +158,16 @@ class _AccountScreenState extends State<AccountScreen> {
             KButton(label: s.edit, small: true, kind: KButtonKind.secondary, onPressed: _rename),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.secPreferences),
+        KCard(
+          padding: EdgeInsets.zero,
+          child: _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
+              value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
+        ),
+        _label(s.secHelp),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
-            _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
-                value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
-            const Divider(),
             _row(Icons.lightbulb_outline_rounded, s.requestFeature, () {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FeatureRequestScreen()));
             }),
@@ -171,20 +177,20 @@ class _AccountScreenState extends State<AccountScreen> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FeatureInboxScreen()));
               }),
             ],
+            const Divider(),
+            _row(Icons.mail_outline_rounded, s.contact, () => launchUrl(Uri.parse('mailto:$kSupportEmail?subject=Kuree'))),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.secLegal),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
             _row(Icons.privacy_tip_outlined, s.privacy, () => launchUrl(Uri.parse(kPrivacyUrl), mode: LaunchMode.externalApplication)),
             const Divider(),
             _row(Icons.description_outlined, s.terms, () => launchUrl(Uri.parse(kTermsUrl), mode: LaunchMode.externalApplication)),
-            const Divider(),
-            _row(Icons.mail_outline_rounded, s.contact, () => launchUrl(Uri.parse('mailto:$kSupportEmail?subject=Kuree'))),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.account),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
@@ -196,6 +202,12 @@ class _AccountScreenState extends State<AccountScreen> {
       ]),
     );
   }
+
+  /// A quiet group heading, like Preferences or Help.
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(Sp.sm, Sp.xl, Sp.sm, Sp.sm),
+        child: Text(text, style: T.small),
+      );
 
   Widget _row(IconData icon, String text, VoidCallback? onTap, {bool bad = false, String? value}) {
     return InkWell(

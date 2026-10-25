@@ -158,6 +158,10 @@ void main() {
     sized(tester);
     await tester.pumpWidget(phone(HomeScreen(preview: ([boystown(), small()], {'display': 'Ishaque', 'name': 'Ishaque', 'can_import_boystown': false}))));
     await shot(tester, '03-home');
+    await tester.tap(find.text('To collect').first);
+    await shot(tester, '03b-to-collect');
+    await tester.tap(find.text('Profile').first);
+    await shot(tester, '03c-profile');
   });
 
   testWidgets('a month', (tester) async {

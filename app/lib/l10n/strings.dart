@@ -1198,6 +1198,30 @@ class S {
 
   /// Account deleted
   String get frSignedOut => _get('frSignedOut');
+
+  /// Chits
+  String get tabChits => _get('tabChits');
+
+  /// To collect
+  String get tabCollect => _get('tabCollect');
+
+  /// Profile
+  String get tabProfile => _get('tabProfile');
+
+  /// Still to pay this month, across your chits.
+  String get collectIntro => _get('collectIntro');
+
+  /// Everyone has paid this month, in every chit.
+  String get nothingToCollect => _get('nothingToCollect');
+
+  /// Preferences
+  String get secPreferences => _get('secPreferences');
+
+  /// Help
+  String get secHelp => _get('secHelp');
+
+  /// Legal
+  String get secLegal => _get('secLegal');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1653,6 +1677,14 @@ const Map<String, String> _en = {
   'frSaved': 'Saved.',
   'frFrom': 'From',
   'frSignedOut': 'Account deleted',
+  'tabChits': 'Chits',
+  'tabCollect': 'To collect',
+  'tabProfile': 'Profile',
+  'collectIntro': 'Still to pay this month, across your chits.',
+  'nothingToCollect': 'Everyone has paid this month, in every chit.',
+  'secPreferences': 'Preferences',
+  'secHelp': 'Help',
+  'secLegal': 'Legal',
 };
 
 const Map<String, String> _ar = {
@@ -2091,6 +2123,14 @@ const Map<String, String> _ar = {
   'frSaved': 'تم الحفظ.',
   'frFrom': 'من',
   'frSignedOut': 'حساب محذوف',
+  'tabChits': 'الجمعيات',
+  'tabCollect': 'للتحصيل',
+  'tabProfile': 'الملف الشخصي',
+  'collectIntro': 'ما زال عليهم الدفع هذا الشهر، في كل جمعياتك.',
+  'nothingToCollect': 'دفع الجميع هذا الشهر في كل الجمعيات.',
+  'secPreferences': 'التفضيلات',
+  'secHelp': 'المساعدة',
+  'secLegal': 'قانوني',
 };
 
 const Map<String, String> _ml = {
@@ -2529,6 +2569,14 @@ const Map<String, String> _ml = {
   'frSaved': 'സേവ് ചെയ്തു.',
   'frFrom': 'അയച്ചത്',
   'frSignedOut': 'അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്തു',
+  'tabChits': 'ചിട്ടികൾ',
+  'tabCollect': 'പിരിക്കാനുള്ളത്',
+  'tabProfile': 'പ്രൊഫൈൽ',
+  'collectIntro': 'ഈ മാസം ഇനിയും അടയ്ക്കാനുള്ളവർ, നിങ്ങളുടെ എല്ലാ ചിട്ടികളിലും.',
+  'nothingToCollect': 'ഈ മാസം എല്ലാ ചിട്ടികളിലും എല്ലാവരും അടച്ചു.',
+  'secPreferences': 'മുൻഗണനകൾ',
+  'secHelp': 'സഹായം',
+  'secLegal': 'നിയമപരം',
 };
 
 const Map<String, String> _ta = {
@@ -2967,6 +3015,14 @@ const Map<String, String> _ta = {
   'frSaved': 'சேமிக்கப்பட்டது.',
   'frFrom': 'அனுப்பியவர்',
   'frSignedOut': 'கணக்கு நீக்கப்பட்டது',
+  'tabChits': 'சீட்டுகள்',
+  'tabCollect': 'வசூலிக்க',
+  'tabProfile': 'சுயவிவரம்',
+  'collectIntro': 'இந்த மாதம் இன்னும் செலுத்த வேண்டியவர்கள், உங்கள் எல்லா சீட்டுகளிலும்.',
+  'nothingToCollect': 'இந்த மாதம் எல்லா சீட்டுகளிலும் எல்லோரும் செலுத்திவிட்டனர்.',
+  'secPreferences': 'விருப்பங்கள்',
+  'secHelp': 'உதவி',
+  'secLegal': 'சட்டம்',
 };
 
 const Map<String, String> _kn = {
@@ -3405,6 +3461,14 @@ const Map<String, String> _kn = {
   'frSaved': 'ಉಳಿಸಲಾಗಿದೆ.',
   'frFrom': 'ಕಳುಹಿಸಿದವರು',
   'frSignedOut': 'ಖಾತೆ ಅಳಿಸಲಾಗಿದೆ',
+  'tabChits': 'ಚೀಟಿಗಳು',
+  'tabCollect': 'ಸಂಗ್ರಹಿಸಲು',
+  'tabProfile': 'ಪ್ರೊಫೈಲ್',
+  'collectIntro': 'ಈ ತಿಂಗಳು ಇನ್ನೂ ಪಾವತಿಸಬೇಕಾದವರು, ನಿಮ್ಮ ಎಲ್ಲ ಚೀಟಿಗಳಲ್ಲಿ.',
+  'nothingToCollect': 'ಈ ತಿಂಗಳು ಎಲ್ಲ ಚೀಟಿಗಳಲ್ಲಿ ಎಲ್ಲರೂ ಪಾವತಿಸಿದ್ದಾರೆ.',
+  'secPreferences': 'ಆದ್ಯತೆಗಳು',
+  'secHelp': 'ಸಹಾಯ',
+  'secLegal': 'ಕಾನೂನು',
 };
 
 const Map<String, String> _hi = {
@@ -3843,6 +3907,14 @@ const Map<String, String> _hi = {
   'frSaved': 'सेव हो गया।',
   'frFrom': 'भेजने वाले',
   'frSignedOut': 'खाता हटा दिया गया',
+  'tabChits': 'चिट',
+  'tabCollect': 'वसूली बाकी',
+  'tabProfile': 'प्रोफ़ाइल',
+  'collectIntro': 'इस महीने अभी भुगतान बाकी, आपके सभी चिट में।',
+  'nothingToCollect': 'इस महीने हर चिट में सबने भुगतान कर दिया है।',
+  'secPreferences': 'पसंद',
+  'secHelp': 'मदद',
+  'secLegal': 'कानूनी',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};
