@@ -1,7 +1,7 @@
 name: kuree
 description: Run your chit. Payments, late fines, the monthly draw and a private link for members.
 publish_to: none
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.5.0
