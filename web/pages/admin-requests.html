@@ -1,0 +1,47 @@
+<section class="adm">
+  <header class="adm__head">
+    <p class="adm__kicker">Kuree team</p>
+    <h1>Feature requests</h1>
+    <p class="adm__lead">What chit admins ask for, newest first.</p>
+    <div class="adm__who" id="admWho" hidden>
+      <span id="admWhoText"></span>
+      <button class="adm__ghost" type="button" id="admSignOut">Sign out</button>
+    </div>
+  </header>
+
+  <div class="adm__card adm__signin" id="admSignin">
+    <h2>Sign in</h2>
+    <p>Use the email you sign in to Kuree with. Only the Kuree team can see the requests.</p>
+
+    <form class="adm__form" id="admEmailForm" novalidate>
+      <label class="adm__field"><span>Email</span>
+        <input type="email" id="admEmail" autocomplete="email" inputmode="email" required></label>
+      <button class="adm__btn" type="submit">Send a code</button>
+    </form>
+
+    <form class="adm__form" id="admCodeForm" novalidate hidden>
+      <p class="adm__hint" id="admCodeHint"></p>
+      <label class="adm__field"><span>Code from your email</span>
+        <input type="text" id="admCode" autocomplete="one-time-code" inputmode="numeric" maxlength="10" required></label>
+      <button class="adm__btn" type="submit">Sign in</button>
+      <button class="adm__ghost" type="button" id="admBack">Use another email</button>
+    </form>
+
+    <form class="adm__form" id="admPwForm" novalidate hidden>
+      <label class="adm__field"><span>Email</span>
+        <input type="email" id="admPwEmail" autocomplete="username" required></label>
+      <label class="adm__field"><span>Password</span>
+        <input type="password" id="admPw" autocomplete="current-password" required></label>
+      <button class="adm__btn" type="submit">Sign in</button>
+    </form>
+
+    <button class="adm__ghost" type="button" id="admSwitch">Use a password instead</button>
+    <p class="adm__err" id="admErr" role="alert" hidden></p>
+  </div>
+
+  <div id="admInbox" hidden>
+    <div class="adm__chips" id="admChips" role="tablist" aria-label="Show requests"></div>
+    <p class="adm__err" id="admListErr" role="alert" hidden></p>
+    <div class="adm__list" id="admList" aria-live="polite"></div>
+  </div>
+</section>

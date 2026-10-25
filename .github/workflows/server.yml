@@ -45,5 +45,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
-      - run: node --check server/site.mjs && node --check server/demo.mjs && node --check web/assets/home.js && node --check web/assets/draw.js
+      - run: node --check server/site.mjs && node --check server/demo.mjs && node --check web/assets/home.js && node --check web/assets/draw.js && node --check web/assets/admin.js
       - run: pip install openpyxl && python3 -c "import ast,sys; ast.parse(open('tools/xlsx.py').read())"
