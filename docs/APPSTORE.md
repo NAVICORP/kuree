@@ -99,7 +99,7 @@ No app names or trademarks go in keywords (Review Guideline 2.3.7), so WhatsApp 
 | Copyright | `2026 SKIFI GROUP LLC` |
 | What's New | `The first version of Kuree.` (not shown for the first version, but harmless) |
 
-**Screenshots**: the iPhone 6.9 inch display slot takes 1290 x 2796. Upload `store/ios/1.png` to `store/ios/7.png` from the `store-pictures` branch, in order. They are RGB with no transparency, as Apple requires. Smaller iPhones reuse them automatically. The app is iPhone only, so no iPad screenshots are needed. No app preview video (previews may only show footage captured from the app; the launch reel isn't that).
+**Screenshots**: the iPhone slot on this account takes 1206 x 2622 (it turned down 1290 x 2796). `store/ios/1.png` to `store/ios/7.png` on the `store-pictures` branch are that size. To put them on the page, run Actions > Store screenshots (or push to the `store-upload` branch): it replaces the screenshots of a version that is still being prepared, in order. Remake the pictures with `node tools/store/make.cjs <screens folder> <out>` from the `store-*.png` renders on the `screens` branch. They are RGB with no transparency, as Apple requires. Smaller iPhones reuse them automatically. The app is iPhone only, so no iPad screenshots are needed. No app preview video (previews may only show footage captured from the app; the launch reel isn't that).
 
 **Build**: pick the build that the TestFlight workflow uploaded (step 6 of the plan).
 

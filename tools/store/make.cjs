@@ -1,5 +1,5 @@
 /* The store pictures: each app screen in a phone on Kuree green with a
-   short caption, for the App Store (1290 x 2796) and Google Play
+   short caption, for the App Store (1206 x 2622, the size its iPhone slot asks for) and Google Play
    (1080 x 1920), plus the Play feature graphic (1024 x 500) and icon.
 
    node tools/store/make.cjs <folder with the store-*.png app screens> <out folder>
@@ -133,7 +133,7 @@ function featurePage(shot) {
   for (const [i, [name, caption]] of FRAMES.entries()) {
     const shot = pick(name);
     const isDraw = name.startsWith('draw');
-    await render(framePage(1290, 2796, shot, caption, isDraw), 1290, 2796, path.join(OUT, 'ios', `${i + 1}.png`));
+    await render(framePage(1206, 2622, shot, caption, isDraw), 1206, 2622, path.join(OUT, 'ios', `${i + 1}.png`));
     await render(framePage(1080, 1920, shot, caption, isDraw), 1080, 1920, path.join(OUT, 'play', `${i + 1}.png`));
   }
   await render(featurePage(pick('month')), 1024, 500, path.join(OUT, 'play', 'feature.png'));

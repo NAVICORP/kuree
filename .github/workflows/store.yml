@@ -1,0 +1,41 @@
+# Puts the store pictures from the `store-pictures` branch (store/ios/1.png,
+# 2.png, ...) on the App Store page of a version that is still being prepared,
+# replacing the screenshots there. Runs by hand (Actions > Store screenshots >
+# Run workflow), or on a push to the `store-upload` branch.
+#
+# Uses the same App Store Connect key secrets as app.yml.
+name: Store screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "App Store version to update"
+        default: "1.0.0"
+  push:
+    branches: [store-upload]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-screenshots
+  cancel-in-progress: false
+
+jobs:
+  ios:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Store pictures
+        run: |
+          git fetch --depth=1 origin store-pictures
+          git archive FETCH_HEAD store/ios | tar -x -C "$RUNNER_TEMP"
+          ls -l "$RUNNER_TEMP/store/ios"
+      - run: pip install --quiet pyjwt cryptography
+      - name: Replace the App Store screenshots
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: python3 .github/scripts/asc_screenshots.py "$RUNNER_TEMP/store/ios" "${{ inputs.version || '1.0.0' }}" en-US
