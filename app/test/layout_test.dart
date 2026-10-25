@@ -150,6 +150,16 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
+      testWidgets('the collection day, as a calendar', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(const KuriEditorScreen(), code));
+        await settle(tester);
+        await tester.scrollUntilVisible(find.text(s.collectionDay), 200, scrollable: find.byType(Scrollable).first);
+        await tapText(tester, s.collectionDay);
+        expect(tester.takeException(), isNull);
+        expect(find.text('31'), findsOneWidget);
+      });
+
       testWidgets('editing a chit', (tester) async {
         small(tester);
         await tester.pumpWidget(app(KuriEditorScreen(record: chit), code));

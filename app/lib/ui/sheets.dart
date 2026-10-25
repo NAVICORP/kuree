@@ -317,6 +317,62 @@ Future<int?> pickMonth(BuildContext context,
   );
 }
 
+// ---------------------------------------------------------------- a day of the month, as a calendar
+
+/// The days 1 to 31 in rows of seven, like a calendar page. Returns the day
+/// tapped. 29, 30 and 31 fall back to the last day in shorter months.
+Future<int?> pickDay(BuildContext context, {required String title, required int selected}) {
+  final s = S.of(context);
+  return showKSheet<int>(
+    context,
+    title: title,
+    builder: (ctx) {
+      Widget cell(int d) {
+        if (d > 31) return const Expanded(child: SizedBox(height: 48));
+        final on = d == selected;
+        return Expanded(
+          child: Center(
+            child: Semantics(
+              button: true,
+              selected: on,
+              label: dayOf(d),
+              child: Material(
+                color: on ? K.deep : K.surface,
+                shape: CircleBorder(side: BorderSide(color: on ? K.deep : K.border)),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => Navigator.of(ctx).pop(d),
+                  child: SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: Center(
+                      child: Text('$d', style: T.bodyStrong.merge(T.tabular).copyWith(color: on ? Colors.white : (d > 28 ? K.muted : K.ink))),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        for (var r = 0; r < 5; r++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Sp.sm),
+            child: Row(children: [for (var c = 1; c <= 7; c++) cell(r * 7 + c)]),
+          ),
+        const SizedBox(height: Sp.xs),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.info_outline_rounded, size: 16, color: K.muted)),
+          const SizedBox(width: Sp.sm),
+          Expanded(child: Text('29, 30, 31: ${s.shorterMonths}', style: T.small)),
+        ]),
+      ]);
+    },
+  );
+}
+
 // ---------------------------------------------------------------- the late fine
 
 /// The chit's late fine: what each late payment adds to that month's pot.

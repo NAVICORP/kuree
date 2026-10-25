@@ -293,12 +293,8 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     }
   }
 
-  Future<int?> _pickDay(String title, int current) async {
-    final s = S.of(context);
-    final picked = await showPicker<int>(context,
-        title: title, selected: current, options: [for (var d = 1; d <= 31; d++) PickOption(d, dayOf(d), sub: d > 28 ? s.shorterMonths : null)]);
-    return picked?.value;
-  }
+  /// A day of the month, on a calendar page of 1 to 31.
+  Future<int?> _pickDay(String title, int current) => pickDay(context, title: title, selected: current);
 
   Future<void> _pickCurrency() async {
     final s = S.of(context);
