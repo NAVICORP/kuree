@@ -46,7 +46,7 @@ services:
       timeout: 5s
       retries: 10
 
-  # The database API, sign-in (passed on to SkAuth) and the server functions.
+  # The database API and sign-in (passed on to SkAuth).
   # The site reaches it as `kuree-api`: plain `api` is also the name of other
   # apps' services on Dokploy's shared network.
   api:
@@ -71,7 +71,6 @@ services:
       AUTH_PROVIDER_URL: https://account.skifi.co
       APP_ID: kuree
       WEB_DIR: ""
-      BOYSTOWN_URL: https://boystown.skifi.co
     volumes:
       - secrets:/secrets:ro
     networks:

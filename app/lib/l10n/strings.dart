@@ -68,15 +68,6 @@ class S {
   /// What should we call you?
   String get askNameTitle => _get('askNameTitle');
 
-  /// Your 5K chit is in.
-  String get importDone => _get('importDone');
-
-  /// Bring in your 5K chit
-  String get importTitle => _get('importTitle');
-
-  /// Bring in
-  String get importButton => _get('importButton');
-
   /// New chit
   String get newChit => _get('newChit');
 
@@ -1300,9 +1291,6 @@ const Map<String, String> _en = {
   'lang_hi': 'Hindi',
   'account': 'Account',
   'askNameTitle': 'What should we call you?',
-  'importDone': 'Your 5K chit is in.',
-  'importTitle': 'Bring in your 5K chit',
-  'importButton': 'Bring in',
   'newChit': 'New chit',
   'noChits': 'No chits yet.',
   'startChit': 'Start a chit',
@@ -1746,9 +1734,6 @@ const Map<String, String> _ar = {
   'lang_hi': 'الهندية',
   'account': 'الحساب',
   'askNameTitle': 'بماذا نناديك؟',
-  'importDone': 'وصلت جمعية 5K الخاصة بك.',
-  'importTitle': 'أحضر جمعية 5K الخاصة بك',
-  'importButton': 'إحضار',
   'newChit': 'جمعية جديدة',
   'noChits': 'لا توجد جمعيات بعد.',
   'startChit': 'ابدأ جمعية',
@@ -2192,9 +2177,6 @@ const Map<String, String> _ml = {
   'lang_hi': 'ഹിന്ദി',
   'account': 'അക്കൗണ്ട്',
   'askNameTitle': 'നിങ്ങളെ എന്ത് പേരിൽ വിളിക്കണം?',
-  'importDone': 'നിങ്ങളുടെ 5K ചിട്ടി എത്തി.',
-  'importTitle': 'നിങ്ങളുടെ 5K ചിട്ടി കൊണ്ടുവരൂ',
-  'importButton': 'കൊണ്ടുവരിക',
   'newChit': 'പുതിയ ചിട്ടി',
   'noChits': 'ഇതുവരെ ചിട്ടികളൊന്നുമില്ല.',
   'startChit': 'ഒരു ചിട്ടി തുടങ്ങൂ',
@@ -2638,9 +2620,6 @@ const Map<String, String> _ta = {
   'lang_hi': 'இந்தி',
   'account': 'கணக்கு',
   'askNameTitle': 'உங்களை என்ன பெயரில் அழைக்கலாம்?',
-  'importDone': 'உங்கள் 5K சீட்டு வந்துவிட்டது.',
-  'importTitle': 'உங்கள் 5K சீட்டைக் கொண்டு வாருங்கள்',
-  'importButton': 'கொண்டு வா',
   'newChit': 'புதிய சீட்டு',
   'noChits': 'இன்னும் சீட்டுகள் இல்லை.',
   'startChit': 'ஒரு சீட்டைத் தொடங்குங்கள்',
@@ -3084,9 +3063,6 @@ const Map<String, String> _kn = {
   'lang_hi': 'ಹಿಂದಿ',
   'account': 'ಖಾತೆ',
   'askNameTitle': 'ನಿಮ್ಮನ್ನು ಯಾವ ಹೆಸರಿನಿಂದ ಕರೆಯಲಿ?',
-  'importDone': 'ನಿಮ್ಮ 5K ಚೀಟಿ ಬಂದಿದೆ.',
-  'importTitle': 'ನಿಮ್ಮ 5K ಚೀಟಿಯನ್ನು ತನ್ನಿ',
-  'importButton': 'ತನ್ನಿ',
   'newChit': 'ಹೊಸ ಚೀಟಿ',
   'noChits': 'ಇನ್ನೂ ಯಾವುದೇ ಚೀಟಿ ಇಲ್ಲ.',
   'startChit': 'ಒಂದು ಚೀಟಿ ಆರಂಭಿಸಿ',
@@ -3530,9 +3506,6 @@ const Map<String, String> _hi = {
   'lang_hi': 'हिन्दी',
   'account': 'खाता',
   'askNameTitle': 'हम आपको किस नाम से बुलाएँ?',
-  'importDone': 'आपकी 5K चिट आ गई है।',
-  'importTitle': 'अपनी 5K चिट लाएँ',
-  'importButton': 'लाएँ',
   'newChit': 'नई चिट',
   'noChits': 'अभी कोई चिट नहीं है।',
   'startChit': 'एक चिट शुरू करें',
