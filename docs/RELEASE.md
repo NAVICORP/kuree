@@ -8,7 +8,6 @@
 2. **Dokploy compose.** New compose `kuree` from GitHub `NAVICORP/kuree`, branch `main`, compose path `./deploy/docker-compose.yml`. Domains `kureeapp.com`, `www.kureeapp.com` and `kuree.skifi.co` to service `site`, port 8000, HTTPS on. Deploy.
 3. **DNS.** kureeapp.com is on Cloudflare: A records for `@` and `www` to the VPS (179.198.218.204). The old `kuree` record on skifi.co stays, so links already shared still work; the site moves them to kureeapp.com.
 4. Open https://kureeapp.com/health. It says `{"ok":true}`.
-5. **Boystown.** Sign in to the app as Ishaque (email ishaque@skifi.co, or WhatsApp if that email is on the same SkiFi account). The home screen offers "Bring in the Boystown 5K Kuri". Tap it once. Anees is added as an admin.
 
 ## 2. Accounts (once)
 

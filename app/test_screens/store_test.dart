@@ -174,7 +174,7 @@ void main() {
 
   testWidgets('store: home', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(HomeScreen(preview: ([riverside(), family()], {'display': 'Rahul', 'name': 'Rahul', 'can_import_boystown': false}))));
+    await tester.pumpWidget(phone(HomeScreen(preview: ([riverside(), family()], {'display': 'Rahul', 'name': 'Rahul'}))));
     await store(tester, 'home');
   });
 

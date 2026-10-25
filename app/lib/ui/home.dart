@@ -25,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<KuriRecord>? kuris;
   Map<String, dynamic>? me;
   String? error;
-  bool importing = false;
 
   @override
   void initState() {
@@ -84,24 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _open(made);
   }
 
-  Future<void> _importBoystown() async {
-    final s = S.of(context);
-    setState(() => importing = true);
-    try {
-      final r = await Api.instance.function('import-boystown');
-      if (!mounted) return;
-      toast(context, s.importDone);
-      await _load();
-      if (r is Map && r['kuri'] is Map) {
-        final rec = KuriRecord.fromJson(Map<String, dynamic>.from(r['kuri'] as Map));
-        if (mounted) await _open(rec);
-      }
-    } on ApiError catch (e) {
-      if (mounted) toast(context, e.message, bad: true);
-    } finally {
-      if (mounted) setState(() => importing = false);
-    }
-  }
 
   /// The footer tab on show: 0 chits, 1 to collect, 2 profile.
   int tab = 0;
@@ -169,27 +150,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _body(S s) {
     if (kuris == null && error != null) return LoadFailed(message: error!, onRetry: _load);
     if (kuris == null) return const Loading();
-    final canImport = me?['can_import_boystown'] == true;
     return RefreshIndicator(
       color: K.green,
       onRefresh: _load,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 112),
         children: [
-          if (canImport) ...[
-            KCard(
-              color: K.sunSoft,
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
-              child: Row(children: [
-                const Icon(Icons.download_rounded, color: K.deep),
-                const SizedBox(width: Sp.md),
-                Expanded(child: Text(s.importTitle, style: T.bodyStrong)),
-                const SizedBox(width: Sp.sm),
-                KButton(label: s.importButton, small: true, busy: importing, onPressed: _importBoystown),
-              ]),
-            ),
-            const SizedBox(height: Sp.lg),
-          ],
           if (kuris!.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 72),
