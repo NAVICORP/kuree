@@ -1,0 +1,95 @@
+# Puts a Kuree update on Google Play as DRAFTS: the signed bundle from an App
+# run in a draft production release (with the release notes from
+# docs/STORE.md), the store pictures from the `store-pictures` branch, and the
+# listing text from docs/STORE.md. Nothing is sent for review or rolled out:
+# that stays a click in Play Console (Publishing overview > Send changes for
+# review). Runs only by hand: Actions > Google Play drafts > Run workflow.
+#
+# Needs the repository secret PLAY_SERVICE_ACCOUNT_JSON (the service account
+# key file). How to make it: docs/STORE.md, "Publishing from GitHub".
+name: Google Play drafts
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle:
+        description: "Upload the bundle as a draft production release"
+        type: boolean
+        default: true
+      run_id:
+        description: "App run to take the bundle from (empty: the newest successful App run on main)"
+        default: ""
+      pictures:
+        description: "Replace the phone screenshots and feature graphic (from store-pictures)"
+        type: boolean
+        default: true
+      text:
+        description: "Replace the short and full description (from docs/STORE.md)"
+        type: boolean
+        default: true
+      dry_run:
+        description: "Dry run: let Google check everything, save nothing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: play-drafts
+  cancel-in-progress: false
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: The bundle
+        if: inputs.bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -e
+          run="$RUN_ID"
+          if [ -z "$run" ]; then
+            run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow app.yml --branch main --status success --limit 1 --json databaseId -q '.[0].databaseId')
+          fi
+          [ -n "$run" ] || { echo "::error::No successful App run on main found."; exit 1; }
+          gh run view "$run" -R "$GITHUB_REPOSITORY" --json number,headSha,headBranch,createdAt,displayTitle \
+            -q '"App run \(.number) on \(.headBranch), commit \(.headSha[0:7]), \(.createdAt): \(.displayTitle)"' | tee -a "$GITHUB_STEP_SUMMARY"
+          sha=$(gh run view "$run" -R "$GITHUB_REPOSITORY" --json headSha -q .headSha)
+          version=$(gh api "repos/$GITHUB_REPOSITORY/contents/app/pubspec.yaml?ref=$sha" -q .content | base64 -d | sed -n 's/^version: *\([^+]*\).*/\1/p')
+          echo "Version name in that commit: $version" | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p "$RUNNER_TEMP/aab"
+          gh run download "$run" -R "$GITHUB_REPOSITORY" -n kuree-android-bundle -D "$RUNNER_TEMP/aab" || {
+            echo "::error::Run $run has no kuree-android-bundle artifact (not signed, or older than 30 days)."; exit 1; }
+          ls -l "$RUNNER_TEMP/aab"
+          echo "AAB=$RUNNER_TEMP/aab/app-release.aab" >> "$GITHUB_ENV"
+
+      - name: The store pictures
+        if: inputs.pictures
+        run: |
+          set -e
+          git fetch --depth=1 origin store-pictures
+          git archive FETCH_HEAD store/play | tar -x -C "$RUNNER_TEMP"
+          ls -l "$RUNNER_TEMP/store/play"
+          echo "PICTURES=$RUNNER_TEMP/store/play" >> "$GITHUB_ENV"
+
+      - run: pip install --quiet pyjwt cryptography
+
+      - name: Save the drafts on Google Play
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          TEXT: ${{ inputs.text }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -e
+          args=()
+          [ -n "$AAB" ] && args+=(--aab "$AAB")
+          [ -n "$PICTURES" ] && args+=(--pictures "$PICTURES")
+          [ "$TEXT" = "true" ] && args+=(--text docs/STORE.md)
+          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          python3 .github/scripts/play_publish.py "${args[@]}"
