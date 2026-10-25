@@ -19,6 +19,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
 import '../core/messages.dart';
+import '../l10n/strings.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'scene.dart';
@@ -38,19 +39,23 @@ class BottleDrawScreen extends StatefulWidget {
     required this.month,
     required this.label,
     required this.pot,
+    this.currency = 'INR',
     required this.entries,
     required this.resultText,
     required this.onSave,
     required this.by,
   });
 
-  /// "Boystown 5K Kuri"
+  /// "Riverside 5K Chit"
   final String title;
   final int month;
 
   /// "October 2026"
   final String label;
   final int pot;
+
+  /// The chit's currency code, for the pot.
+  final String currency;
   final List<DrawEntry> entries;
   final String Function(int slot, int names, DateTime when) resultText;
   final Future<bool> Function(int slot, DrawInfo info) onSave;
@@ -82,10 +87,10 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
         pickIndex: pick,
         seed: seed,
         kicker: widget.title.toUpperCase(),
-        title: 'Month ${widget.month} draw',
-        subtitle: '${widget.label}, pot ${money(widget.pot)}',
+        title: S.current.drawTitle(widget.month),
+        subtitle: S.current.drawSubtitle(widget.label, money(widget.pot, widget.currency)),
         when: when,
-      )..subtitlePot = money(widget.pot);
+      )..subtitlePot = money(widget.pot, widget.currency);
 
   @override
   void dispose() {
@@ -163,7 +168,7 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
       try {
         if (!await Gal.hasAccess()) await Gal.requestAccess();
         await Gal.putVideo(path);
-        if (mounted) toast(context, 'Saved to your photos.');
+        if (mounted) toast(context, S.of(context).savedToPhotos);
       } catch (_) {
         // No access to the photos: sharing still works.
       }
@@ -172,7 +177,7 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
     } catch (e) {
       if (mounted) {
         setState(() => videoProgress = null);
-        toast(context, 'The video could not be made on this phone.', bad: true);
+        toast(context, S.of(context).videoFailed, bad: true);
       }
     }
   }
@@ -180,7 +185,7 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
   Future<void> _shareVideo() async {
     final p = videoPath;
     if (p == null) return;
-    await SharePlus.instance.share(ShareParams(files: [XFile(p, mimeType: 'video/mp4')], title: '${widget.title}, month ${widget.month} draw'));
+    await SharePlus.instance.share(ShareParams(files: [XFile(p, mimeType: 'video/mp4')], title: S.current.drawShareTitle(widget.title, widget.month)));
   }
 
   /// Plays the same draw again, frame by frame, into an mp4 with its sound.
@@ -238,16 +243,18 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
   }
 
   Future<void> _close() async {
+    final s = S.of(context);
     if (phase == _Phase.running || phase == _Phase.preparing) {
-      if (!await confirm(context, title: 'Stop the draw?', text: 'Nothing is saved.', yes: 'Stop', danger: true)) return;
+      if (!await confirm(context, title: s.stopDrawTitle, text: s.nothingSaved, yes: s.stop, danger: true)) return;
     } else if (phase == _Phase.done && !saved) {
-      if (!await confirm(context, title: 'Close without saving?', text: 'The winner is not saved yet.', yes: 'Close', danger: true)) return;
+      if (!await confirm(context, title: s.closeUnsavedTitle, text: s.winnerNotSaved, yes: s.close, danger: true)) return;
     }
     if (mounted) Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = S.of(context);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -268,15 +275,15 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
             ),
             SafeArea(
               child: Align(
-                alignment: Alignment.topRight,
+                alignment: AlignmentDirectional.topEnd,
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: RoundIcon(Icons.close_rounded, dark: true, tooltip: 'Close', onTap: _close),
+                  padding: const EdgeInsets.all(Sp.sm),
+                  child: RoundIcon(Icons.close_rounded, dark: true, tooltip: s.close, onTap: _close),
                 ),
               ),
             ),
-            if (phase == _Phase.ready || phase == _Phase.preparing) _readyCard(),
-            if (phase == _Phase.done) _doneCard(),
+            if (phase == _Phase.ready || phase == _Phase.preparing) _readyCard(s),
+            if (phase == _Phase.done) _doneCard(s),
           ]),
         ),
       ),
@@ -289,53 +296,53 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
       child: SafeArea(
         top: false,
         child: Container(
-          margin: const EdgeInsets.all(12),
+          margin: const EdgeInsets.all(Sp.md),
           constraints: BoxConstraints(maxWidth: 480, maxHeight: MediaQuery.of(context).size.height * 0.62),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(28), boxShadow: const [
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(K.rLg), boxShadow: const [
             BoxShadow(color: Color(0x66000000), blurRadius: 40, offset: Offset(0, 16)),
           ]),
           child: Material(
             color: K.paper,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(K.rLg),
             clipBehavior: Clip.antiAlias,
-            child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 18), child: child),
+            child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(Sp.xl, Sp.xl, Sp.xl, 18), child: child),
           ),
         ),
       ),
     );
   }
 
-  Widget _readyCard() {
+  Widget _readyCard(S s) {
     return _sheet(Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text('Month ${widget.month} draw', style: T.h2),
-      const SizedBox(height: 4),
-      Text('${widget.entries.length} slips go in the bottle, one for every slot still waiting for the pot.', style: T.small),
-      const SizedBox(height: 12),
+      Text(s.drawTitle(widget.month), style: T.h2),
+      const SizedBox(height: Sp.xs),
+      Text(s.slipsGoIn(widget.entries.length), style: T.small),
+      const SizedBox(height: Sp.md),
       Wrap(spacing: 6, runSpacing: 6, children: [
         for (final e in widget.entries)
           Container(
-            padding: const EdgeInsets.fromLTRB(4, 4, 10, 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 10, 4),
             decoration: BoxDecoration(color: K.surface, borderRadius: BorderRadius.circular(999), border: Border.all(color: K.border)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               SlotBadge('${e.slot}', size: 24, style: SlotBadgeStyle.sun),
               const SizedBox(width: 6),
-              Text(e.name, style: T.label),
+              Flexible(child: Text(e.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.label)),
             ]),
           ),
       ]),
-      const SizedBox(height: 12),
-      Text('Hold another phone over this screen and start recording, then press Start. It counts down from 3.', style: T.small),
+      const SizedBox(height: Sp.md),
+      Text(s.recordHint, style: T.small),
       const SizedBox(height: 6),
       SwitchListTile.adaptive(
         contentPadding: EdgeInsets.zero,
         value: sound,
         activeTrackColor: K.green,
         onChanged: phase == _Phase.ready ? (v) => setState(() => sound = v) : null,
-        title: const Text('Music and sound effects', style: T.bodyStrong),
+        title: Text(s.musicSound, style: T.bodyStrong),
       ),
       const SizedBox(height: 6),
       KButton(
-        label: phase == _Phase.preparing ? 'Getting ready' : 'Start the draw',
+        label: phase == _Phase.preparing ? s.gettingReady : s.startDraw,
         icon: Icons.play_arrow_rounded,
         kind: KButtonKind.sun,
         expand: true,
@@ -345,43 +352,43 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
     ]));
   }
 
-  Widget _doneCard() {
+  Widget _doneCard(S s) {
     final win = scene.picked;
     return _sheet(Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Row(children: [
         SlotBadge('${win.slot}', size: 48, style: SlotBadgeStyle.sun),
-        const SizedBox(width: 12),
+        const SizedBox(width: Sp.md),
         Expanded(child: Text(win.name, style: T.h2)),
       ]),
       const SizedBox(height: 6),
-      Text('Takes the pot for month ${widget.month}, ${widget.label}.', style: T.body.copyWith(color: K.ink2)),
-      const SizedBox(height: 16),
+      Text(s.takesPotFor(widget.month, widget.label), style: T.body.copyWith(color: K.ink2)),
+      const SizedBox(height: Sp.lg),
       KButton(
-        label: saved ? 'Saved' : 'Save as month ${widget.month} winner',
+        label: saved ? s.saved : s.saveAsWinner(widget.month),
         icon: saved ? Icons.check_circle_rounded : Icons.check_rounded,
         expand: true,
         busy: saving,
         onPressed: saved ? null : _save,
       ),
-      const SizedBox(height: 10),
+      const SizedBox(height: Sp.md - 2),
       KButton(
-        label: videoProgress != null ? 'Making the video ${(videoProgress! * 100).round()}%' : (videoPath != null ? 'Share the video' : 'Save the video'),
+        label: videoProgress != null ? s.makingVideo((videoProgress! * 100).round()) : (videoPath != null ? s.shareVideo : s.saveVideo),
         icon: Icons.movie_outlined,
         kind: KButtonKind.secondary,
         expand: true,
         busy: videoProgress != null,
         onPressed: videoProgress != null ? null : _video,
       ),
-      const SizedBox(height: 10),
+      const SizedBox(height: Sp.md - 2),
       KButton(
-        label: 'Send the result on WhatsApp',
+        label: s.sendResultWa,
         icon: Icons.chat_outlined,
         kind: KButtonKind.secondary,
         expand: true,
         onPressed: () => launchUrl(whatsApp(widget.resultText(win.slot, order.length, when!)), mode: LaunchMode.externalApplication),
       ),
       const SizedBox(height: 6),
-      KButton(label: 'Close', kind: KButtonKind.ghost, onPressed: _close),
+      KButton(label: s.close, kind: KButtonKind.ghost, onPressed: _close),
     ]));
   }
 }

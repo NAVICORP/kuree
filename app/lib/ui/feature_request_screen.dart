@@ -3,45 +3,46 @@ import 'package:flutter/material.dart';
 
 import '../core/api.dart';
 import '../core/format.dart';
+import '../l10n/strings.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Every word on the feature request screens, in one place, so they can be
-/// translated together.
+/// Every word on the feature request screens, in the app's language (the
+/// words live in lib/l10n with the rest of the app's).
 class FeatureRequestText {
-  static const title = 'Request a feature';
-  static const introTitle = 'Tell us what would help';
-  static const introText = 'An idea, something that gets in the way, a feature you miss. We read every request.';
-  static const fieldTitle = 'Your idea in a few words';
-  static const fieldTitleHint = 'For example: a reminder the day before';
-  static const fieldDetails = 'Tell us more (optional)';
-  static const fieldDetailsHint = 'How would you use it? What happens today?';
-  static const importance = 'How much would it help?';
-  static const nice = 'Nice to have';
-  static const important = 'Important';
-  static const must = 'Must have';
-  static const send = 'Send request';
-  static const needTitle = 'Give your idea a short title.';
-  static const thanksTitle = 'Thank you!';
-  static const thanksText = 'Your request reached the Kuree team. You can follow it below.';
-  static const sendAnother = 'Send another';
-  static const yours = 'Your requests';
-  static const noneYet = 'Your requests will show here, with what the team decides.';
-  static const reply = 'From the Kuree team';
-  static const inboxTitle = 'Feature requests';
-  static const inboxEmpty = 'No requests here yet.';
-  static const all = 'All';
-  static const statusNew = 'New';
-  static const statusPlanned = 'Planned';
-  static const statusDone = 'Done';
-  static const statusDeclined = 'Declined';
-  static const change = 'Update the request';
-  static const noteLabel = 'Note for the person who asked (optional)';
-  static const noteHint = 'For example: coming in the next update';
-  static const save = 'Save';
-  static const saved = 'Saved.';
-  static const from = 'From';
-  static const signedOut = 'Account deleted';
+  static String get title => S.current.frTitle;
+  static String get introTitle => S.current.frIntroTitle;
+  static String get introText => S.current.frIntroText;
+  static String get fieldTitle => S.current.frFieldTitle;
+  static String get fieldTitleHint => S.current.frFieldTitleHint;
+  static String get fieldDetails => S.current.frFieldDetails;
+  static String get fieldDetailsHint => S.current.frFieldDetailsHint;
+  static String get importance => S.current.frImportance;
+  static String get nice => S.current.frNice;
+  static String get important => S.current.frImportant;
+  static String get must => S.current.frMust;
+  static String get send => S.current.frSend;
+  static String get needTitle => S.current.frNeedTitle;
+  static String get thanksTitle => S.current.frThanksTitle;
+  static String get thanksText => S.current.frThanksText;
+  static String get sendAnother => S.current.frSendAnother;
+  static String get yours => S.current.frYours;
+  static String get noneYet => S.current.frNoneYet;
+  static String get reply => S.current.frReply;
+  static String get inboxTitle => S.current.frInboxTitle;
+  static String get inboxEmpty => S.current.frInboxEmpty;
+  static String get all => S.current.frAll;
+  static String get statusNew => S.current.frStatusNew;
+  static String get statusPlanned => S.current.frStatusPlanned;
+  static String get statusDone => S.current.frStatusDone;
+  static String get statusDeclined => S.current.frStatusDeclined;
+  static String get change => S.current.frChange;
+  static String get noteLabel => S.current.frNoteLabel;
+  static String get noteHint => S.current.frNoteHint;
+  static String get save => S.current.save;
+  static String get saved => S.current.frSaved;
+  static String get from => S.current.frFrom;
+  static String get signedOut => S.current.frSignedOut;
 }
 
 String _statusLabel(String s) => switch (s) {
@@ -220,8 +221,9 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    S.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text(FeatureRequestText.title)),
+      appBar: AppBar(title: Text(FeatureRequestText.title)),
       body: SafeArea(
         top: false,
         child: ListView(
@@ -252,11 +254,11 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
               duration: const Duration(milliseconds: 260),
               child: _sent ? _thanks() : _form(),
             ),
-            const SectionTitle(FeatureRequestText.yours),
+            SectionTitle(FeatureRequestText.yours),
             if (_mine == null)
               const Padding(padding: EdgeInsets.all(24), child: Loading())
             else if (_mine!.isEmpty)
-              const KCard(child: EmptyState(icon: Icons.inbox_outlined, text: FeatureRequestText.noneYet))
+              KCard(child: EmptyState(icon: Icons.inbox_outlined, text: FeatureRequestText.noneYet))
             else
               for (final r in _mine!) Padding(padding: const EdgeInsets.only(bottom: 10), child: _RequestCard(r)),
           ],
@@ -275,7 +277,7 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
           maxLength: 100,
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(labelText: FeatureRequestText.fieldTitle, hintText: FeatureRequestText.fieldTitleHint),
+          decoration: InputDecoration(labelText: FeatureRequestText.fieldTitle, hintText: FeatureRequestText.fieldTitleHint),
           onChanged: (_) {
             if (_error != null) setState(() => _error = null);
           },
@@ -287,7 +289,7 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
           minLines: 4,
           maxLines: 8,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: FeatureRequestText.fieldDetails,
             hintText: FeatureRequestText.fieldDetailsHint,
             alignLabelWithHint: true,
@@ -297,7 +299,7 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
         Text(FeatureRequestText.importance, style: T.label),
         const SizedBox(height: 10),
         Wrap(spacing: 8, runSpacing: 8, children: [
-          for (final (v, label) in const [
+          for (final (v, label) in [
             ('nice', FeatureRequestText.nice),
             ('important', FeatureRequestText.important),
             ('must', FeatureRequestText.must),
@@ -495,6 +497,7 @@ class _FeatureInboxScreenState extends State<FeatureInboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    S.of(context);
     final filters = <(String?, String)>[
       (null, FeatureRequestText.all),
       ('new', FeatureRequestText.statusNew),
@@ -518,7 +521,7 @@ class _FeatureInboxScreenState extends State<FeatureInboxScreen> {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 40),
           children: [
             if (_items!.isEmpty)
-              const Padding(padding: EdgeInsets.only(top: 40), child: EmptyState(icon: Icons.inbox_outlined, text: FeatureRequestText.inboxEmpty))
+              Padding(padding: const EdgeInsets.only(top: 40), child: EmptyState(icon: Icons.inbox_outlined, text: FeatureRequestText.inboxEmpty))
             else
               for (final r in _items!) Padding(padding: const EdgeInsets.only(bottom: 10), child: _InboxCard(r, onTap: () => _open(r))),
           ],
@@ -526,7 +529,7 @@ class _FeatureInboxScreenState extends State<FeatureInboxScreen> {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const Text(FeatureRequestText.inboxTitle)),
+      appBar: AppBar(title: Text(FeatureRequestText.inboxTitle)),
       body: SafeArea(
         top: false,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -659,7 +662,7 @@ class _StatusSheetState extends State<_StatusSheet> {
         minLines: 2,
         maxLines: 5,
         textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: FeatureRequestText.noteLabel,
           hintText: FeatureRequestText.noteHint,
           alignLabelWithHint: true,

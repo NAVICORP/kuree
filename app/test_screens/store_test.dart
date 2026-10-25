@@ -182,7 +182,7 @@ void main() {
     sized(tester);
     await tester.pumpWidget(phone(KuriEditorScreen(record: riverside())));
     await settle(tester);
-    await tester.drag(find.byType(ListView).first, const Offset(0, -1250));
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1320)); // past the money card, which now starts with the currency
     await store(tester, 'slots-a');
     await tester.drag(find.byType(ListView).first, const Offset(0, -500));
     await store(tester, 'slots-b');

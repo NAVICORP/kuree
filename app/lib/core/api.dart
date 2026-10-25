@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/strings.dart';
 import 'config.dart';
 
 /// Something the server or the network said no to, in words a person can act on.
@@ -151,7 +152,7 @@ class Api {
     } on ApiError catch (e) {
       if (e.status == 400 || e.status == 401 || e.status == 403 || e.status == 404) {
         await _setSession(null);
-        throw ApiError('Your sign-in has ended. Sign in again.', status: 401);
+        throw ApiError(S.current.errSessionEnded, status: 401);
       }
       // No signal: carry on with the old token and let the server decide.
     }
@@ -163,7 +164,7 @@ class Api {
         final j = await _send('POST', '/auth/v1/token', query: {'grant_type': 'refresh_token'},
             body: {'refresh_token': _session!.refreshToken}, withUser: false, retry: false);
         final next = Session.fromJson(j);
-        if (next == null) throw ApiError('Sign in again.', status: 401);
+        if (next == null) throw ApiError(S.current.errSignInAgain, status: 401);
         await _setSession(next);
       } finally {
         _refreshing = null;
@@ -173,7 +174,7 @@ class Api {
 
   Future<dynamic> _send(String method, String path,
       {Object? body, Map<String, String>? query, bool withUser = true, bool retry = true}) async {
-    if (offline) throw ApiError('Offline.');
+    if (offline) throw ApiError(S.current.errOffline);
     if (withUser) await _fresh();
     final uri = Uri.parse('$kApiBase$path').replace(queryParameters: query);
     http.Response r;
@@ -183,9 +184,9 @@ class Api {
       final streamed = await _http.send(req).timeout(const Duration(seconds: 30));
       r = await http.Response.fromStream(streamed).timeout(const Duration(seconds: 30));
     } on TimeoutException {
-      throw ApiError('The server took too long to answer. Check your connection and try again.');
+      throw ApiError(S.current.errTimeout);
     } catch (_) {
-      throw ApiError('No connection. Check your internet and try again.');
+      throw ApiError(S.current.errNoConnection);
     }
     final text = utf8.decode(r.bodyBytes, allowMalformed: true);
     dynamic j;
@@ -203,7 +204,7 @@ class Api {
         await _refresh();
       } on ApiError {
         await _setSession(null);
-        throw ApiError('Your sign-in has ended. Sign in again.', status: 401);
+        throw ApiError(S.current.errSessionEnded, status: 401);
       }
       return _send(method, path, body: body, query: query, withUser: withUser, retry: false);
     }
@@ -217,24 +218,25 @@ class Api {
       raw = (j['message'] ?? j['msg'] ?? j['error_description'] ?? j['error'] ?? '').toString();
       code = (j['code'] ?? j['error_code'])?.toString();
     }
-    if (raw.isEmpty) raw = status >= 500 ? 'The Kuree server had a problem. Try again in a minute.' : 'Something went wrong ($status).';
+    if (raw.isEmpty) raw = status >= 500 ? S.current.errServer : S.current.errStatus(status);
     return ApiError(nice(raw), status: status, code: code);
   }
 
   /// Server wording, turned into what to do next.
   static String nice(String m) {
     final s = m.toLowerCase();
-    if (s.contains('not on whatsapp')) return 'This number is not on WhatsApp.';
-    if (s.contains('could not send')) return 'We could not send the code. Try again in a minute.';
-    if (s.contains('rate limit') || s.contains('too many')) return 'Too many tries. Wait a minute and try again.';
+    final t = S.current;
+    if (s.contains('not on whatsapp')) return t.errNotOnWhatsApp;
+    if (s.contains('could not send')) return t.errCouldNotSend;
+    if (s.contains('rate limit') || s.contains('too many')) return t.errTooMany;
     if ((s.contains('invalid') || s.contains('expired') || s.contains('not right')) &&
         (s.contains('token') || s.contains('otp') || s.contains('code'))) {
-      return 'That code is wrong or has expired. Ask for a new one.';
+      return t.errWrongCode;
     }
-    if (s.contains('invalid login credentials')) return 'That email and password do not match.';
-    if (s.contains('phone') && s.contains('invalid')) return 'Enter your WhatsApp number with the country code.';
-    if (s.contains('email address is invalid')) return 'That email does not look right.';
-    if (s.contains('jwt') || s.contains('not signed in')) return 'Your sign-in has ended. Sign in again.';
+    if (s.contains('invalid login credentials')) return t.errPasswordMismatch;
+    if (s.contains('phone') && s.contains('invalid')) return t.errPhoneCountry;
+    if (s.contains('email address is invalid')) return t.errEmailLooksWrong;
+    if (s.contains('jwt') || s.contains('not signed in')) return t.errSessionEnded;
     return m;
   }
 
@@ -270,7 +272,7 @@ class Api {
 
   Future<void> _take(dynamic j) async {
     final s = Session.fromJson(j);
-    if (s == null) throw ApiError('The sign-in did not finish. Try again.');
+    if (s == null) throw ApiError(S.current.errSignInNotFinished);
     await _setSession(s);
   }
 
@@ -310,12 +312,12 @@ class Api {
   Future<List<int>> download(String url) async {
     try {
       final r = await _http.get(Uri.parse(url)).timeout(const Duration(seconds: 60));
-      if (r.statusCode != 200) throw ApiError('The file could not be made just now. Try again in a minute.', status: r.statusCode);
+      if (r.statusCode != 200) throw ApiError(S.current.errFile, status: r.statusCode);
       return r.bodyBytes;
     } on ApiError {
       rethrow;
     } catch (_) {
-      throw ApiError('No connection. Check your internet and try again.');
+      throw ApiError(S.current.errNoConnection);
     }
   }
 }

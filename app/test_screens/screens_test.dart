@@ -6,11 +6,13 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kuree/core/api.dart';
 import 'package:kuree/core/kuri.dart';
 import 'package:kuree/draw/bottle_draw_screen.dart';
 import 'package:kuree/draw/scene.dart';
+import 'package:kuree/l10n/strings.dart';
 import 'package:kuree/ui/account.dart';
 import 'package:kuree/ui/home.dart';
 import 'package:kuree/ui/kuri_editor.dart';
@@ -29,6 +31,9 @@ Future<void> loadFonts() async {
 
   await family('Manrope', [for (final w in [500, 600, 700, 800]) 'assets/fonts/Manrope-$w.ttf']);
   await family('Bricolage', [for (final w in [600, 700, 800]) 'assets/fonts/BricolageGrotesque-$w.ttf']);
+  for (final s in ['Arabic', 'Malayalam', 'Tamil', 'Kannada', 'Devanagari']) {
+    await family('NotoSans$s', ['assets/fonts/NotoSans$s-500.ttf', 'assets/fonts/NotoSans$s-700.ttf']);
+  }
   // Material icons, from the Flutter SDK running the test.
   final roots = <String>[
     if (Platform.environment['FLUTTER_ROOT'] != null) Platform.environment['FLUTTER_ROOT']!,
@@ -73,7 +78,7 @@ KuriRecord boystown() {
     'updated_at': now.subtract(const Duration(minutes: 7)).toUtc().toIso8601String(),
     'updated_by': 'Anees Muhammed',
     'data': {
-      'name': '5K Kuri', 'group': 'Boystown', 'share': 5000, 'slots': 13, 'startYear': start.year, 'startMonth': start.month,
+      'name': '5K Chit', 'group': 'Riverside', 'share': 5000, 'slots': 13, 'startYear': start.year, 'startMonth': start.month,
       'collectDay': 20, 'lastDay': 25, 'fine': 200, 'people': people, 'payers': payers,
       'months': [
         {'n': 1, 'winner': 4, 'paid': all},
@@ -99,7 +104,16 @@ KuriRecord small() => KuriRecord.fromJson({
       },
     });
 
-Widget phone(Widget child) => MaterialApp(debugShowCheckedModeBanner: false, theme: kureeTheme(), home: child);
+Widget phone(Widget child, [String? code]) => MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: kureeTheme(),
+      locale: code == null ? null : Locale(code),
+      supportedLocales: code == null ? const [Locale('en', 'US')] : [for (final c in S.codes) Locale(c)],
+      localizationsDelegates: code == null
+          ? null
+          : const [S.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+      home: child,
+    );
 
 Future<void> settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 300));
@@ -124,6 +138,7 @@ void main() {
     await loadFonts();
     Api.instance.offline = true;
   });
+  tearDown(() => S.current = S.forCode('en'));
 
   void sized(WidgetTester tester) {
     tester.view.physicalSize = const Size(1170, 2532);
@@ -193,17 +208,17 @@ void main() {
     await shot(tester, '09c-choose');
   });
 
-  testWidgets('new kuri', (tester) async {
+  testWidgets('new chit', (tester) async {
     sized(tester);
     await tester.pumpWidget(phone(const KuriEditorScreen()));
-    await shot(tester, '10-new-kuri');
+    await shot(tester, '10-new-chit');
   });
 
-  testWidgets('edit kuri', (tester) async {
+  testWidgets('edit chit', (tester) async {
     sized(tester);
     await tester.pumpWidget(phone(KuriEditorScreen(record: boystown())));
     await settle(tester);
-    await tester.drag(find.byType(ListView).first, const Offset(0, -1100));
+    await tester.drag(find.byType(ListView).first, const Offset(0, -1170));
     await shot(tester, '11-edit-slots');
     await tester.drag(find.byType(ListView).first, const Offset(0, -1300));
     await shot(tester, '12-edit-numbers');
@@ -230,6 +245,60 @@ void main() {
     )));
     await shot(tester, '14-draw-ready');
   });
+
+  // The main screens in Malayalam and Arabic, for checking the words fit.
+  for (final code in ['ml', 'ar']) {
+    final s = S.forCode(code);
+    KuriRecord chit() {
+      final r = boystown();
+      if (code == 'ar') r.doc.currency = 'AED';
+      return r;
+    }
+
+    testWidgets('$code: sign in', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(const SignInScreen(), code));
+      await shot(tester, '$code-01-sign-in');
+    });
+
+    testWidgets('$code: home', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(HomeScreen(preview: ([chit(), small()], {'display': 'Ishaque', 'name': 'Ishaque'})), code));
+      await shot(tester, '$code-03-home');
+    });
+
+    testWidgets('$code: a month', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(KuriScreen(record: chit()), code));
+      await shot(tester, '$code-04-month');
+      await tester.drag(find.byType(ListView).first, const Offset(0, -700));
+      await shot(tester, '$code-05-month-members');
+      await tester.drag(find.byType(ListView).first, const Offset(0, 3000));
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.text(s.reminders));
+      await shot(tester, '$code-07-reminders');
+    });
+
+    testWidgets('$code: menu', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(KuriScreen(record: chit()), code));
+      await settle(tester);
+      await tester.tap(find.byTooltip(s.more));
+      await shot(tester, '$code-08-menu');
+    });
+
+    testWidgets('$code: new chit', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(const KuriEditorScreen(), code));
+      await shot(tester, '$code-10-new-chit');
+    });
+
+    testWidgets('$code: account', (tester) async {
+      sized(tester);
+      await tester.pumpWidget(phone(const AccountScreen(me: {'name': 'Ishaque', 'display': 'Ishaque', 'phone': '919072150276'}), code));
+      await shot(tester, '$code-13-account');
+    });
+  }
 
   test('bottle draw frames', () async {
     final k = boystown().doc;

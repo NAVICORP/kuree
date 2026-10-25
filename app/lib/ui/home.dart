@@ -3,17 +3,18 @@ import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
+import '../l10n/strings.dart';
 import 'account.dart';
 import 'kuri_editor.dart';
 import 'kuri_screen.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Every kuri this person runs.
+/// Every chit this person runs.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.preview});
 
-  /// Kuris and the signed-in person to show without asking the server (screenshots).
+  /// Chits and the signed-in person to show without asking the server (screenshots).
   final (List<KuriRecord>, Map<String, dynamic>)? preview;
 
   @override
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _askName() async {
     if (_asked) return;
     _asked = true;
-    final name = await askName(context, title: 'What should we call you?', initial: '');
+    final name = await askName(context, title: S.of(context).askNameTitle, initial: '');
     if (name == null || name.isEmpty) return;
     try {
       final r = await Api.instance.rpc('set_my_name', {'name': name});
@@ -84,11 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _importBoystown() async {
+    final s = S.of(context);
     setState(() => importing = true);
     try {
       final r = await Api.instance.function('import-boystown');
       if (!mounted) return;
-      toast(context, 'The Boystown 5K Kuri is in.');
+      toast(context, s.importDone);
       await _load();
       if (r is Map && r['kuri'] is Map) {
         final rec = KuriRecord.fromJson(Map<String, dynamic>.from(r['kuri'] as Map));
@@ -103,10 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = S.of(context);
     final name = (me?['display'] as String?) ?? '';
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 20,
+        titleSpacing: Sp.xl,
         title: Row(children: [
           ClipRRect(borderRadius: BorderRadius.circular(9), child: Image.asset('assets/brand/icon.png', width: 32, height: 32)),
           const SizedBox(width: 10),
@@ -114,18 +117,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ]),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 14),
-            child: GestureDetector(
-              onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(me: me ?? const {})));
-                _load();
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
-                child: Text(initials(name.isEmpty ? 'K' : name), style: T.label.copyWith(color: K.heroText, fontWeight: FontWeight.w800)),
+            padding: const EdgeInsetsDirectional.only(end: 10),
+            child: Tooltip(
+              message: s.account,
+              child: Semantics(
+                button: true,
+                label: s.account,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(me: me ?? const {})));
+                    _load();
+                  },
+                  child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
+                        child: Text(initials(name.isEmpty ? 'K' : name), style: T.label.copyWith(color: K.heroText, fontWeight: FontWeight.w800)),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -141,13 +158,13 @@ class _HomeScreenState extends State<HomeScreen> {
               highlightElevation: 4,
               shape: const StadiumBorder(),
               icon: const Icon(Icons.add_rounded),
-              label: Text('New chit', style: T.button.copyWith(color: Colors.white)),
+              label: Text(s.newChit, style: T.button.copyWith(color: Colors.white)),
             ),
-      body: _body(),
+      body: _body(s),
     );
   }
 
-  Widget _body() {
+  Widget _body(S s) {
     if (kuris == null && error != null) return LoadFailed(message: error!, onRetry: _load);
     if (kuris == null) return const Loading();
     final canImport = me?['can_import_boystown'] == true;
@@ -155,32 +172,42 @@ class _HomeScreenState extends State<HomeScreen> {
       color: K.green,
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 112),
         children: [
           if (canImport) ...[
             KCard(
               color: K.sunSoft,
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
               child: Row(children: [
                 const Icon(Icons.download_rounded, color: K.deep),
-                const SizedBox(width: 12),
-                const Expanded(child: Text('Bring in the Boystown 5K Kuri', style: T.bodyStrong)),
-                KButton(label: 'Bring in', small: true, busy: importing, onPressed: _importBoystown),
+                const SizedBox(width: Sp.md),
+                Expanded(child: Text(s.importTitle, style: T.bodyStrong)),
+                const SizedBox(width: Sp.sm),
+                KButton(label: s.importButton, small: true, busy: importing, onPressed: _importBoystown),
               ]),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: Sp.lg),
           ],
           if (kuris!.isEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 60),
+              padding: const EdgeInsets.only(top: 72),
               child: EmptyState(
                 icon: Icons.savings_outlined,
-                text: 'No chits yet.',
-                action: KButton(label: 'Start a chit', icon: Icons.add_rounded, onPressed: _create),
+                text: s.noChits,
+                action: KButton(label: s.startChit, icon: Icons.add_rounded, onPressed: _create),
               ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 4, 14),
+              child: Row(children: [
+                Expanded(child: Text(s.yourChits, style: T.h1)),
+                Pill('${kuris!.length}', color: K.surface2, fg: K.ink2),
+              ]),
             ),
           for (final k in kuris!) ...[
             KuriCard(record: k, onTap: () => _open(k)),
-            const SizedBox(height: 14),
+            const SizedBox(height: Sp.md + 2),
           ],
         ],
       ),
@@ -188,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// One kuri on the home screen: this month at a glance.
+/// One chit on the home screen: this month at a glance.
 class KuriCard extends StatelessWidget {
   const KuriCard({super.key, required this.record, required this.onTap});
   final KuriRecord record;
@@ -196,6 +223,7 @@ class KuriCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = S.of(context);
     final k = record.doc;
     final n = k.currentMonth();
     final m = k.months.isEmpty ? Month(n: 1) : k.months[n - 1];
@@ -204,42 +232,46 @@ class KuriCard extends StatelessWidget {
     final winner = m.winner;
     return KCard(
       onTap: onTap,
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 18, 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              if (k.group.trim().isNotEmpty) Text(k.group, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
+              if (k.group.trim().isNotEmpty)
+                Text(k.group, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
               Text(k.name, style: T.h2),
             ]),
           ),
-          if (!record.isOwner) const Pill('Admin', color: K.surface2, fg: K.ink2),
+          if (!record.isOwner) ...[const SizedBox(width: Sp.sm), Pill(s.roleAdmin, color: K.surface2, fg: K.ink2)],
         ]),
-        const SizedBox(height: 4),
-        Text('Month $n of ${k.months.length}, ${k.monthLabel(n)}', style: T.small),
-        const SizedBox(height: 14),
+        const SizedBox(height: Sp.xs),
+        Text(s.monthOfTotal(n, k.months.length, k.monthLabel(n)), style: T.small),
+        const SizedBox(height: Sp.md + 2),
         Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(money(got), style: T.h2.copyWith(fontSize: 24).merge(T.tabular)),
-          const SizedBox(width: 6),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 3),
-            child: Text('of ${money(k.pot)}', style: T.small),
+          Expanded(
+            child: Wrap(crossAxisAlignment: WrapCrossAlignment.end, spacing: 6, children: [
+              Text(k.money(got), style: T.h2.copyWith(fontSize: 24).merge(T.tabular)),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Text(s.ofAmount(k.money(k.pot)), style: T.small),
+              ),
+            ]),
           ),
-          const Spacer(),
+          const SizedBox(width: Sp.sm),
           Padding(
             padding: const EdgeInsets.only(bottom: 3),
-            child: Text('$paid of ${k.payers.length} paid', style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
+            child: Text(s.paidOfTotal(paid, k.payers.length), style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
           ),
         ]),
-        const SizedBox(height: 8),
+        const SizedBox(height: Sp.sm),
         ProgressLine(k.pot == 0 ? 0 : got / k.pot, color: K.leaf, track: K.surface2),
-        const SizedBox(height: 12),
+        const SizedBox(height: Sp.md),
         Row(children: [
           Icon(winner == null ? Icons.schedule_rounded : Icons.emoji_events_rounded, size: 17, color: winner == null ? K.muted : K.green),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-              winner == null ? 'Collection ${k.collectDate(n).day} ${k.monthShort(n)}, ${k.nextNote(n)}' : 'Takes the pot: ${k.slotName(winner)}',
+              winner == null ? s.collectionNote(k.collectDate(n).day, k.monthShort(n), k.nextNote(n)) : s.takesPotName(k.slotName(winner)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: T.small.copyWith(color: winner == null ? K.muted : K.green, fontWeight: FontWeight.w700),
@@ -253,6 +285,7 @@ class KuriCard extends StatelessWidget {
 
 /// Asks for a name in a small sheet.
 Future<String?> askName(BuildContext context, {required String title, String initial = ''}) {
+  final s = S.of(context);
   final c = TextEditingController(text: initial);
   return showKSheet<String>(
     context,
@@ -264,11 +297,11 @@ Future<String?> askName(BuildContext context, {required String title, String ini
         textCapitalization: TextCapitalization.words,
         maxLength: 60,
         style: T.bodyStrong,
-        decoration: const InputDecoration(hintText: 'Your name', counterText: ''),
+        decoration: InputDecoration(hintText: s.yourName, counterText: ''),
         onSubmitted: (v) => Navigator.of(ctx).pop(v.trim()),
       ),
-      const SizedBox(height: 14),
-      KButton(label: 'Save', icon: Icons.check_rounded, expand: true, onPressed: () => Navigator.of(ctx).pop(c.text.trim())),
+      const SizedBox(height: Sp.lg),
+      KButton(label: s.save, icon: Icons.check_rounded, expand: true, onPressed: () => Navigator.of(ctx).pop(c.text.trim())),
     ]),
   );
 }

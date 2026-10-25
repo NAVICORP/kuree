@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../l10n/strings.dart';
 import 'config.dart';
 import 'format.dart';
 import 'kuri.dart';
@@ -20,22 +21,33 @@ List<T> shuffled<T>(List<T> list) {
   return x;
 }
 
+// The messages below are written in the app's language.
+
 /// The message to one person who has not paid yet.
 String reminderFor(KuriDoc k, Month m, Due d) {
-  final fine = k.fine > 0 ? ' After that there is a late fine of ${money(k.fine)}.' : '';
-  final from = k.group.trim().isEmpty ? '' : ' from ${k.group.trim()}';
-  return 'Hi ${firstName(d.person.name)}, a reminder$from: your ${k.name} payment of ${money(d.amount)} '
-      'for month ${m.n} (${k.monthLabel(m.n)}) is due by midnight on the ${ordinal(k.deadline(m.n).day)}.$fine Thank you.';
+  final s = S.current;
+  final group = k.group.trim();
+  final name = firstName(d.person.name);
+  final amount = k.money(d.amount);
+  final label = k.monthLabel(m.n);
+  final day = dayOf(k.deadline(m.n).day);
+  final head = group.isEmpty
+      ? s.msgReminder(name, k.name, amount, m.n, label, day)
+      : s.msgReminderFrom(name, group, k.name, amount, m.n, label, day);
+  final fine = k.fine > 0 ? s.msgFineAfter(k.money(k.fine)) : '';
+  return '$head$fine${s.msgThanks}';
 }
 
 /// Who has paid and who has not, for the group chat, with the members' link.
+/// The two headings are in bold on WhatsApp (*like this*), so the lists
+/// stand apart.
 String groupList(KuriDoc k, Month m, String shareToken) {
-  final mon = kMonths[k.collectDate(m.n).month - 1];
+  final s = S.current;
+  final mon = monthName(k.collectDate(m.n).month);
   final paid = k.paidNames(m);
   final due = k.dues(m).map((d) => d.person.name).toList();
-  // In bold on WhatsApp (*like this*), so the two lists stand apart.
-  final paidHead = '*$mon : Paid*';
-  final dueHead = '*$mon : Not paid yet*';
+  final paidHead = '*${s.msgPaidHead(mon)}*';
+  final dueHead = '*${s.msgDueHead(mon)}*';
   final b = StringBuffer();
   if (paid.isNotEmpty) {
     b.writeln(paidHead);
@@ -52,10 +64,7 @@ String groupList(KuriDoc k, Month m, String shareToken) {
 
 /// The result of a bottle draw, for the group chat.
 String drawResult(KuriDoc k, int month, int slot, int names, DateTime when) {
-  return '${k.fullName}, month $month (${k.monthLabel(month)})\n'
-      'The bottle picked: $slot. ${k.slotName(slot)}\n'
-      'Takes the pot of ${money(k.pot)}.\n'
-      '$names names were in the bottle. Drawn ${stamp(when)}.';
+  return S.current.msgDrawResult(k.fullName, month, k.monthLabel(month), slot, k.slotName(slot), k.money(k.pot), names, stamp(when));
 }
 
 /// A WhatsApp link: to one person when there is a number, or to any chat

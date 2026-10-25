@@ -51,6 +51,28 @@ void main() {
       expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 25].map(ordinal).toList(),
           ['1st', '2nd', '3rd', '4th', '11th', '12th', '13th', '21st', '22nd', '25th']);
     });
+    test('every currency, formatted its own way', () {
+      expect(money(65000, 'INR'), '₹65,000');
+      expect(money(150000, 'INR'), '₹1,50,000');
+      expect(money(150000, 'AED'), 'AED 150,000');
+      expect(money(1500, 'SAR'), 'SAR 1,500');
+      expect(money(1500, 'QAR'), 'QAR 1,500');
+      expect(money(250, 'KWD'), 'KWD 250');
+      expect(money(1500, 'OMR'), 'OMR 1,500');
+      expect(money(1500, 'BHD'), 'BHD 1,500');
+      expect(money(1250000, 'USD'), r'$1,250,000');
+      expect(money(1500, 'GBP'), '£1,500');
+      expect(money(1500, 'EUR'), '€1,500');
+      expect(money(1500, 'SGD'), r'S$1,500');
+      expect(money(1500, 'MYR'), 'RM 1,500');
+      expect(money(150000, 'LKR'), 'Rs 150,000');
+      expect(money(150000, 'xyz'), '₹1,50,000');
+      expect(currencyOf(null).code, 'INR');
+      expect(currencyOf(' aed ').code, 'AED');
+      expect(kCurrencies.map((c) => c.code).toList(),
+          ['INR', 'AED', 'SAR', 'QAR', 'KWD', 'OMR', 'BHD', 'USD', 'GBP', 'EUR', 'SGD', 'MYR', 'LKR']);
+      expect(currencyOf('AED').name, 'UAE dirham');
+    });
     test('phone numbers', () {
       expect(phoneDigits('90721 50276'), '919072150276');
       expect(phoneDigits('+971 50 123 4567'), '971501234567');
@@ -145,6 +167,33 @@ void main() {
       for (final c in counts) {
         expect(c, inInclusiveRange(9300, 10700));
       }
+    });
+  });
+
+  group('currency on a chit', () {
+    test('a chit saved before currencies loads as Indian rupees', () {
+      final j = boystown().toJson()..remove('currency');
+      final k = KuriDoc.fromJson(j);
+      expect(k.currency, 'INR');
+      expect(k.money(k.pot), '₹65,000');
+      expect(k.toJson()['currency'], 'INR');
+    });
+    test('an unknown code also loads as Indian rupees', () {
+      final k = KuriDoc.fromJson(boystown().toJson()..['currency'] = 'ZZZ');
+      expect(k.currency, 'INR');
+    });
+    test('a chit in dirhams shows dirhams everywhere', () {
+      final k = KuriDoc.fromJson(boystown().toJson()..['currency'] = 'AED');
+      expect(k.currency, 'AED');
+      expect(KuriDoc.fromJson(k.toJson()).currency, 'AED');
+      expect(k.money(k.pot), 'AED 65,000');
+      expect(k.partLabel(k.payers.firstWhere((p) => p.id == 'p10a')), '½ share');
+      final m = k.months[4];
+      final naif = k.dues(m).firstWhere((d) => d.person.name == 'Naif');
+      final text = reminderFor(k, m, naif);
+      expect(text, contains('AED 5,000'));
+      expect(text, contains('late fine of AED 200'));
+      expect(drawResult(k, 5, 9, 9, DateTime(2026, 10, 20, 19, 31)), contains('Takes the pot of AED 65,000.'));
     });
   });
 }

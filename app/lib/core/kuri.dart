@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../l10n/strings.dart';
 import 'format.dart';
 
 /// Someone in the kuri. One person can hold several slots, and a slot can be
@@ -129,6 +130,7 @@ class KuriDoc {
     this.collectDay = 20,
     this.lastDay = 25,
     this.fine = 200,
+    this.currency = 'INR',
     List<Person>? people,
     List<Payer>? payers,
     List<Month>? months,
@@ -153,17 +155,20 @@ class KuriDoc {
   int lastDay;
   int fine;
 
+  /// The chit's currency code: "INR" unless chosen otherwise.
+  String currency;
+
   final List<Person> people;
   final List<Payer> payers;
   final List<Month> months;
   String updated;
   final Map<String, dynamic> extra;
 
-  // 'groupLang' was a setting for the group message's language; the message
-  // is English now, so an old value is read and dropped.
+  // 'groupLang' was a setting for the group message's language; messages now
+  // follow the app's language, so an old value is read and dropped.
   static const _known = {
     'v', 'name', 'group', 'share', 'slots', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
-    'groupLang', 'people', 'payers', 'months', 'updated',
+    'currency', 'groupLang', 'people', 'payers', 'months', 'updated',
   };
 
   factory KuriDoc.fromJson(Map<String, dynamic> j) {
@@ -171,7 +176,7 @@ class KuriDoc {
     List<Map<String, dynamic>> list(String k) =>
         (j[k] is List ? j[k] as List : const []).whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList();
     final doc = KuriDoc(
-      name: '${j['name'] ?? 'Kuri'}',
+      name: '${j['name'] ?? 'Chit'}',
       group: '${j['group'] ?? ''}',
       share: _int(j['share'], 0),
       slots: _int(j['slots'], 0),
@@ -180,6 +185,7 @@ class KuriDoc {
       collectDay: _int(j['collectDay'], 20).clamp(1, 31),
       lastDay: _int(j['lastDay'], 25).clamp(1, 31),
       fine: _int(j['fine'], 0),
+      currency: currencyOf(j['currency'] as String?).code,
       people: list('people').map(Person.fromJson).toList(),
       payers: list('payers').map(Payer.fromJson).toList(),
       months: list('months').map(Month.fromJson).toList(),
@@ -204,6 +210,7 @@ class KuriDoc {
         'collectDay': collectDay,
         'lastDay': lastDay,
         'fine': fine,
+        'currency': currency,
         'people': people.map((p) => p.toJson()).toList(),
         'payers': payers.map((p) => p.toJson()).toList(),
         'months': months.map((m) => m.toJson()).toList(),
@@ -226,6 +233,9 @@ class KuriDoc {
   // ---------------------------------------------------------------- money
 
   int get pot => share * slots;
+
+  /// An amount in this chit's currency: ₹65,000 or AED 65,000.
+  String money(num value) => currencyOf(currency).format(value);
 
   int paidSum(Month m) => payers.where((p) => m.isPaid(p.id)).fold(0, (t, p) => t + p.amt);
 
@@ -259,10 +269,10 @@ class KuriDoc {
 
   String monthLabel(int n) {
     final d = collectDate(n);
-    return '${kMonths[d.month - 1]} ${d.year}';
+    return '${monthName(d.month)} ${d.year}';
   }
 
-  String monthShort(int n) => kMonthsShort[collectDate(n).month - 1];
+  String monthShort(int n) => monthShortName(collectDate(n).month);
 
   /// The month whose collection falls in this calendar month, kept inside the kuri.
   int currentMonth([DateTime? now]) {
@@ -289,15 +299,16 @@ class KuriDoc {
   String nextNote(int n, [DateTime? now]) {
     final t = now ?? DateTime.now();
     int daysTo(DateTime d) => DateTime.utc(d.year, d.month, d.day).difference(DateTime.utc(t.year, t.month, t.day)).inDays;
+    final s = S.current;
     final dc = daysTo(collectDate(n));
-    if (dc > 1) return 'in $dc days';
-    if (dc == 1) return 'tomorrow';
-    if (dc == 0) return 'today';
+    if (dc > 1) return s.noteInDays(dc);
+    if (dc == 1) return s.noteTomorrow;
+    if (dc == 0) return s.noteToday;
     final dd = daysTo(deadline(n));
-    if (dd > 1) return '$dd days left to pay';
-    if (dd == 1) return 'last day tomorrow';
-    if (dd == 0) return 'pay by midnight today';
-    return 'deadline passed';
+    if (dd > 1) return s.noteDaysLeft(dd);
+    if (dd == 1) return s.noteLastDayTomorrow;
+    if (dd == 0) return s.notePayToday;
+    return s.noteDeadlinePassed;
   }
 
   // ---------------------------------------------------------------- people and slots
@@ -309,31 +320,32 @@ class KuriDoc {
     return null;
   }
 
-  String nameOf(Payer p) => personById(p.person)?.name ?? 'Someone';
+  String nameOf(Payer p) => personById(p.person)?.name ?? S.current.someone;
 
   List<Payer> payersIn(int slot) => payers.where((p) => p.slot == slot).toList();
 
   /// "Farhan / Yasir"
   String slotName(int slot) {
     final names = payersIn(slot).map(nameOf).toList();
-    return names.isEmpty ? 'Slot $slot' : names.join(' / ');
+    return names.isEmpty ? S.current.slotN(slot) : names.join(' / ');
   }
 
   /// "Farhan and Yasir"
   String slotNameAnd(int slot) {
     final names = payersIn(slot).map(nameOf).toList();
-    if (names.isEmpty) return 'Slot $slot';
+    if (names.isEmpty) return S.current.slotN(slot);
     if (names.length == 1) return names.first;
-    return '${names.sublist(0, names.length - 1).join(', ')} and ${names.last}';
+    return S.current.andJoin(names.sublist(0, names.length - 1).join(', '), names.last);
   }
 
   /// "½ share" for half of a slot, or the amount for any other part.
   String? partLabel(Payer p) {
     if (p.amt >= share || share <= 0) return null;
-    if (p.amt * 2 == share) return '½ share';
-    if (p.amt * 3 == share) return '⅓ share';
-    if (p.amt * 4 == share) return '¼ share';
-    return '${money(p.amt)} share';
+    final s = S.current;
+    if (p.amt * 2 == share) return s.shareHalf;
+    if (p.amt * 3 == share) return s.shareThird;
+    if (p.amt * 4 == share) return s.shareQuarter;
+    return s.shareAmount(money(p.amt));
   }
 
   /// slot -> the month it took the pot
@@ -353,7 +365,7 @@ class KuriDoc {
     final order = <Due>[];
     for (final p in payers) {
       if (m.isPaid(p.id)) continue;
-      final person = personById(p.person) ?? Person(id: p.person, name: 'Someone');
+      final person = personById(p.person) ?? Person(id: p.person, name: S.current.someone);
       final d = byPerson.putIfAbsent(person.id, () {
         final x = Due(person, 0);
         order.add(x);

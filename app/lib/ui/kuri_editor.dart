@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../core/api.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
+import '../l10n/strings.dart';
 import 'sheets.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -24,8 +25,8 @@ class _Holder {
   }
 }
 
-/// A new kuri, or changes to one: the name, the money, the dates, who holds
-/// each slot and their numbers. Returns the saved kuri.
+/// A new chit, or changes to one: the name, the money and its currency, the
+/// dates, who holds each slot and their numbers. Returns the saved chit.
 class KuriEditorScreen extends StatefulWidget {
   const KuriEditorScreen({super.key, this.record});
   final KuriRecord? record;
@@ -40,7 +41,8 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   late final _name = TextEditingController(text: isNew ? '' : base.name);
   late final _group = TextEditingController(text: base.group);
   late final _share = TextEditingController(text: isNew ? '' : '${base.share}');
-  late final _fine = TextEditingController(text: '${base.fine}');
+  late final _fine = TextEditingController(text: base.fine > 0 ? '${base.fine}' : '');
+  late String currency = base.currency;
   late int slots = base.slots;
   late int startYear = base.startYear;
   late int startMonth = base.startMonth;
@@ -138,10 +140,12 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
   KuriDoc _build() {
     final name = _name.text.trim();
-    if (name.isEmpty) throw ApiError('Give the chit a name, like 5K Chit.');
-    if (share <= 0) throw ApiError('Enter how much each slot pays a month.');
+    final t = S.current;
+    if (name.isEmpty) throw ApiError(t.errNeedName);
+    if (share <= 0) throw ApiError(t.errNeedShare);
     final doc = base.copy()
       ..name = name
+      ..currency = currency
       ..group = _group.text.trim()
       ..share = share
       ..fine = fine
@@ -179,10 +183,10 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     for (var i = 0; i < slots; i++) {
       final s = i + 1;
       final r = rows[i].where((h) => h.name.text.trim().isNotEmpty).toList();
-      if (r.isEmpty) throw ApiError('Slot $s needs a name.');
+      if (r.isEmpty) throw ApiError(t.errSlotName(s));
       if (r.length > 1) {
-        final total = r.fold<int>(0, (t, h) => t + (int.tryParse(h.amount.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0));
-        if (total != share) throw ApiError('Slot $s: the parts add up to ${money(total)}, but a slot pays ${money(share)}.');
+        final total = r.fold<int>(0, (sum, h) => sum + (int.tryParse(h.amount.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0));
+        if (total != share) throw ApiError(t.errPartsSum(s, money(total, currency), money(share, currency)));
       }
       final letters = 'abcdefghij';
       for (var j = 0; j < r.length; j++) {
@@ -193,7 +197,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
         }
         usedIds.add(id);
         final amt = r.length == 1 ? share : int.tryParse(h.amount.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-        if (amt <= 0) throw ApiError('Slot $s: enter what each person pays.');
+        if (amt <= 0) throw ApiError(t.errPartAmount(s));
         payers.add(Payer(id: id, slot: s, person: personFor(h.name.text.trim().replaceAll(RegExp(r'\s+'), ' ')).id, amt: amt));
       }
     }
@@ -202,13 +206,13 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     if (doc.months.length > slots) {
       for (final m in doc.months.sublist(slots)) {
         if (m.paid.isNotEmpty || m.fines.isNotEmpty || m.winner != null) {
-          throw ApiError('Month ${m.n} already has payments or a taker, so the chit cannot have fewer than ${m.n} slots.');
+          throw ApiError(t.errFewerSlots(m.n));
         }
       }
     }
     for (final m in doc.months) {
       if (m.winner != null && m.winner! > slots) {
-        throw ApiError('Slot ${m.winner} took the pot in month ${m.n}, so the chit needs at least ${m.winner} slots.');
+        throw ApiError(t.errTakerSlot(m.winner!, m.n));
       }
     }
     doc.slots = slots;
@@ -219,7 +223,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       ..clear()
       ..addAll(payers);
     doc.fitMonths();
-    // Ticks for someone no longer in the kuri go.
+    // Ticks for someone no longer in the chit go.
     for (final m in doc.months) {
       m.paid.removeWhere((k, _) => !usedIds.contains(k));
       m.fines.removeWhere((k, _) => !usedIds.contains(k));
@@ -243,7 +247,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       Navigator.of(context).pop(KuriRecord.fromJson(Map<String, dynamic>.from(j as Map)));
     } on ApiError catch (e) {
       if (!mounted) return;
-      setState(() => error = e.isConflict ? 'Another admin saved this chit a moment ago. Go back, reload it, then make your changes again.' : e.message);
+      setState(() => error = e.isConflict ? S.of(context).errConflictEditor : e.message);
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -254,9 +258,9 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     final options = <PickOption<int>>[];
     for (var i = -18; i <= 12; i++) {
       final d = DateTime(now.year, now.month + i, 1);
-      options.add(PickOption(d.year * 100 + d.month, '${kMonths[d.month - 1]} ${d.year}'));
+      options.add(PickOption(d.year * 100 + d.month, '${monthName(d.month)} ${d.year}'));
     }
-    final picked = await showPicker<int>(context, title: 'First month', options: options, selected: startYear * 100 + startMonth);
+    final picked = await showPicker<int>(context, title: S.of(context).firstMonth, options: options, selected: startYear * 100 + startMonth);
     if (picked != null) {
       setState(() {
         startYear = picked.value ~/ 100;
@@ -266,91 +270,121 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   }
 
   Future<int?> _pickDay(String title, int current) async {
+    final s = S.of(context);
     final picked = await showPicker<int>(context,
-        title: title, selected: current, options: [for (var d = 1; d <= 31; d++) PickOption(d, ordinal(d), sub: d > 28 ? 'Shorter months use their last day' : null)]);
+        title: title, selected: current, options: [for (var d = 1; d <= 31; d++) PickOption(d, dayOf(d), sub: d > 28 ? s.shorterMonths : null)]);
     return picked?.value;
+  }
+
+  Future<void> _pickCurrency() async {
+    final s = S.of(context);
+    final picked = await showPicker<String>(context, title: s.currency, selected: currency, options: [
+      for (final c in kCurrencies) PickOption(c.code, c.name, sub: c.format(5000), trailing: c.code),
+    ]);
+    if (picked != null) setState(() => currency = picked.value);
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = S.of(context);
     final names = _names;
+    final cur = currencyOf(currency);
+    final withNumber = phones.entries.where((e) => names.any((n) => nameKey(n) == e.key)).length;
     return Scaffold(
-      appBar: AppBar(title: Text(isNew ? 'New chit' : 'Edit chit')),
+      appBar: AppBar(title: Text(isNew ? s.newChit : s.editChit)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 130),
+        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 130),
         children: [
-          const SectionTitle('Chit'),
+          SectionTitle(s.sectionChit),
           KCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              _field('Name', _name, hint: '5K Chit', caps: TextCapitalization.words),
-              const SizedBox(height: 14),
-              _field('Group', _group, hint: 'Riverside', caps: TextCapitalization.words),
+              _field(s.fieldName, _name, hint: s.nameHint, caps: TextCapitalization.words),
+              const SizedBox(height: Sp.lg),
+              _field(s.fieldGroup, _group, hint: s.groupHint, caps: TextCapitalization.words),
             ]),
           ),
-          const SectionTitle('Money'),
+          SectionTitle(s.sectionMoney),
           KCard(
+            padding: EdgeInsets.zero,
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(child: _field('Each slot pays a month', _share, hint: '5000', money: true)),
-                const SizedBox(width: 12),
-                Expanded(child: _field('Late fine', _fine, hint: '200', money: true)),
-              ]),
-              const SizedBox(height: 14),
-              Row(children: [
-                const Expanded(child: Text('Slots', style: T.label)),
-                RoundIcon(Icons.remove_rounded, onTap: slots > 2 ? () => _setSlots(slots - 1) : null, size: 38),
-                SizedBox(width: 52, child: Text('$slots', textAlign: TextAlign.center, style: T.h2.merge(T.tabular))),
-                RoundIcon(Icons.add_rounded, onTap: slots < 60 ? () => _setSlots(slots + 1) : null, size: 38),
-              ]),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(14)),
-                child: Text(
-                  share > 0 ? 'Pot ${money(share * slots)} a month, for $slots months' : 'One slot takes the pot each month, for $slots months',
-                  style: T.label.copyWith(color: K.brand600),
-                ),
+              KChoice(label: s.currency, value: '${cur.name} (${cur.code})', icon: Icons.payments_outlined, onTap: _pickCurrency),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.all(Sp.lg + 2),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Expanded(child: _field(s.eachSlotPays, _share, hint: '5000', money: true)),
+                    const SizedBox(width: Sp.md),
+                    Expanded(child: _field(s.lateFine, _fine, hint: s.fineNone, money: true)),
+                  ]),
+                  const SizedBox(height: Sp.lg),
+                  Row(children: [
+                    Expanded(child: Text(s.slots, style: T.label)),
+                    RoundIcon(Icons.remove_rounded, tooltip: s.fewerSlots, onTap: slots > 2 ? () => _setSlots(slots - 1) : null),
+                    SizedBox(width: 44, child: Text('$slots', textAlign: TextAlign.center, style: T.h2.merge(T.tabular))),
+                    RoundIcon(Icons.add_rounded, tooltip: s.moreSlots, onTap: slots < 60 ? () => _setSlots(slots + 1) : null),
+                  ]),
+                  const SizedBox(height: Sp.md),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
+                    child: Text(
+                      share > 0 ? s.potSummary(money(share * slots, currency), slots) : s.potSummaryNone(slots),
+                      style: T.label.copyWith(color: K.brand600),
+                    ),
+                  ),
+                ]),
               ),
             ]),
           ),
-          const SectionTitle('Dates'),
+          SectionTitle(s.sectionDates),
           KCard(
             padding: EdgeInsets.zero,
             child: Column(children: [
-              _choice('First month', '${kMonths[startMonth - 1]} $startYear', _pickStart),
+              KChoice(label: s.firstMonth, value: '${monthName(startMonth)} $startYear', icon: Icons.event_outlined, onTap: _pickStart),
               const Divider(),
-              _choice('Collection day', '${ordinal(collectDay)} of every month', () async {
-                final d = await _pickDay('Collection day', collectDay);
-                if (d != null) setState(() => collectDay = d);
-              }),
+              KChoice(
+                label: s.collectionDay,
+                value: s.everyMonthDay(dayOf(collectDay)),
+                icon: Icons.savings_outlined,
+                onTap: () async {
+                  final d = await _pickDay(s.collectionDay, collectDay);
+                  if (d != null) setState(() => collectDay = d);
+                },
+              ),
               const Divider(),
-              _choice('Last day to pay', '${ordinal(lastDay)}, by midnight${lastDay < collectDay ? ', the month after' : ''}', () async {
-                final d = await _pickDay('Last day to pay', lastDay);
-                if (d != null) setState(() => lastDay = d);
-              }),
+              KChoice(
+                label: s.lastDayToPay,
+                value: lastDay < collectDay ? s.byMidnightNext(dayOf(lastDay)) : s.byMidnight(dayOf(lastDay)),
+                icon: Icons.schedule_rounded,
+                onTap: () async {
+                  final d = await _pickDay(s.lastDayToPay, lastDay);
+                  if (d != null) setState(() => lastDay = d);
+                },
+              ),
             ]),
           ),
-          SectionTitle('Slots', trailing: Text('One name per slot', style: T.small)),
+          SectionTitle(s.slots, trailing: Text(s.oneNamePerSlot, style: T.small)),
           for (var i = 0; i < rows.length; i++) ...[
-            _slotRow(i),
-            const SizedBox(height: 10),
+            _slotRow(i, s, cur),
+            const SizedBox(height: Sp.md - 2),
           ],
-          SectionTitle('Numbers for reminders', trailing: Text('${phones.entries.where((e) => names.any((n) => nameKey(n) == e.key)).length} of ${names.length}', style: T.small)),
+          SectionTitle(s.numbersForReminders, trailing: Pill(s.countOf(withNumber, names.length), color: K.surface2, fg: K.ink2)),
           KCard(
             padding: EdgeInsets.zero,
             child: names.isEmpty
-                ? Padding(padding: const EdgeInsets.all(18), child: Text('Add names to the slots first.', style: T.small))
+                ? Padding(padding: const EdgeInsets.all(Sp.lg + 2), child: Text(s.addNamesFirst, style: T.small))
                 : Column(children: [
                     for (var i = 0; i < names.length; i++) ...[
                       if (i > 0) const Divider(),
-                      _phoneRow(names[i]),
+                      _phoneRow(names[i], s),
                     ],
                   ]),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Sp.sm),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text('Numbers are only for WhatsApp reminders. They never show on the members\' link.', style: T.small),
+            padding: const EdgeInsets.symmetric(horizontal: Sp.xs),
+            child: Text(s.numbersNote, style: T.small),
           ),
         ],
       ),
@@ -359,10 +393,10 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            padding: const EdgeInsets.fromLTRB(Sp.page, Sp.md, Sp.page, Sp.md),
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              if (error != null) ...[Notice(error!), const SizedBox(height: 10)],
-              KButton(label: isNew ? 'Start the chit' : 'Save changes', icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
+              if (error != null) ...[Notice(error!), const SizedBox(height: Sp.md - 2)],
+              KButton(label: isNew ? s.startTheChit : s.saveChanges, icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
             ]),
           ),
         ),
@@ -371,115 +405,123 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   }
 
   Widget _field(String label, TextEditingController c, {String? hint, bool money = false, TextCapitalization caps = TextCapitalization.none}) {
+    final cur = currencyOf(currency);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: T.label),
-      const SizedBox(height: 8),
+      const SizedBox(height: Sp.sm),
       TextField(
         controller: c,
         keyboardType: money ? TextInputType.number : TextInputType.text,
         textCapitalization: caps,
         inputFormatters: money ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)] : null,
         style: T.bodyStrong,
-        decoration: InputDecoration(hintText: hint, prefixText: money ? '₹ ' : null, prefixStyle: T.bodyStrong.copyWith(color: K.muted)),
+        decoration: InputDecoration(hintText: hint, prefixText: money ? '${cur.symbol} ' : null, prefixStyle: T.bodyStrong.copyWith(color: K.muted)),
       ),
     ]);
   }
 
-  Widget _choice(String label, String value, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 14, 12, 14),
-        child: Row(children: [
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(label, style: T.small),
-              const SizedBox(height: 2),
-              Text(value, style: T.bodyStrong),
-            ]),
-          ),
-          const Icon(Icons.expand_more_rounded, color: K.muted),
-        ]),
-      ),
-    );
-  }
-
-  Widget _slotRow(int i) {
+  Widget _slotRow(int i, S s, Currency cur) {
     final r = rows[i];
     final split = r.length > 1;
+    Widget name(int j) => TextField(
+          controller: r[j].name,
+          textCapitalization: TextCapitalization.words,
+          style: T.bodyStrong,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            hintText: split ? s.nameN(j + 1) : s.fieldName,
+            isDense: true,
+            suffixIcon: split
+                ? IconButton(
+                    tooltip: s.remove,
+                    onPressed: () => _unsplit(i, j),
+                    icon: const Icon(Icons.close_rounded, size: 20, color: K.muted),
+                  )
+                : null,
+          ),
+        );
     return KCard(
-      padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+      padding: EdgeInsetsDirectional.fromSTEB(12, 12, split ? 12 : 4, split ? 6 : 12),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 38)),
-        const SizedBox(width: 10),
+        const SizedBox(width: Sp.md - 2),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            for (var j = 0; j < r.length; j++)
-              Padding(
-                padding: EdgeInsets.only(bottom: j < r.length - 1 ? 8 : 0),
-                child: Row(children: [
-                  Expanded(
-                    child: TextField(
-                      controller: r[j].name,
-                      textCapitalization: TextCapitalization.words,
-                      style: T.bodyStrong,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(hintText: split ? 'Name ${j + 1}' : 'Name', isDense: true),
-                    ),
-                  ),
-                  if (split) ...[
-                    const SizedBox(width: 6),
-                    SizedBox(
-                      width: 96,
-                      child: TextField(
-                        controller: r[j].amount,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
-                        style: T.bodyStrong,
-                        decoration: const InputDecoration(
-                          prefixText: '₹',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+          child: split
+              // A shared slot: one line per person, each with their part.
+              ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  for (var j = 0; j < r.length; j++)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Sp.sm),
+                      child: Row(children: [
+                        Expanded(child: name(j)),
+                        const SizedBox(width: Sp.sm),
+                        SizedBox(
+                          width: cur.symbol.length > 1 ? 120 : 104,
+                          child: TextField(
+                            controller: r[j].amount,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
+                            style: T.bodyStrong,
+                            decoration: InputDecoration(
+                              prefixText: cur.symbol.length > 1 ? '${cur.symbol} ' : cur.symbol,
+                              prefixStyle: T.bodyStrong.copyWith(color: K.muted),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+                            ),
+                          ),
                         ),
+                      ]),
+                    ),
+                  if (r.length < 4)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton.icon(
+                        onPressed: () => _split(i),
+                        style: TextButton.styleFrom(
+                          foregroundColor: K.green,
+                          minimumSize: const Size(0, 44),
+                          padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
+                          shape: const StadiumBorder(),
+                          textStyle: T.label,
+                        ),
+                        icon: const Icon(Icons.person_add_alt_1_outlined, size: 18),
+                        label: Text(s.addPerson),
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Remove',
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => _unsplit(i, j),
-                      icon: const Icon(Icons.close_rounded, size: 19, color: K.muted),
-                    ),
-                  ],
-                ]),
-              ),
-          ]),
+                ])
+              : name(0),
         ),
-        if (r.length < 4)
+        if (!split)
           IconButton(
-            tooltip: 'Share this slot between people',
-            visualDensity: VisualDensity.compact,
+            tooltip: s.splitSlot,
             onPressed: () => _split(i),
-            icon: const Icon(Icons.call_split_rounded, color: K.green),
+            icon: const Icon(Icons.group_add_outlined, color: K.green),
           ),
       ]),
     );
   }
 
-  Widget _phoneRow(String name) {
+  Widget _phoneRow(String name, S s) {
     final p = phones[nameKey(name)] ?? '';
     return InkWell(
       onTap: () async {
         final got = await askPhone(context, name, p);
         if (got != null) setState(() => phones[nameKey(name)] = got);
       },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 12, 14, 12),
-        child: Row(children: [
-          Expanded(child: Text(name, style: T.bodyStrong)),
-          Text(p.isEmpty ? 'Add number' : prettyPhone(p), style: T.small.copyWith(color: p.isEmpty ? K.green : K.ink2, fontWeight: FontWeight.w700)),
-          const SizedBox(width: 4),
-          Icon(p.isEmpty ? Icons.add_rounded : Icons.edit_outlined, size: 18, color: K.muted),
-        ]),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 52),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 14, 12),
+          child: Row(children: [
+            Expanded(child: Text(name, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+            const SizedBox(width: Sp.sm),
+            Text(p.isEmpty ? s.addNumber : prettyPhone(p),
+                textDirection: p.isEmpty ? null : TextDirection.ltr,
+                style: T.small.copyWith(color: p.isEmpty ? K.green : K.ink2, fontWeight: FontWeight.w700)),
+            const SizedBox(width: Sp.xs),
+            Icon(p.isEmpty ? Icons.add_rounded : Icons.edit_outlined, size: 18, color: K.muted),
+          ]),
+        ),
       ),
     );
   }

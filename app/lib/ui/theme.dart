@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// The Boystown greens: deep forest green, leaf, sunny yellow, mint, on paper.
+/// The Kuree greens: deep forest green, leaf, sunny yellow, mint, on paper.
 class K {
   static const deep = Color(0xFF032A09);
   static const green = Color(0xFF24592B);
@@ -31,6 +31,9 @@ class K {
   static const warnBg = Color(0xFFF8EFDC);
   static const sunSoft = Color(0xFFFBF0B8);
 
+  /// Corner radii: small chips and fields, cards, big cards and sheets.
+  static const rSm = 14.0;
+  static const rMd = 18.0;
   static const r = 22.0;
   static const rLg = 28.0;
 
@@ -40,24 +43,44 @@ class K {
   ];
 }
 
+/// Fonts for the scripts Manrope and Bricolage do not have: Malayalam, Tamil,
+/// Kannada, Hindi (Devanagari) and Arabic. Latin letters and digits stay in
+/// Manrope or Bricolage; anything else falls through to these.
+const List<String> kFontFallback = ['NotoSansMalayalam', 'NotoSansTamil', 'NotoSansKannada', 'NotoSansDevanagari', 'NotoSansArabic'];
+
+/// Spacing: one scale for paddings and gaps.
+class Sp {
+  static const xs = 4.0;
+  static const sm = 8.0;
+  static const md = 12.0;
+  static const lg = 16.0;
+  static const xl = 20.0;
+  static const xxl = 24.0;
+
+  /// The side margin of every page.
+  static const page = 16.0;
+}
+
 /// Text: Manrope for reading, Bricolage Grotesque for titles and big numbers.
-/// No letter spacing anywhere.
+/// No letter spacing anywhere. Line heights leave room for the taller
+/// Malayalam, Tamil, Kannada, Hindi and Arabic letters.
 class T {
   static const _m = 'Manrope';
   static const _b = 'Bricolage';
+  static const _f = kFontFallback;
 
-  static const display = TextStyle(fontFamily: _b, fontSize: 34, fontWeight: FontWeight.w700, height: 1.05, letterSpacing: 0, color: K.ink);
-  static const h1 = TextStyle(fontFamily: _b, fontSize: 28, fontWeight: FontWeight.w700, height: 1.1, letterSpacing: 0, color: K.ink);
-  static const h2 = TextStyle(fontFamily: _b, fontSize: 22, fontWeight: FontWeight.w700, height: 1.15, letterSpacing: 0, color: K.ink);
-  static const h3 = TextStyle(fontFamily: _b, fontSize: 18, fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0, color: K.ink);
-  static const amount = TextStyle(fontFamily: _b, fontSize: 40, fontWeight: FontWeight.w700, height: 1.0, letterSpacing: 0,
+  static const display = TextStyle(fontFamily: _b, fontFamilyFallback: _f, fontSize: 34, fontWeight: FontWeight.w700, height: 1.12, letterSpacing: 0, color: K.ink);
+  static const h1 = TextStyle(fontFamily: _b, fontFamilyFallback: _f, fontSize: 28, fontWeight: FontWeight.w700, height: 1.18, letterSpacing: 0, color: K.ink);
+  static const h2 = TextStyle(fontFamily: _b, fontFamilyFallback: _f, fontSize: 22, fontWeight: FontWeight.w700, height: 1.22, letterSpacing: 0, color: K.ink);
+  static const h3 = TextStyle(fontFamily: _b, fontFamilyFallback: _f, fontSize: 18, fontWeight: FontWeight.w700, height: 1.26, letterSpacing: 0, color: K.ink);
+  static const amount = TextStyle(fontFamily: _b, fontFamilyFallback: _f, fontSize: 40, fontWeight: FontWeight.w700, height: 1.0, letterSpacing: 0,
       color: Colors.white, fontFeatures: [FontFeature.tabularFigures()]);
-  static const body = TextStyle(fontFamily: _m, fontSize: 15, fontWeight: FontWeight.w500, height: 1.4, letterSpacing: 0, color: K.ink);
-  static const bodyStrong = TextStyle(fontFamily: _m, fontSize: 15.5, fontWeight: FontWeight.w700, height: 1.3, letterSpacing: 0, color: K.ink);
-  static const small = TextStyle(fontFamily: _m, fontSize: 13, fontWeight: FontWeight.w600, height: 1.35, letterSpacing: 0, color: K.muted);
-  static const tiny = TextStyle(fontFamily: _m, fontSize: 11.5, fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0, color: K.muted);
-  static const label = TextStyle(fontFamily: _m, fontSize: 13.5, fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0, color: K.ink2);
-  static const button = TextStyle(fontFamily: _m, fontSize: 15.5, fontWeight: FontWeight.w700, height: 1.1, letterSpacing: 0);
+  static const body = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 15, fontWeight: FontWeight.w500, height: 1.45, letterSpacing: 0, color: K.ink);
+  static const bodyStrong = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 15.5, fontWeight: FontWeight.w700, height: 1.35, letterSpacing: 0, color: K.ink);
+  static const small = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 13, fontWeight: FontWeight.w600, height: 1.4, letterSpacing: 0, color: K.muted);
+  static const tiny = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 11.5, fontWeight: FontWeight.w700, height: 1.3, letterSpacing: 0, color: K.muted);
+  static const label = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 13.5, fontWeight: FontWeight.w700, height: 1.3, letterSpacing: 0, color: K.ink2);
+  static const button = TextStyle(fontFamily: _m, fontFamilyFallback: _f, fontSize: 15.5, fontWeight: FontWeight.w700, height: 1.2, letterSpacing: 0);
   static const tabular = TextStyle(fontFeatures: [FontFeature.tabularFigures()]);
 }
 
@@ -79,9 +102,9 @@ ThemeData kureeTheme() {
     outlineVariant: K.border,
   );
   TextStyle m(double size, FontWeight w, [Color c = K.ink]) =>
-      TextStyle(fontFamily: 'Manrope', fontSize: size, fontWeight: w, letterSpacing: 0, color: c);
+      TextStyle(fontFamily: 'Manrope', fontFamilyFallback: kFontFallback, fontSize: size, fontWeight: w, letterSpacing: 0, color: c);
   TextStyle b(double size, FontWeight w) =>
-      TextStyle(fontFamily: 'Bricolage', fontSize: size, fontWeight: w, letterSpacing: 0, color: K.ink);
+      TextStyle(fontFamily: 'Bricolage', fontFamilyFallback: kFontFallback, fontSize: size, fontWeight: w, letterSpacing: 0, color: K.ink);
   final text = TextTheme(
     displayLarge: b(48, FontWeight.w700),
     displayMedium: b(40, FontWeight.w700),
@@ -104,6 +127,7 @@ ThemeData kureeTheme() {
     colorScheme: scheme,
     scaffoldBackgroundColor: K.paper,
     fontFamily: 'Manrope',
+    fontFamilyFallback: kFontFallback,
     textTheme: text,
     splashFactory: InkSparkle.splashFactory,
     appBarTheme: const AppBarTheme(
@@ -113,13 +137,13 @@ ThemeData kureeTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark, statusBarBrightness: Brightness.light),
-      titleTextStyle: TextStyle(fontFamily: 'Bricolage', fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: 0, color: K.ink),
+      titleTextStyle: TextStyle(fontFamily: 'Bricolage', fontFamilyFallback: kFontFallback, fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: 0, color: K.ink),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: K.surface,
       isDense: false,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       hintStyle: m(15, FontWeight.w500, const Color(0xFF8A9A90)),
       labelStyle: m(14, FontWeight.w600, K.muted),
       floatingLabelStyle: m(14, FontWeight.w700, K.green),
@@ -148,11 +172,21 @@ ThemeData kureeTheme() {
     dialogTheme: DialogThemeData(
       backgroundColor: K.paper,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(K.rLg)),
       titleTextStyle: b(21, FontWeight.w700),
       contentTextStyle: m(15, FontWeight.w500, K.ink2),
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(color: K.green),
+    tooltipTheme: TooltipThemeData(
+      decoration: BoxDecoration(color: K.deep, borderRadius: BorderRadius.circular(10)),
+      textStyle: m(13, FontWeight.w600, Colors.white),
+    ),
+    switchTheme: SwitchThemeData(
+      trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+      thumbColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? Colors.white : K.muted),
+      trackColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? K.green : K.surface2),
+    ),
+    checkboxTheme: CheckboxThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
     pageTransitionsTheme: const PageTransitionsTheme(builders: {
       TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
       TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),

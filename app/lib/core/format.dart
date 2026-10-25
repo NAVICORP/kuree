@@ -1,11 +1,21 @@
 /// Numbers, dates and names the way the group writes them.
 library;
 
+import '../l10n/strings.dart';
+
+/// English month names. Shown text goes through [monthName] so it follows
+/// the app's language; these stay for code that needs English.
 const List<String> kMonths = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 const List<String> kMonthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/// A month's name in the app's language (1 = January).
+String monthName(int month) => S.current.monthsLong[(month - 1) % 12];
+
+/// A month's short name in the app's language (1 = Jan).
+String monthShortName(int month) => S.current.monthsShort[(month - 1) % 12];
 
 /// 65000 as "65,000" and 150000 as "1,50,000" (Indian grouping).
 String groupDigits(num value) {
@@ -25,10 +35,74 @@ String groupDigits(num value) {
   return negative ? '-$s' : s;
 }
 
-/// ₹65,000
-String money(num value) => '₹${groupDigits(value)}';
+/// 150000 as "150,000" (groups of three).
+String groupThousands(num value) {
+  final negative = value < 0;
+  final s = value.abs().round().toString();
+  final b = StringBuffer();
+  for (var i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) b.write(',');
+    b.write(s[i]);
+  }
+  return negative ? '-$b' : b.toString();
+}
 
-/// 1st, 2nd, 3rd, 4th, 11th, 21st, 25th
+/// A currency a chit can be kept in. Amounts are whole numbers, so no
+/// decimals are shown.
+class Currency {
+  const Currency(this.code, this.symbol, {this.indian = false, this.spaced = false});
+
+  /// ISO code, saved with the chit: "INR".
+  final String code;
+
+  /// What goes before the amount: "₹", "AED".
+  final String symbol;
+
+  /// Indian grouping (1,50,000) rather than thousands (150,000).
+  final bool indian;
+
+  /// A space between the symbol and the amount ("AED 1,500", not "₹1,500").
+  final bool spaced;
+
+  String format(num value) {
+    final digits = indian ? groupDigits(value) : groupThousands(value);
+    return spaced ? '$symbol $digits' : '$symbol$digits';
+  }
+
+  /// The currency's name in the app's language.
+  String get name => S.current.currencyName(code);
+}
+
+/// Every currency on offer, in the order the picker shows them.
+const List<Currency> kCurrencies = [
+  Currency('INR', '₹', indian: true),
+  Currency('AED', 'AED', spaced: true),
+  Currency('SAR', 'SAR', spaced: true),
+  Currency('QAR', 'QAR', spaced: true),
+  Currency('KWD', 'KWD', spaced: true),
+  Currency('OMR', 'OMR', spaced: true),
+  Currency('BHD', 'BHD', spaced: true),
+  Currency('USD', r'$'),
+  Currency('GBP', '£'),
+  Currency('EUR', '€'),
+  Currency('SGD', r'S$'),
+  Currency('MYR', 'RM', spaced: true),
+  Currency('LKR', 'Rs', spaced: true),
+];
+
+/// The currency for a saved code; anything unknown is the Indian rupee.
+Currency currencyOf(String? code) {
+  final c = (code ?? '').trim().toUpperCase();
+  for (final x in kCurrencies) {
+    if (x.code == c) return x;
+  }
+  return kCurrencies.first;
+}
+
+/// ₹65,000, or in another currency: AED 65,000.
+String money(num value, [String currency = 'INR']) => currencyOf(currency).format(value);
+
+/// 1st, 2nd, 3rd, 4th, 11th, 21st, 25th (English).
 String ordinal(int n) {
   final mod100 = n % 100;
   if (mod100 >= 11 && mod100 <= 13) return '${n}th';
@@ -43,6 +117,10 @@ String ordinal(int n) {
       return '${n}th';
   }
 }
+
+/// A day of the month in the app's language: "25th" in English, "25" in
+/// the others (their sentences carry the word for "date").
+String dayOf(int n) => S.current.code == 'en' ? ordinal(n) : '$n';
 
 int daysInMonth(int year, int month) => DateTime(year, month + 1, 0).day;
 
@@ -71,23 +149,27 @@ extension _Chars on String {
 /// A name as one key, so "Sinan KP" and "sinan  kp" are the same person.
 String nameKey(String name) => name.toLowerCase().replaceAll(RegExp(r'\s+'), ' ').trim();
 
-/// 20 Oct 2026, 7:31 pm
-String stamp(DateTime d) {
+/// 7:31 pm
+String clock(DateTime d) {
   final h = d.hour, m = d.minute;
   final hh = (h % 12) == 0 ? 12 : h % 12;
-  return '${d.day} ${kMonthsShort[d.month - 1]} ${d.year}, $hh:${m.toString().padLeft(2, '0')} ${h < 12 ? 'am' : 'pm'}';
+  return '$hh:${m.toString().padLeft(2, '0')} ${h < 12 ? S.current.am : S.current.pm}';
 }
+
+/// 20 Oct 2026, 7:31 pm
+String stamp(DateTime d) => '${d.day} ${monthShortName(d.month)} ${d.year}, ${clock(d)}';
 
 /// "just now", "5 min ago", "yesterday", or the date.
 String ago(DateTime d, [DateTime? now]) {
+  final s = S.current;
   final n = now ?? DateTime.now();
   final diff = n.difference(d);
-  if (diff.inSeconds < 60) return 'just now';
-  if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-  if (diff.inHours < 24 && n.day == d.day) return 'today, ${stamp(d).split(', ').last}';
+  if (diff.inSeconds < 60) return s.agoJustNow;
+  if (diff.inMinutes < 60) return s.agoMinutes(diff.inMinutes);
+  if (diff.inHours < 24 && n.day == d.day) return s.agoToday(clock(d));
   final yesterday = DateTime(n.year, n.month, n.day).subtract(const Duration(days: 1));
   if (d.year == yesterday.year && d.month == yesterday.month && d.day == yesterday.day) {
-    return 'yesterday, ${stamp(d).split(', ').last}';
+    return s.agoYesterday(clock(d));
   }
   return stamp(d);
 }

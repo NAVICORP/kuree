@@ -71,7 +71,19 @@ const groupDigits = (n) => {
   }
   return s;
 };
-const money = (n) => `₹${groupDigits(n)}`;
+// The chit's currency: [symbol, Indian grouping, space after the symbol].
+// Chits saved before currencies existed are in rupees.
+const CURRENCIES = {
+  INR: ['₹', true, false], AED: ['AED', false, true], SAR: ['SAR', false, true], QAR: ['QAR', false, true],
+  KWD: ['KWD', false, true], OMR: ['OMR', false, true], BHD: ['BHD', false, true], USD: ['$', false, false],
+  GBP: ['£', false, false], EUR: ['€', false, false], SGD: ['S$', false, false], MYR: ['RM', false, true], LKR: ['Rs', false, true],
+};
+const thousands = (n) => String(Math.round(Math.abs(Number(n) || 0))).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const money = (n, currency) => {
+  const [sym, indian, spaced] = CURRENCIES[String(currency || 'INR').toUpperCase()] || CURRENCIES.INR;
+  const digits = indian ? groupDigits(n) : thousands(n);
+  return spaced ? `${sym}\u00a0${digits}` : `${sym}${digits}`;
+};
 
 function encodingFor(req) {
   const a = String(req.headers['accept-encoding'] || '');
@@ -196,7 +208,7 @@ function kuriPage(token, k, { live = true } = {}) {
   const name = String(d.name || 'Chit').trim();
   const cd = Number(d.collectDay) || 20, ld = Number(d.lastDay) || 25, fine = Number(d.fine) || 0;
   const lead = `Collection on the ${ordinal(cd)} of every month.<br>Pay by midnight on the ${ordinal(ld)}${ld < cd ? ' of the next month' : ''}` +
-    (fine ? `, ${esc(money(fine))} fine after that.` : '.');
+    (fine ? `, ${esc(money(fine, d.currency))} fine after that.` : '.');
   const seed = JSON.stringify({ data: d, updated_at: k.updated_at, token: live ? token : '' })
     .replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   const title = group ? `${group} ${name}` : name;
