@@ -249,6 +249,7 @@ void main() {
     await pumpInTab(tester, const KuriEditorScreen());
     await settle(tester);
     await tester.scrollUntilVisible(find.text('First month'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.pump(); // lay out the scroll first, so the tap lands on the row and not on Start the chit
     await tester.tap(find.text('First month'));
     await shot(tester, '10c-first-month');
   });
@@ -258,6 +259,7 @@ void main() {
     await pumpInTab(tester, const KuriEditorScreen());
     await settle(tester);
     await tester.scrollUntilVisible(find.text('Collection day'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.pump(); // lay out the scroll first, so the tap lands on the row and not on Start the chit
     await tester.tap(find.text('Collection day'));
     await shot(tester, '10d-collection-day');
   });
