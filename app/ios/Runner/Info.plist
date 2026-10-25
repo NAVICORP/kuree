@@ -35,6 +35,8 @@
 	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Kuree saves the bottle draw video to your photos so you can post it in the group.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Kuree only uses your photo library to save the bottle draw video, so you can post it in the group.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
