@@ -230,6 +230,15 @@ void main() {
     await shot(tester, '10b-new-chit-names');
   });
 
+  testWidgets('first month calendar', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const KuriEditorScreen()));
+    await settle(tester);
+    await tester.scrollUntilVisible(find.text('First month'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('First month'));
+    await shot(tester, '10c-first-month');
+  });
+
   testWidgets('late fine', (tester) async {
     sized(tester);
     await tester.pumpWidget(phone(KuriScreen(record: boystown())));

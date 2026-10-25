@@ -204,17 +204,24 @@ class _AccountScreenState extends State<AccountScreen> {
         constraints: const BoxConstraints(minHeight: 56),
         child: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 14, 14),
-          child: Row(children: [
-            Icon(icon, color: bad ? K.bad : K.ink2, size: 22),
-            const SizedBox(width: Sp.md + 2),
-            Expanded(child: Text(text, style: T.bodyStrong.copyWith(color: bad ? K.bad : K.ink))),
-            if (value != null) ...[
-              const SizedBox(width: Sp.sm),
-              Flexible(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small)),
-            ],
-            const SizedBox(width: Sp.xs),
-            const Icon(Icons.chevron_right_rounded, color: K.border2),
-          ]),
+          // The value (English) sits at the end, next to the arrow, like the
+          // arrows on the other rows; a long one stops at under half the row.
+          child: LayoutBuilder(
+            builder: (context, box) => Row(children: [
+              Icon(icon, color: bad ? K.bad : K.ink2, size: 22),
+              const SizedBox(width: Sp.md + 2),
+              Expanded(child: Text(text, style: T.bodyStrong.copyWith(color: bad ? K.bad : K.ink))),
+              if (value != null) ...[
+                const SizedBox(width: Sp.sm),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: box.maxWidth * 0.45),
+                  child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small),
+                ),
+              ],
+              const SizedBox(width: Sp.xs),
+              const Icon(Icons.chevron_right_rounded, color: K.border2),
+            ]),
+          ),
         ),
       ),
     );

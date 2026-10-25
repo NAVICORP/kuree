@@ -340,6 +340,8 @@
   "undo": "Undo",
   "prevMonth": "Previous month",
   "nextMonth": "Next month",
+  "prevYear": "Previous year",
+  "nextYear": "Next year",
   "monthNLabel": "Month {n}, {label}",
   "@monthNLabel": {
     "placeholders": {

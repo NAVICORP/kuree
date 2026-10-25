@@ -416,6 +416,12 @@ class S {
   /// Next month
   String get nextMonth => _get('nextMonth');
 
+  /// Previous year
+  String get prevYear => _get('prevYear');
+
+  /// Next year
+  String get nextYear => _get('nextYear');
+
   /// Month {n}, {label}
   String monthNLabel(Object n, Object label) => _fill('monthNLabel', {'n': n, 'label': label});
 
@@ -1386,6 +1392,8 @@ const Map<String, String> _en = {
   'undo': 'Undo',
   'prevMonth': 'Previous month',
   'nextMonth': 'Next month',
+  'prevYear': 'Previous year',
+  'nextYear': 'Next year',
   'monthNLabel': 'Month {n}, {label}',
   'collectedOf': 'of {pot} collected',
   'collectedOfFines': 'of {pot} collected, plus {fines} in fines',
@@ -1822,6 +1830,8 @@ const Map<String, String> _ar = {
   'undo': 'تراجع',
   'prevMonth': 'الشهر السابق',
   'nextMonth': 'الشهر التالي',
+  'prevYear': 'السنة السابقة',
+  'nextYear': 'السنة التالية',
   'monthNLabel': 'الشهر {n}، {label}',
   'collectedOf': 'تم تحصيله من {pot}',
   'collectedOfFines': 'تم تحصيله من {pot}، إضافة إلى غرامات {fines}',
@@ -2258,6 +2268,8 @@ const Map<String, String> _ml = {
   'undo': 'പഴയപടിയാക്കുക',
   'prevMonth': 'മുൻ മാസം',
   'nextMonth': 'അടുത്ത മാസം',
+  'prevYear': 'മുൻ വർഷം',
+  'nextYear': 'അടുത്ത വർഷം',
   'monthNLabel': 'മാസം {n}, {label}',
   'collectedOf': '{pot}-ൽ പിരിഞ്ഞത്',
   'collectedOfFines': '{pot}-ൽ പിരിഞ്ഞത്, കൂടാതെ {fines} പിഴ',
@@ -2694,6 +2706,8 @@ const Map<String, String> _ta = {
   'undo': 'செயல்தவிர்',
   'prevMonth': 'முந்தைய மாதம்',
   'nextMonth': 'அடுத்த மாதம்',
+  'prevYear': 'முந்தைய ஆண்டு',
+  'nextYear': 'அடுத்த ஆண்டு',
   'monthNLabel': 'மாதம் {n}, {label}',
   'collectedOf': '{pot} இல் வசூலானது',
   'collectedOfFines': '{pot} இல் வசூலானது, கூடுதலாக {fines} அபராதம்',
@@ -3130,6 +3144,8 @@ const Map<String, String> _kn = {
   'undo': 'ರದ್ದುಗೊಳಿಸಿ',
   'prevMonth': 'ಹಿಂದಿನ ತಿಂಗಳು',
   'nextMonth': 'ಮುಂದಿನ ತಿಂಗಳು',
+  'prevYear': 'ಹಿಂದಿನ ವರ್ಷ',
+  'nextYear': 'ಮುಂದಿನ ವರ್ಷ',
   'monthNLabel': 'ತಿಂಗಳು {n}, {label}',
   'collectedOf': '{pot} ರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ',
   'collectedOfFines': '{pot} ರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ, ಜೊತೆಗೆ {fines} ದಂಡ',
@@ -3566,6 +3582,8 @@ const Map<String, String> _hi = {
   'undo': 'पहले जैसा करें',
   'prevMonth': 'पिछला महीना',
   'nextMonth': 'अगला महीना',
+  'prevYear': 'पिछला साल',
+  'nextYear': 'अगला साल',
   'monthNLabel': 'महीना {n}, {label}',
   'collectedOf': '{pot} में से जमा',
   'collectedOfFines': '{pot} में से जमा, साथ में {fines} जुर्माना',

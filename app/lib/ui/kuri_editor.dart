@@ -275,18 +275,20 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     }
   }
 
+  /// The first month, on a calendar of months: five years back (an older
+  /// chit being moved in) to two years ahead.
   Future<void> _pickStart() async {
     final now = DateTime.now();
-    final options = <PickOption<int>>[];
-    for (var i = -18; i <= 12; i++) {
-      final d = DateTime(now.year, now.month + i, 1);
-      options.add(PickOption(d.year * 100 + d.month, '${monthName(d.month)} ${d.year}'));
-    }
-    final picked = await showPicker<int>(context, title: S.of(context).firstMonth, options: options, selected: startYear * 100 + startMonth);
+    final picked = await pickMonth(context,
+        title: S.of(context).firstMonth,
+        year: startYear,
+        month: startMonth,
+        first: DateTime(now.year, now.month - 60),
+        last: DateTime(now.year, now.month + 24));
     if (picked != null) {
       setState(() {
-        startYear = picked.value ~/ 100;
-        startMonth = picked.value % 100;
+        startYear = picked ~/ 100;
+        startMonth = picked % 100;
       });
     }
   }

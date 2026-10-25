@@ -138,6 +138,18 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
+      testWidgets('the first month, as a calendar', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(const KuriEditorScreen(), code));
+        await settle(tester);
+        await tester.scrollUntilVisible(find.text(s.firstMonth), 200, scrollable: find.byType(Scrollable).first);
+        await tapText(tester, s.firstMonth);
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.byTooltip(s.nextYear));
+        await settle(tester);
+        expect(tester.takeException(), isNull);
+      });
+
       testWidgets('editing a chit', (tester) async {
         small(tester);
         await tester.pumpWidget(app(KuriEditorScreen(record: chit), code));

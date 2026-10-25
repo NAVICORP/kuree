@@ -248,6 +248,75 @@ Future<String?> askPhone(BuildContext context, String name, String current) {
   );
 }
 
+// ---------------------------------------------------------------- a month, as a calendar
+
+/// A year of months to tap, with arrows to the years either side. Months
+/// before [first] or after [last] can't be picked. Returns year * 100 + month.
+Future<int?> pickMonth(BuildContext context,
+    {required String title, required int year, required int month, required DateTime first, required DateTime last}) {
+  final s = S.of(context);
+  final now = DateTime.now();
+  int key(int y, int m) => y * 100 + m;
+  final lo = key(first.year, first.month), hi = key(last.year, last.month);
+  var shown = year;
+  return showKSheet<int>(
+    context,
+    title: title,
+    builder: (ctx) => StatefulBuilder(builder: (ctx, setState) {
+      Widget cell(int m) {
+        final k = key(shown, m);
+        final on = shown == year && m == month;
+        final today = shown == now.year && m == now.month;
+        final ok = k >= lo && k <= hi;
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(Sp.xs),
+            child: Semantics(
+              button: true,
+              selected: on,
+              enabled: ok,
+              label: '${monthName(m)} $shown',
+              child: Opacity(
+                opacity: ok ? 1 : 0.35,
+                child: Material(
+                  color: on ? K.deep : (today ? K.brand100 : K.surface),
+                  shape: StadiumBorder(side: BorderSide(color: on ? K.deep : (today ? K.brand300 : K.border))),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: ok ? () => Navigator.of(ctx).pop(k) : null,
+                    child: SizedBox(
+                      height: 52,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(monthShortName(m), maxLines: 1, style: T.bodyStrong.copyWith(color: on ? Colors.white : K.ink)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(children: [
+          RoundIcon(Icons.chevron_left_rounded, tooltip: s.prevYear, onTap: shown > first.year ? () => setState(() => shown--) : null),
+          Expanded(child: Text('$shown', textAlign: TextAlign.center, style: T.h2.merge(T.tabular))),
+          RoundIcon(Icons.chevron_right_rounded, tooltip: s.nextYear, onTap: shown < last.year ? () => setState(() => shown++) : null),
+        ]),
+        const SizedBox(height: Sp.md),
+        for (var r = 0; r < 4; r++) Row(children: [for (var c = 1; c <= 3; c++) cell(r * 3 + c)]),
+      ]);
+    }),
+  );
+}
+
 // ---------------------------------------------------------------- the late fine
 
 /// The chit's late fine: what each late payment adds to that month's pot.
