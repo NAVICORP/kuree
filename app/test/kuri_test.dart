@@ -196,4 +196,35 @@ void main() {
       expect(drawResult(k, 5, 9, 9, DateTime(2026, 10, 20, 19, 31)), contains('Takes the pot of AED 65,000.'));
     });
   });
+  group('the late fine', () {
+    test('a new fine leaves the fines already marked at their old amount', () {
+      final k = boystown();
+      expect(k.fineSum(k.months[2]), 200);
+      k.setFine(300);
+      expect(k.fine, 300);
+      expect(k.months[2].fineAmt, 200);
+      expect(k.fineSum(k.months[2]), 200);
+      expect(k.months[4].fineAmt, isNull);
+      k.months[4].fines['p6'] = true;
+      expect(k.fineSum(k.months[4]), 300);
+      expect(k.allFines, 500);
+      final back = KuriDoc.fromJson(k.toJson());
+      expect(back.months[2].fineAmt, 200);
+      expect(back.months[2].extra.containsKey('fineAmt'), isFalse);
+      expect(back.allFines, 500);
+    });
+    test('going back to the old fine forgets the kept amount', () {
+      final k = boystown()..setFine(300);
+      k.setFine(200);
+      expect(k.months[2].fineAmt, isNull);
+      expect(k.fineSum(k.months[2]), 200);
+    });
+    test('no fine from now on', () {
+      final k = boystown()..setFine(0);
+      expect(k.fine, 0);
+      expect(k.fineSum(k.months[2]), 200);
+      k.months[4].fines['p6'] = true;
+      expect(k.fineSum(k.months[4]), 0);
+    });
+  });
 }

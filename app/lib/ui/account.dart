@@ -137,8 +137,8 @@ class _AccountScreenState extends State<AccountScreen> {
         KCard(
           child: Row(children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 46,
+              height: 46,
               alignment: Alignment.center,
               decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
               child: Text(initials(name.isEmpty ? 'K' : name), style: T.h3.copyWith(color: K.heroText)),
@@ -201,20 +201,27 @@ class _AccountScreenState extends State<AccountScreen> {
     return InkWell(
       onTap: onTap,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 56),
+        constraints: const BoxConstraints(minHeight: 52),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 14, 14),
-          child: Row(children: [
-            Icon(icon, color: bad ? K.bad : K.ink2, size: 22),
-            const SizedBox(width: Sp.md + 2),
-            Expanded(child: Text(text, style: T.bodyStrong.copyWith(color: bad ? K.bad : K.ink))),
-            if (value != null) ...[
-              const SizedBox(width: Sp.sm),
-              Flexible(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small)),
-            ],
-            const SizedBox(width: Sp.xs),
-            const Icon(Icons.chevron_right_rounded, color: K.border2),
-          ]),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
+          // The value (English) sits at the end, next to the arrow, like the
+          // arrows on the other rows; a long one stops at under half the row.
+          child: LayoutBuilder(
+            builder: (context, box) => Row(children: [
+              Icon(icon, color: bad ? K.bad : K.green, size: 20),
+              const SizedBox(width: Sp.md + 2),
+              Expanded(child: Text(text, style: T.body.copyWith(color: bad ? K.bad : K.ink))),
+              if (value != null) ...[
+                const SizedBox(width: Sp.sm),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: box.maxWidth * 0.45),
+                  child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small),
+                ),
+              ],
+              const SizedBox(width: Sp.xs),
+              const Icon(Icons.chevron_right_rounded, color: K.border2),
+            ]),
+          ),
         ),
       ),
     );

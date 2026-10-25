@@ -17,13 +17,18 @@ class _Holder {
         amount = TextEditingController(text: amount);
   final TextEditingController name;
   final TextEditingController amount;
+  final FocusNode focus = FocusNode();
   final String? id;
 
   void dispose() {
     name.dispose();
     amount.dispose();
+    focus.dispose();
   }
 }
+
+/// The most slots a chit can have: five years of months.
+const kMaxSlots = 60;
 
 /// A new chit, or changes to one: the name, the money and its currency, the
 /// dates, who holds each slot and their numbers. Returns the saved chit.
@@ -43,7 +48,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   late final _share = TextEditingController(text: isNew ? '' : '${base.share}');
   late final _fine = TextEditingController(text: base.fine > 0 ? '${base.fine}' : '');
   late String currency = base.currency;
-  late int slots = base.slots;
   late int startYear = base.startYear;
   late int startMonth = base.startMonth;
   late int collectDay = base.collectDay;
@@ -59,6 +63,12 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   }
 
   int get share => int.tryParse(_share.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+
+  /// One row per slot, then one empty row to add the next name. The slots
+  /// are the rows before that empty one.
+  int get slots => rows.isNotEmpty && _isEmpty(rows.last) ? rows.length - 1 : rows.length;
+
+  static bool _isEmpty(List<_Holder> r) => r.length == 1 && r.first.name.text.trim().isEmpty;
   int get fine => int.tryParse(_fine.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
 
   @override
@@ -67,9 +77,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     for (final p in base.people) {
       if (p.phone.isNotEmpty) phones[nameKey(p.name)] = p.phone;
     }
-    for (var s = 1; s <= slots; s++) {
+    // A new chit starts with one empty row; a saved one with its slots.
+    for (var s = 1; s <= (isNew ? 0 : base.slots); s++) {
       rows.add(_rowFor(s));
     }
+    _tidy();
     _share.addListener(() => setState(() {}));
   }
 
@@ -92,18 +104,26 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     super.dispose();
   }
 
-  void _setSlots(int n) {
-    setState(() {
-      slots = n.clamp(2, 60);
-      while (rows.length < slots) {
-        rows.add(_rowFor(rows.length + 1));
+  /// Keeps exactly one empty row at the end: a name typed into it brings the
+  /// next one, and clearing the last name takes the spare row away again.
+  void _tidy() {
+    if ((rows.isEmpty || !_isEmpty(rows.last)) && rows.length < kMaxSlots) {
+      rows.add([_Holder('', '')]);
+    }
+    while (rows.length >= 2 && _isEmpty(rows.last) && _isEmpty(rows[rows.length - 2])) {
+      for (final h in rows.removeLast()) {
+        h.dispose();
       }
-      while (rows.length > slots) {
-        for (final h in rows.removeLast()) {
-          h.dispose();
-        }
-      }
-    });
+    }
+  }
+
+  /// Next on the keyboard goes on to the next slot's name.
+  void _next(int i) {
+    if (i + 1 < rows.length) {
+      rows[i + 1].first.focus.requestFocus();
+    } else {
+      FocusScope.of(context).unfocus();
+    }
   }
 
   void _split(int i) {
@@ -148,11 +168,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       ..currency = currency
       ..group = _group.text.trim()
       ..share = share
-      ..fine = fine
       ..startYear = startYear
       ..startMonth = startMonth
       ..collectDay = collectDay
       ..lastDay = lastDay;
+    doc.setFine(fine);
 
     // People: the same name in two slots is the same person.
     final byKey = {for (final p in base.people) nameKey(p.name): p};
@@ -178,6 +198,8 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       return p;
     }
 
+    // At least two slots: with fewer, the first empty one is the one to fill.
+    if (slots < 2) throw ApiError(t.errSlotName(slots + 1));
     final payers = <Payer>[];
     final usedIds = <String>{};
     for (var i = 0; i < slots; i++) {
@@ -253,28 +275,26 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     }
   }
 
+  /// The first month, on a calendar of months: five years back (an older
+  /// chit being moved in) to two years ahead.
   Future<void> _pickStart() async {
     final now = DateTime.now();
-    final options = <PickOption<int>>[];
-    for (var i = -18; i <= 12; i++) {
-      final d = DateTime(now.year, now.month + i, 1);
-      options.add(PickOption(d.year * 100 + d.month, '${monthName(d.month)} ${d.year}'));
-    }
-    final picked = await showPicker<int>(context, title: S.of(context).firstMonth, options: options, selected: startYear * 100 + startMonth);
+    final picked = await pickMonth(context,
+        title: S.of(context).firstMonth,
+        year: startYear,
+        month: startMonth,
+        first: DateTime(now.year, now.month - 60),
+        last: DateTime(now.year, now.month + 24));
     if (picked != null) {
       setState(() {
-        startYear = picked.value ~/ 100;
-        startMonth = picked.value % 100;
+        startYear = picked ~/ 100;
+        startMonth = picked % 100;
       });
     }
   }
 
-  Future<int?> _pickDay(String title, int current) async {
-    final s = S.of(context);
-    final picked = await showPicker<int>(context,
-        title: title, selected: current, options: [for (var d = 1; d <= 31; d++) PickOption(d, dayOf(d), sub: d > 28 ? s.shorterMonths : null)]);
-    return picked?.value;
-  }
+  /// A day of the month, on a calendar page of 1 to 31.
+  Future<int?> _pickDay(String title, int current) => pickDay(context, title: title, selected: current);
 
   Future<void> _pickCurrency() async {
     final s = S.of(context);
@@ -318,18 +338,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                     Expanded(child: _field(s.lateFine, _fine, hint: s.fineNone, money: true)),
                   ]),
                   const SizedBox(height: Sp.lg),
-                  Row(children: [
-                    Expanded(child: Text(s.slots, style: T.label)),
-                    RoundIcon(Icons.remove_rounded, tooltip: s.fewerSlots, onTap: slots > 2 ? () => _setSlots(slots - 1) : null),
-                    SizedBox(width: 44, child: Text('$slots', textAlign: TextAlign.center, style: T.h2.merge(T.tabular))),
-                    RoundIcon(Icons.add_rounded, tooltip: s.moreSlots, onTap: slots < 60 ? () => _setSlots(slots + 1) : null),
-                  ]),
-                  const SizedBox(height: Sp.md),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
                     child: Text(
-                      share > 0 ? s.potSummary(money(share * slots, currency), slots) : s.potSummaryNone(slots),
+                      slots == 0
+                          ? s.slotsFromNames
+                          : share > 0
+                              ? s.potSummary(money(share * slots, currency), slots)
+                              : s.potSummaryNone(slots),
                       style: T.label.copyWith(color: K.brand600),
                     ),
                   ),
@@ -364,7 +381,10 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
               ),
             ]),
           ),
-          SectionTitle(s.slots, trailing: Text(s.oneNamePerSlot, style: T.small)),
+          SectionTitle(
+            s.slots,
+            trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
+          ),
           for (var i = 0; i < rows.length; i++) ...[
             _slotRow(i, s, cur),
             const SizedBox(height: Sp.md - 2),
@@ -423,11 +443,17 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   Widget _slotRow(int i, S s, Currency cur) {
     final r = rows[i];
     final split = r.length > 1;
+    // The empty row at the end, for the next name.
+    final spare = i == rows.length - 1 && _isEmpty(r);
     Widget name(int j) => TextField(
+          key: ValueKey('slot-${i + 1}-${j + 1}'),
           controller: r[j].name,
+          focusNode: r[j].focus,
           textCapitalization: TextCapitalization.words,
+          textInputAction: split ? TextInputAction.done : TextInputAction.next,
+          onSubmitted: split ? null : (_) => _next(i),
           style: T.bodyStrong,
-          onChanged: (_) => setState(() {}),
+          onChanged: (_) => setState(_tidy),
           decoration: InputDecoration(
             hintText: split ? s.nameN(j + 1) : s.fieldName,
             isDense: true,
@@ -441,9 +467,9 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
           ),
         );
     return KCard(
-      padding: EdgeInsetsDirectional.fromSTEB(12, 12, split ? 12 : 4, split ? 6 : 12),
+      padding: EdgeInsetsDirectional.fromSTEB(10, 10, split ? 10 : 2, split ? 4 : 10),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 38)),
+        Padding(padding: const EdgeInsets.only(top: 6), child: SlotBadge('${i + 1}', size: 32)),
         const SizedBox(width: Sp.md - 2),
         Expanded(
           child: split
@@ -491,12 +517,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 ])
               : name(0),
         ),
-        if (!split)
+        if (!split && !spare)
           IconButton(
             tooltip: s.splitSlot,
             onPressed: () => _split(i),
             icon: const Icon(Icons.group_add_outlined, color: K.green),
-          ),
+          )
+        else if (spare)
+          // Keeps the empty row the same height and width as the others.
+          const SizedBox(width: 48, height: 48),
       ]),
     );
   }

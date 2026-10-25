@@ -274,6 +274,28 @@
   },
   "drawDonePressSave": "Draw done. Press Save to publish it.",
   "numberAddedPressSave": "Number added. Press Save to keep it.",
+  "slotsFromNames": "Add names below. Each name is one slot, and the chit runs one month per slot.",
+  "fineChip": "Late fine {fine}",
+  "@fineChip": {
+    "placeholders": {
+      "fine": {}
+    }
+  },
+  "fineEach": "{fine} for each late payment",
+  "@fineEach": {
+    "placeholders": {
+      "fine": {}
+    }
+  },
+  "addLateFine": "Add a late fine",
+  "fineSheetText": "Added to that month's pot for each late payment. Fines already marked keep their amount.",
+  "fineChangedPressSave": "Late fine is now {fine}. Press Save to keep it.",
+  "@fineChangedPressSave": {
+    "placeholders": {
+      "fine": {}
+    }
+  },
+  "fineOffPressSave": "No late fine from now on. Press Save to keep it.",
   "newLinkTitle": "Make a new link?",
   "newLinkText": "The old link stops working straight away. Share the new one in the group.",
   "newLinkYes": "Make a new link",
@@ -318,6 +340,8 @@
   "undo": "Undo",
   "prevMonth": "Previous month",
   "nextMonth": "Next month",
+  "prevYear": "Previous year",
+  "nextYear": "Next year",
   "monthNLabel": "Month {n}, {label}",
   "@monthNLabel": {
     "placeholders": {

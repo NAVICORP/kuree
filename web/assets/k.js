@@ -56,7 +56,9 @@
   function paid(m, id) { return !!(m.paid && m.paid[id]); }
   function fined(m, id) { return !!(m.fines && m.fines[id]); }
   function paidSum(m) { var t = 0; PAYERS.forEach(function (p) { if (paid(m, p.id)) t += p.amt; }); return t; }
-  function fineSum(m) { var t = 0; PAYERS.forEach(function (p) { if (fined(m, p.id)) t += FINE(); }); return t; }
+  /* a month keeps the fine it was marked at when the chit's fine changed later */
+  function fineOf(m) { return m.fineAmt != null ? Number(m.fineAmt) || 0 : FINE(); }
+  function fineSum(m) { var t = 0; PAYERS.forEach(function (p) { if (fined(m, p.id)) t += fineOf(m); }); return t; }
   function allFines() { var t = 0; data.months.forEach(function (m) { t += fineSum(m); }); return t; }
   function status(m) {
     if (PAYERS.length && PAYERS.every(function (p) { return paid(m, p.id); }) && m.winner) return "done";
@@ -215,7 +217,7 @@
         '<button class="ibtn" type="button" data-step="1"' + (sel >= n ? " disabled" : "") + ' aria-label="Next month">' + svgi("i-next") + "</button>" +
       "</div>" +
       '<div class="mcard__meta"><span>Collection ' + ord(cdate(m.n).getDate()) + "</span><span>Last date " + ord(dl.getDate()) + ", midnight</span>" +
-        (FINE() ? "<span>Late fine " + money(FINE()) + "</span>" : "") + "</div>" +
+        (fineOf(m) ? "<span>Late fine " + money(fineOf(m)) + "</span>" : "") + "</div>" +
       '<div class="mcard__meta"><span><b class="num">' + money(got) + '</b> of <span class="num">' + money(POT) + "</span> collected</span>" +
       (fines ? '<span class="num">+ ' + money(fines) + " in fines</span>" : "") + "</div>" +
       '<div class="bar" role="img" aria-label="' + pct + '% collected"><i style="width:' + pct + '%"></i></div></div>' +
@@ -227,7 +229,7 @@
       "</div>");
     PAYERS.forEach(function (p) {
       var isw = m.winner === p.slot, pd = paid(m, p.id), fd = fined(m, p.id);
-      var due = p.amt + (fd ? FINE() : 0);
+      var due = p.amt + (fd ? fineOf(m) : 0);
       var dw = w[p.slot];
       var draw = isw ? '<span class="badge badge--win" title="Took the pot in month ' + m.n + '" aria-label="Took the pot in month ' + m.n + '">' + svgi("i-trophy") + m.n + "</span>"
         : (dw ? '<span class="badge badge--drawn" title="Took the pot in month ' + dw + '" aria-label="Took the pot in month ' + dw + '">' + svgi("i-trophy") + dw + "</span>"
@@ -238,7 +240,7 @@
         '<div class="prow__name" title="' + esc(p.name) + '">' + esc(p.name) + (pl ? ' <span class="badge badge--plain">' + pl + "</span>" : "") + "</div>" +
         '<dl class="prow__facts">' +
           '<div><dt>Payment</dt><dd><span class="badge ' + (pd ? "badge--ok" : "badge--wait") + '">' + (pd ? "Paid" : "Pending") + "</span>" +
-            (fd ? ' <span class="badge badge--bad" title="Paid after the last date, ' + money(FINE()) + ' late fine">Late</span>' : "") + "</dd></div>" +
+            (fd ? ' <span class="badge badge--bad" title="Paid after the last date, ' + money(fineOf(m)) + ' late fine">Late</span>' : "") + "</dd></div>" +
           '<div><dt>Amount due</dt><dd><span class="fval num">' + money(due) + "</span>" + (fd ? " <small>incl. fine</small>" : "") + "</dd></div>" +
           '<div class="f-draw"><dt>Draw</dt><dd>' + draw + "</dd></div>" +
         "</dl></div>");
@@ -296,7 +298,7 @@
         if (wn) {
           h.push('<td><span class="mk w" role="img" title="Took the pot in month ' + x.n + '" aria-label="Took the pot">' + svgi("i-trophy") + "</span></td>");
         } else if (fd) {
-          var ft = "Paid after the last date, " + money(FINE()) + " late fine added to the pot";
+          var ft = "Paid after the last date, " + money(fineOf(x)) + " late fine added to the pot";
           h.push('<td class="td--2"><span class="mk y" role="img" aria-label="Paid">' + svgi("i-check") + "</span>" +
             '<span class="mk f" role="img" title="' + ft + '" aria-label="' + ft + '">' + svgi("i-alert") + "</span></td>");
         } else {

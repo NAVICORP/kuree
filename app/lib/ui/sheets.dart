@@ -248,6 +248,164 @@ Future<String?> askPhone(BuildContext context, String name, String current) {
   );
 }
 
+// ---------------------------------------------------------------- a month, as a calendar
+
+/// A year of months to tap, with arrows to the years either side. Months
+/// before [first] or after [last] can't be picked. Returns year * 100 + month.
+Future<int?> pickMonth(BuildContext context,
+    {required String title, required int year, required int month, required DateTime first, required DateTime last}) {
+  final s = S.of(context);
+  final now = DateTime.now();
+  int key(int y, int m) => y * 100 + m;
+  final lo = key(first.year, first.month), hi = key(last.year, last.month);
+  var shown = year;
+  return showKSheet<int>(
+    context,
+    title: title,
+    builder: (ctx) => StatefulBuilder(builder: (ctx, setState) {
+      Widget cell(int m) {
+        final k = key(shown, m);
+        final on = shown == year && m == month;
+        final today = shown == now.year && m == now.month;
+        final ok = k >= lo && k <= hi;
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(Sp.xs),
+            child: Semantics(
+              button: true,
+              selected: on,
+              enabled: ok,
+              label: '${monthName(m)} $shown',
+              child: Opacity(
+                opacity: ok ? 1 : 0.35,
+                child: Material(
+                  color: on ? K.deep : (today ? K.brand100 : K.surface),
+                  shape: StadiumBorder(side: BorderSide(color: on ? K.deep : (today ? K.brand300 : K.border))),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: ok ? () => Navigator.of(ctx).pop(k) : null,
+                    child: SizedBox(
+                      height: 46,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: Sp.sm),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(monthShortName(m), maxLines: 1, style: T.bodyStrong.copyWith(color: on ? Colors.white : K.ink)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(children: [
+          RoundIcon(Icons.chevron_left_rounded, tooltip: s.prevYear, onTap: shown > first.year ? () => setState(() => shown--) : null),
+          Expanded(child: Text('$shown', textAlign: TextAlign.center, style: T.h2.merge(T.tabular))),
+          RoundIcon(Icons.chevron_right_rounded, tooltip: s.nextYear, onTap: shown < last.year ? () => setState(() => shown++) : null),
+        ]),
+        const SizedBox(height: Sp.md),
+        for (var r = 0; r < 4; r++) Row(children: [for (var c = 1; c <= 3; c++) cell(r * 3 + c)]),
+      ]);
+    }),
+  );
+}
+
+// ---------------------------------------------------------------- a day of the month, as a calendar
+
+/// The days 1 to 31 in rows of seven, like a calendar page. Returns the day
+/// tapped. 29, 30 and 31 fall back to the last day in shorter months.
+Future<int?> pickDay(BuildContext context, {required String title, required int selected}) {
+  final s = S.of(context);
+  return showKSheet<int>(
+    context,
+    title: title,
+    builder: (ctx) {
+      Widget cell(int d) {
+        if (d > 31) return const Expanded(child: SizedBox(height: 40));
+        final on = d == selected;
+        return Expanded(
+          child: Center(
+            child: Semantics(
+              button: true,
+              selected: on,
+              label: dayOf(d),
+              child: Material(
+                color: on ? K.deep : K.surface,
+                shape: CircleBorder(side: BorderSide(color: on ? K.deep : K.border)),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () => Navigator.of(ctx).pop(d),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Center(
+                      child: Text('$d', style: T.bodyStrong.merge(T.tabular).copyWith(color: on ? Colors.white : (d > 28 ? K.muted : K.ink))),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        for (var r = 0; r < 5; r++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Sp.sm),
+            child: Row(children: [for (var c = 1; c <= 7; c++) cell(r * 7 + c)]),
+          ),
+        const SizedBox(height: Sp.xs),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.info_outline_rounded, size: 16, color: K.muted)),
+          const SizedBox(width: Sp.sm),
+          Expanded(child: Text('29, 30, 31: ${s.shorterMonths}', style: T.small)),
+        ]),
+      ]);
+    },
+  );
+}
+
+// ---------------------------------------------------------------- the late fine
+
+/// The chit's late fine: what each late payment adds to that month's pot.
+/// Returns the new amount (0 for no fine), or null when the sheet is closed.
+Future<int?> askFine(BuildContext context, int current, String currency) {
+  final s = S.of(context);
+  final cur = currencyOf(currency);
+  final c = TextEditingController(text: current > 0 ? '$current' : '');
+  return showKSheet<int>(
+    context,
+    title: s.lateFine,
+    builder: (ctx) {
+      void done() => Navigator.of(ctx).pop(int.tryParse(c.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0);
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(
+          controller: c,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          textInputAction: TextInputAction.done,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(7)],
+          style: T.bodyStrong,
+          decoration: InputDecoration(hintText: s.fineNone, prefixText: '${cur.symbol} ', prefixStyle: T.bodyStrong.copyWith(color: K.muted)),
+          onSubmitted: (_) => done(),
+        ),
+        const SizedBox(height: Sp.sm),
+        Text(s.fineSheetText, style: T.small),
+        const SizedBox(height: Sp.lg),
+        KButton(label: s.save, icon: Icons.check_rounded, expand: true, onPressed: done),
+      ]);
+    },
+  );
+}
+
 // ---------------------------------------------------------------- the members' link
 
 /// The private link: copy, share, open. Returns true when the admin asks for

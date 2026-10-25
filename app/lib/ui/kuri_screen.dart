@@ -220,6 +220,15 @@ class _KuriScreenState extends State<KuriScreen> {
     }
   }
 
+  /// The chit's late fine, changed here without opening Edit.
+  Future<void> _editFine() async {
+    final value = await askFine(context, doc.fine, doc.currency);
+    if (value == null || value == doc.fine || !mounted) return;
+    _change(() => doc.setFine(value));
+    final s = S.of(context);
+    toast(context, value > 0 ? s.fineChangedPressSave(doc.money(value)) : s.fineOffPressSave);
+  }
+
   Future<void> _edit() async {
     final s = S.of(context);
     if (dirty && !await confirm(context, title: s.saveFirstTitle, text: s.saveFirstText, yes: s.save)) return;
@@ -255,6 +264,7 @@ class _KuriScreenState extends State<KuriScreen> {
       PickOption('report', s.spreadsheet, sub: s.spreadsheetSub, icon: Icons.table_chart_outlined),
       PickOption('history', s.history, sub: s.historySub, icon: Icons.history_rounded),
       PickOption('admins', s.admins, sub: s.adminsSub, icon: Icons.admin_panel_settings_outlined),
+      PickOption('fine', s.lateFine, sub: doc.fine > 0 ? s.fineEach(doc.money(doc.fine)) : s.addLateFine, icon: Icons.schedule_rounded),
       PickOption('edit', s.editChit, sub: s.editChitSub, icon: Icons.tune_rounded),
       if (rec.isOwner) PickOption('delete', s.deleteChit, icon: Icons.delete_outline_rounded),
     ]);
@@ -271,6 +281,8 @@ class _KuriScreenState extends State<KuriScreen> {
         if (restored == true) await _reload();
       case 'admins':
         await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AdminsScreen(record: rec)));
+      case 'fine':
+        await _editFine();
       case 'edit':
         await _edit();
       case 'delete':
@@ -299,7 +311,7 @@ class _KuriScreenState extends State<KuriScreen> {
           title: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (doc.group.trim().isNotEmpty)
               Text(doc.group, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
-            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 19)),
+            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 17)),
           ]),
           actions: [
             IconButton(tooltip: s.membersLink, icon: const Icon(Icons.link_rounded), onPressed: _link),
@@ -600,7 +612,18 @@ class _KuriScreenState extends State<KuriScreen> {
         ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 10),
-          child: Text(s.tickHelp, style: T.small),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(s.tickHelp, style: T.small),
+            const SizedBox(height: Sp.sm),
+            // The fine a Late adds, and the way to change it.
+            KButton(
+              label: doc.fine > 0 ? s.fineChip(doc.money(doc.fine)) : s.addLateFine,
+              icon: doc.fine > 0 ? Icons.edit_outlined : Icons.add_rounded,
+              kind: KButtonKind.secondary,
+              small: true,
+              onPressed: _editFine,
+            ),
+          ]),
         ),
         const Divider(),
         if (rows.isEmpty)
@@ -629,7 +652,7 @@ class _MemberRow extends StatelessWidget {
     final paid = month.isPaid(payer.id), late = month.isFined(payer.id), won = month.winner == payer.slot;
     final part = doc.partLabel(payer);
     var status = paid ? s.statusPaid(doc.money(payer.amt)) : s.statusPending(doc.money(payer.amt));
-    if (late) status = s.statusLateFine(status, doc.money(doc.fine));
+    if (late) status = s.statusLateFine(status, doc.money(doc.fineFor(month)));
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
@@ -649,7 +672,7 @@ class _MemberRow extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 6, runSpacing: 2, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(doc.nameOf(payer), style: T.bodyStrong.copyWith(fontSize: 16)),
+              Text(doc.nameOf(payer), style: T.bodyStrong),
               if (part != null) Pill(part),
             ]),
             const SizedBox(height: 2),
@@ -688,14 +711,14 @@ class _Tick extends StatelessWidget {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: on ? K.green : K.surface,
             shape: BoxShape.circle,
             border: Border.all(color: on ? K.green : K.border2, width: 2),
           ),
-          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 24),
+          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 21),
         ),
       ),
     );
@@ -726,7 +749,7 @@ class _LateButton extends StatelessWidget {
           child: Center(
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 160),
-              height: 36,
+              height: 32,
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: on ? K.badBg : K.surface,
@@ -734,9 +757,9 @@ class _LateButton extends StatelessWidget {
                 border: Border.all(color: on ? K.badBg : K.border),
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.schedule_rounded, size: 15, color: on ? K.bad : K.muted),
+                Icon(Icons.schedule_rounded, size: 14, color: on ? K.bad : K.muted),
                 const SizedBox(width: 4),
-                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 13, color: on ? K.bad : K.muted)),
+                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 12, color: on ? K.bad : K.muted)),
               ]),
             ),
           ),
