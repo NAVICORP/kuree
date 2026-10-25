@@ -103,6 +103,9 @@ void main() {
         await tester.tap(find.bySemanticsLabel(s.semPaid('Naif')), warnIfMissed: false);
         await settle(tester);
         expect(tester.takeException(), isNull);
+        // The Reminders button sits near the top; after scrolling down the
+        // list no longer builds it, so scroll back up to it first.
+        await tester.scrollUntilVisible(find.text(s.reminders), -300, scrollable: find.byType(Scrollable).first);
         await tapText(tester, s.reminders);
         expect(tester.takeException(), isNull);
       });
