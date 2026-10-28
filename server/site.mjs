@@ -38,6 +38,7 @@ const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp',
   '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
   '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 const TEXT = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt']);
@@ -188,6 +189,16 @@ const PAGES = {
   '/terms': ['Terms | Kuree', 'pages/terms.html'],
   '/delete-account': ['Deleting an account | Kuree', 'pages/delete-account.html'],
 };
+
+// Every public page, with the date its file last changed. Members' pages
+// (/k/...) and the admin are private and stay out.
+function sitemap() {
+  const day = (rel) => statSync(path.join(ROOT, rel)).mtime.toISOString().slice(0, 10);
+  const pages = [['/', 'home.html'], ...Object.entries(PAGES).map(([u, pg]) => [u, pg[1]])];
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    pages.map(([u, f]) => `  <url><loc>${ORIGIN}${u === '/' ? '/' : u}</loc><lastmod>${day(f)}</lastmod></url>`).join('\n') +
+    '\n</urlset>\n';
+}
 
 // ---------------------------------------------------------------- a kuri from its link
 
@@ -394,7 +405,13 @@ async function handle(req, res) {
     return sendBody(req, res, 200, TYPES['.html'], shell(page[0], read(page[1]), { home: !!page[2] }),
       { 'cache-control': 'public, max-age=300', 'content-security-policy': CSP });
   }
-  if (p === '/robots.txt') return sendBody(req, res, 200, TYPES['.txt'], 'User-agent: *\nDisallow: /k/\nDisallow: /admin/\n', { 'cache-control': 'public, max-age=3600' });
+  if (p === '/robots.txt') {
+    return sendBody(req, res, 200, TYPES['.txt'], `User-agent: *\nDisallow: /k/\nDisallow: /admin/\n\nSitemap: ${ORIGIN}/sitemap.xml\n`,
+      { 'cache-control': 'public, max-age=3600' });
+  }
+  // What Kuree is, in plain words, for AI assistants and search (llmstxt.org).
+  if (p === '/llms.txt') return sendBody(req, res, 200, TYPES['.txt'], read('llms.txt'), { 'cache-control': 'public, max-age=3600' });
+  if (p === '/sitemap.xml') return sendBody(req, res, 200, TYPES['.xml'], sitemap(), { 'cache-control': 'public, max-age=3600' });
   if (p === '/favicon.ico') return sendFile(req, res, path.join(ROOT, 'favicon.ico'), 'public, max-age=86400');
   if (p.startsWith('/assets/')) {
     let rel;

@@ -1,0 +1,29 @@
+# Kuree
+
+> Kuree is a phone app for the people who run a chit, also called a chitty, committee or ROSCA: a group where every member pays the same share each month and one member takes the whole pot, until everyone has had it once. Kuree keeps the record of who paid, who is late, who takes the pot and what comes next. It never holds, moves or lends money; members pay each other the way they always have.
+
+Kuree is made by SkiFi (SKIFI GROUP LLC, https://skifi.co). It is free, with no in-app purchases, and is coming to the App Store (iPhone) and Google Play (Android).
+
+## What it does
+
+- Every month on one screen: tick who paid, mark late payers and the fine is added, see the total and what is left.
+- Two people can share one slot, as half shares or any parts.
+- The bottle draw picks who takes the pot: every slot still waiting goes into the bottle once and the phone's secure random numbers pick one. The draw can be saved as a video for the group. Admins can also choose by hand.
+- Reminders on WhatsApp: who paid and who has not, to the group in one tap, or to each person with the amount and the last day to pay.
+- Members do not need the app. They follow along from a private link in any browser, with no login. Phone numbers stay with the admins.
+- Co-admins by WhatsApp number or email, every change kept with undo, and an Excel download of every month and payment.
+- Works in English, Arabic, Malayalam, Tamil, Kannada and Hindi, with a currency for each chit.
+- Sign in with a code on WhatsApp or by email.
+
+## Pages
+
+- [Kuree home](https://kureeapp.com/): what the app does, the bottle draw, reminders, the members' link and questions
+- [Questions](https://kureeapp.com/#faq): does Kuree hold money, do members need the app, what members see, is the draw fair
+- [Privacy](https://kureeapp.com/privacy)
+- [Terms](https://kureeapp.com/terms)
+- [Deleting an account](https://kureeapp.com/delete-account)
+
+## Contact
+
+- Email: contact@skifi.co
+- Made by SkiFi: https://skifi.co
