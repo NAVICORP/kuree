@@ -14,6 +14,7 @@ import '../core/messages.dart';
 import '../draw/bottle_draw_screen.dart';
 import '../l10n/strings.dart';
 import 'admins_screen.dart';
+import 'glass.dart';
 import 'history_screen.dart';
 import 'kuri_editor.dart';
 import 'sheets.dart';
@@ -307,6 +308,7 @@ class _KuriScreenState extends State<KuriScreen> {
         }
       },
       child: Scaffold(
+        extendBody: MediaQuery.viewInsetsOf(context).bottom == 0,
         appBar: AppBar(
           titleSpacing: Sp.xs,
           title: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -315,68 +317,70 @@ class _KuriScreenState extends State<KuriScreen> {
             Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 17)),
           ]),
           actions: [
-            IconButton(tooltip: s.membersLink, icon: const Icon(Icons.link_rounded), onPressed: _link),
-            IconButton(tooltip: s.more, icon: const Icon(Icons.more_horiz_rounded), onPressed: _menu),
+            RoundIcon(Icons.link_rounded, tooltip: s.membersLink, onTap: _link),
+            RoundIcon(Icons.more_horiz_rounded, tooltip: s.more, onTap: _menu),
             const SizedBox(width: Sp.xs),
           ],
         ),
-        body: RefreshIndicator(
-          color: K.green,
-          onRefresh: () async {
-            if (dirty) {
-              toast(context, s.saveChangesFirst);
-              return;
-            }
-            await _reload();
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 120),
-            children: [
-              _hero(s),
-              const SizedBox(height: Sp.md + 2),
-              _winner(s),
-              const SizedBox(height: Sp.md + 2),
-              _actions(s),
-              const SizedBox(height: Sp.md + 2),
-              _members(s),
-              const SizedBox(height: Sp.xl),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Icon(Icons.history_rounded, size: 16, color: K.muted),
-                const SizedBox(width: 6),
-                Flexible(child: Text(s.historyKept, style: T.small, textAlign: TextAlign.center)),
-              ]),
-              if (rec.updatedBy != null && rec.updatedAt != null) ...[
-                const SizedBox(height: Sp.xs),
-                Text(s.lastSavedBy(rec.updatedBy!, ago(rec.updatedAt!)), style: T.small, textAlign: TextAlign.center),
+        // The body runs under the footer and the Save bar; its own padding
+        // says how much of its bottom they cover.
+        body: Builder(
+          builder: (context) => RefreshIndicator(
+            color: K.green,
+            onRefresh: () async {
+              if (dirty) {
+                toast(context, s.saveChangesFirst);
+                return;
+              }
+              await _reload();
+            },
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 32 + MediaQuery.paddingOf(context).bottom),
+              children: [
+                _hero(s),
+                const SizedBox(height: Sp.md + 2),
+                _winner(s),
+                const SizedBox(height: Sp.md + 2),
+                _actions(s),
+                const SizedBox(height: Sp.md + 2),
+                _members(s),
+                const SizedBox(height: Sp.xl),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Icon(Icons.history_rounded, size: 16, color: K.muted),
+                  const SizedBox(width: 6),
+                  Flexible(child: Text(s.historyKept, style: T.small, textAlign: TextAlign.center)),
+                ]),
+                if (rec.updatedBy != null && rec.updatedAt != null) ...[
+                  const SizedBox(height: Sp.xs),
+                  Text(s.lastSavedBy(rec.updatedBy!, ago(rec.updatedAt!)), style: T.small, textAlign: TextAlign.center),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         bottomNavigationBar: AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           transitionBuilder: (c, a) => SizeTransition(sizeFactor: a, child: c),
-          child: dirty ? _saveBar(s) : const SizedBox.shrink(),
+          // With nothing to save, an empty strip the height of the footer
+          // still tells the list how much of its bottom the glass covers.
+          child: dirty ? _saveBar(s) : SizedBox(key: const ValueKey('none'), height: MediaQuery.paddingOf(context).bottom),
         ),
       ),
     );
   }
 
+  /// Unsaved changes: a glass bar floats over the bottom of the chit, just
+  /// above the footer, with Undo and Save.
   Widget _saveBar(S s) {
-    return Container(
+    return KeyedSubtree(
       key: const ValueKey('save'),
-      decoration: const BoxDecoration(
-        color: K.surface,
-        border: Border(top: BorderSide(color: K.border)),
-        boxShadow: [BoxShadow(color: Color(0x14032A09), blurRadius: 20, offset: Offset(0, -6))],
-      ),
-      child: SafeArea(
-        top: false,
+      child: GlassBar(
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 16, 12),
+          padding: const EdgeInsetsDirectional.only(start: 2),
           child: Row(children: [
             const Icon(Icons.edit_note_rounded, color: K.warn),
             const SizedBox(width: Sp.sm),
-            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.label.copyWith(color: K.ink))),
             Flexible(
               child: KButton(
                 label: s.undo,

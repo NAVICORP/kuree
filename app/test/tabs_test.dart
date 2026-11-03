@@ -85,21 +85,32 @@ void main() {
     );
   }
 
-  void expectFooterBelowChit(WidgetTester tester) {
+  /// The footer floats over the chit as glass: the chit runs to the bottom of
+  /// the phone, under it, and the footer's tabs stay on top to tap.
+  void expectFooterOverChit(WidgetTester tester) {
     expect(footerItem(s.tabChits).hitTestable(), findsOneWidget);
     expect(footerItem(s.tabCollect).hitTestable(), findsOneWidget);
     expect(footerItem(s.tabProfile).hitTestable(), findsOneWidget);
     final chit = tester.getRect(find.byType(KuriScreen));
     final footer = tester.getRect(find.byType(KNavBar));
-    expect(chit.bottom, moreOrLessEquals(footer.top));
+    expect(chit.bottom, moreOrLessEquals(screenHeight(tester)));
     expect(footer.bottom, moreOrLessEquals(screenHeight(tester)));
   }
 
   testWidgets('a chit opened from Chits keeps the footer below it', (tester) async {
     await openChit(tester);
-    expectFooterBelowChit(tester);
+    expectFooterOverChit(tester);
     expect(footerIndex(tester), 0);
     expect(find.byType(KuriCard), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the end of a chit scrolls clear of the glass footer', (tester) async {
+    await openChit(tester);
+    await tester.drag(find.descendant(of: find.byType(KuriScreen), matching: find.byType(ListView)).first, const Offset(0, -4000));
+    await settle(tester);
+    final footer = tester.getRect(find.byType(KNavBar));
+    expect(tester.getRect(find.text(s.historyKept)).bottom, lessThanOrEqualTo(footer.top));
     expect(tester.takeException(), isNull);
   });
 
@@ -124,7 +135,7 @@ void main() {
     expect(footerIndex(tester), 0);
     expect(find.byType(KuriScreen), findsOneWidget);
     expect(find.byType(KuriCard), findsNothing);
-    expectFooterBelowChit(tester);
+    expectFooterOverChit(tester);
   });
 
   testWidgets('the back button closes the chit and the footer stays', (tester) async {
@@ -171,7 +182,7 @@ void main() {
     await tester.pageBack();
     await settle(tester);
     expect(find.byType(HistoryScreen), findsNothing);
-    expectFooterBelowChit(tester);
+    expectFooterOverChit(tester);
   });
 
   testWidgets('unsaved changes ask first when Chits is tapped', (tester) async {
@@ -202,7 +213,7 @@ void main() {
     await settle(tester);
     expect(find.byType(KuriScreen), findsOneWidget);
     expect(footerIndex(tester), 1);
-    expectFooterBelowChit(tester);
+    expectFooterOverChit(tester);
     // Chits shows its own list, not the chit opened in To collect.
     await tester.tap(footerItem(s.tabChits));
     await settle(tester);

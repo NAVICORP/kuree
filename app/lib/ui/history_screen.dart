@@ -109,7 +109,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         if (versions == null) return const Loading();
         if (versions!.isEmpty) return Center(child: EmptyState(icon: Icons.history_rounded, text: s.historyEmpty));
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40),
+          padding: EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40 + MediaQuery.paddingOf(context).bottom),
           itemCount: versions!.length,
           separatorBuilder: (_, __) => const SizedBox(height: Sp.md - 2),
           itemBuilder: (_, i) {

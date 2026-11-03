@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'glass.dart';
+
 /// The Kuree greens: deep forest green, leaf, sunny yellow, mint, on paper.
 class K {
   static const deep = Color(0xFF032A09);
@@ -131,6 +133,10 @@ ThemeData kureeTheme() {
     fontFamilyFallback: kFontFallback,
     textTheme: text,
     splashFactory: InkSparkle.splashFactory,
+    actionIconTheme: ActionIconThemeData(
+      backButtonIconBuilder: (_) => const GlassHeaderIcon(),
+      closeButtonIconBuilder: (_) => const GlassHeaderIcon(close: true),
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: K.paper,
       foregroundColor: K.ink,

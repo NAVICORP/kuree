@@ -30,7 +30,7 @@ class CollectList extends StatelessWidget {
       color: K.green,
       onRefresh: onRefresh,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, Sp.xxl),
+        padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, Sp.xxl + MediaQuery.paddingOf(context).bottom),
         children: [
           if (items.isEmpty)
             Padding(

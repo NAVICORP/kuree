@@ -108,7 +108,8 @@ void main() {
         expect(find.byType(KuriScreen), findsOneWidget);
         expect(find.byType(KNavBar), findsOneWidget);
         if (code == 'ar') expect(Directionality.of(tester.element(find.byType(KNavBar))), TextDirection.rtl);
-        expect(tester.getRect(find.byType(KuriScreen)).bottom, moreOrLessEquals(tester.getRect(find.byType(KNavBar)).top));
+        // The chit runs under the glass footer, to the bottom of the phone.
+        expect(tester.getRect(find.byType(KuriScreen)).bottom, moreOrLessEquals(tester.getRect(find.byType(KNavBar)).bottom));
         expect(tester.takeException(), isNull);
         // An unsaved change: the Save bar sits above the footer.
         final naif = find.bySemanticsLabel(s.semPaid('Naif'));

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/strings.dart';
+import 'glass.dart';
 import 'theme.dart';
 
 enum KButtonKind { primary, secondary, ghost, danger, sun }
@@ -59,6 +60,14 @@ class KButton extends StatelessWidget {
         ),
       ],
     );
+    // The solid buttons catch the light like glass along their rim.
+    final rim = switch (kind) {
+      KButtonKind.primary => GlassTone.dark,
+      KButtonKind.secondary || KButtonKind.sun => GlassTone.light,
+      _ => null,
+    };
+    Widget face = Container(height: h, padding: EdgeInsets.symmetric(horizontal: small ? 14 : 18), child: child);
+    if (rim != null) face = GlassRim(tone: rim, child: face);
     return Opacity(
       opacity: enabled || busy ? 1 : 0.45,
       child: Material(
@@ -72,11 +81,7 @@ class KButton extends StatelessWidget {
                   onPressed!();
                 }
               : null,
-          child: Container(
-            height: h,
-            padding: EdgeInsets.symmetric(horizontal: small ? 14 : 18),
-            child: child,
-          ),
+          child: face,
         ),
       ),
     );
@@ -247,49 +252,107 @@ class ProgressLine extends StatelessWidget {
   }
 }
 
-/// Choices in a rounded pill: All 14, To pay 6, Paid 8.
-class KSegmented<V> extends StatelessWidget {
+/// Choices in a rounded pill: All 14, To pay 6, Paid 8. The pills sit in a
+/// frosted glass track; the chosen one is a green glass drop that slides to
+/// the next pill with a small overshoot, like liquid.
+class KSegmented<V> extends StatefulWidget {
   const KSegmented({super.key, required this.items, required this.value, required this.onChanged});
   final List<(V, String)> items;
   final V value;
   final ValueChanged<V> onChanged;
 
   @override
+  State<KSegmented<V>> createState() => _KSegmentedState<V>();
+}
+
+class _KSegmentedState<V> extends State<KSegmented<V>> {
+  final _row = GlobalKey();
+  late List<GlobalKey> _keys = _make();
+  List<Rect>? _rects;
+
+  List<GlobalKey> _make() => [for (var i = 0; i < widget.items.length; i++) GlobalKey()];
+
+  @override
+  void didUpdateWidget(KSegmented<V> old) {
+    super.didUpdateWidget(old);
+    if (old.items.length != widget.items.length) {
+      _keys = _make();
+      _rects = null;
+    }
+  }
+
+  /// Where each pill sits, so the drop can be placed under the chosen one.
+  /// Measured after each frame, since the labels change width (the counts,
+  /// and longer words in other languages).
+  void _measure() {
+    if (!mounted) return;
+    final row = _row.currentContext?.findRenderObject() as RenderBox?;
+    if (row == null || !row.hasSize) return;
+    final rects = <Rect>[];
+    for (final k in _keys) {
+      final b = k.currentContext?.findRenderObject() as RenderBox?;
+      if (b == null || !b.hasSize) return;
+      rects.add(b.localToGlobal(Offset.zero, ancestor: row) & b.size);
+    }
+    final old = _rects;
+    if (old != null && old.length == rects.length && Iterable<int>.generate(rects.length).every((i) => old[i] == rects[i])) return;
+    setState(() => _rects = rects);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: K.surface2, borderRadius: BorderRadius.circular(999), border: Border.all(color: K.border)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        for (final (v, label) in items)
-          Semantics(
-            button: true,
-            selected: v == value,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onChanged(v);
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                constraints: const BoxConstraints(minHeight: 40),
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                decoration: BoxDecoration(
-                  color: v == value ? K.surface : Colors.transparent,
-                  borderRadius: BorderRadius.circular(999),
-                  boxShadow: v == value ? const [BoxShadow(color: Color(0x1A032A09), blurRadius: 6, offset: Offset(0, 2))] : null,
+    WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+    final index = widget.items.indexWhere((e) => e.$1 == widget.value);
+    final rects = _rects;
+    final at = rects != null && index >= 0 && index < rects.length ? rects[index] : null;
+    final still = MediaQuery.disableAnimationsOf(context);
+    return Glass(
+      padding: const EdgeInsets.all(3),
+      child: Stack(children: [
+        if (at != null)
+          AnimatedPositioned(
+            duration: still ? Duration.zero : const Duration(milliseconds: 380),
+            curve: Curves.easeOutBack,
+            left: at.left,
+            top: at.top,
+            width: at.width,
+            height: at.height,
+            child: const IgnorePointer(child: Glass(tone: GlassTone.green, shadow: false, child: SizedBox.expand())),
+          ),
+        Row(key: _row, mainAxisSize: MainAxisSize.min, children: [
+          for (var i = 0; i < widget.items.length; i++)
+            Semantics(
+              button: true,
+              selected: i == index,
+              child: GestureDetector(
+                key: _keys[i],
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  if (i != index) HapticFeedback.selectionClick();
+                  widget.onChanged(widget.items[i].$1);
+                },
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 40),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+                  // Before the drop is placed (the very first frame), the
+                  // chosen pill is coloured on its own.
+                  decoration: at == null && i == index ? const BoxDecoration(color: K.deep, borderRadius: BorderRadius.all(Radius.circular(999))) : null,
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: T.label.copyWith(color: i == index ? Colors.white : K.ink2),
+                    child: Text(widget.items[i].$2),
+                  ),
                 ),
-                child: Text(label, style: T.label.copyWith(color: v == value ? K.deep : K.muted)),
               ),
             ),
-          ),
+        ]),
       ]),
     );
   }
 }
 
-/// A round icon button on dark or light backgrounds. The circle can be
+/// A round glass button on dark or light backgrounds. The circle can be
 /// small, but the place to tap is always at least 48 across.
 class RoundIcon extends StatelessWidget {
   const RoundIcon(this.icon, {super.key, this.onTap, this.dark = false, this.tooltip, this.size = 36});
@@ -304,13 +367,19 @@ class RoundIcon extends StatelessWidget {
     final tap = math.max(48.0, size);
     final circle = Opacity(
       opacity: onTap == null ? 0.3 : 1,
-      child: Material(
-        color: dark ? const Color(0x1AFFFFFF) : K.surface,
-        shape: CircleBorder(side: dark ? BorderSide.none : const BorderSide(color: K.border)),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: SizedBox(width: size, height: size, child: Icon(icon, size: size * 0.5, color: dark ? K.heroText : K.ink)),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Glass(
+          tone: dark ? GlassTone.dark : GlassTone.light,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onTap,
+              child: Center(child: Icon(icon, size: size * 0.5, color: dark ? K.heroText : K.ink)),
+            ),
+          ),
         ),
       ),
     );
@@ -437,7 +506,11 @@ Future<R?> showKSheet<R>(BuildContext context, {required String title, required 
     useRootNavigator: true,
     isScrollControlled: true,
     useSafeArea: true,
-    backgroundColor: K.paper,
+    // The sheet is thick frosted glass: the screen behind shows through,
+    // softly blurred, while its own text reads as clearly as a page.
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    barrierColor: const Color(0x52031A07),
     builder: (ctx) {
       final media = MediaQuery.of(ctx);
       final pad = EdgeInsets.fromLTRB(Sp.xl, Sp.sm, Sp.xl, Sp.xxl + media.padding.bottom);
@@ -445,20 +518,26 @@ Future<R?> showKSheet<R>(BuildContext context, {required String title, required 
         padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: media.size.height * 0.9),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const SizedBox(height: 10),
-            Center(child: Container(width: 40, height: 5, decoration: BoxDecoration(color: K.border2, borderRadius: BorderRadius.circular(5)))),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(22, 10, 8, 4),
-              child: Row(children: [
-                Expanded(child: Text(title, style: T.h2)),
-                RoundIcon(Icons.close_rounded, tooltip: S.of(ctx).close, onTap: () => Navigator.of(ctx).pop(), size: 34),
-              ]),
-            ),
-            Flexible(
-              child: scroll ? SingleChildScrollView(padding: pad, child: builder(ctx)) : Padding(padding: pad, child: builder(ctx)),
-            ),
-          ]),
+          child: Glass(
+            tone: GlassTone.sheet,
+            blur: 30,
+            shadow: false,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const SizedBox(height: 10),
+              Center(child: Container(width: 38, height: 5, decoration: BoxDecoration(color: K.border2, borderRadius: BorderRadius.circular(5)))),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(22, 10, 8, 4),
+                child: Row(children: [
+                  Expanded(child: Text(title, style: T.h2)),
+                  RoundIcon(Icons.close_rounded, tooltip: S.of(ctx).close, onTap: () => Navigator.of(ctx).pop(), size: 34),
+                ]),
+              ),
+              Flexible(
+                child: scroll ? SingleChildScrollView(padding: pad, child: builder(ctx)) : Padding(padding: pad, child: builder(ctx)),
+              ),
+            ]),
+          ),
         ),
       );
     },
@@ -568,8 +647,10 @@ class KNavItem {
   final String label;
 }
 
-/// The footer with the app's main tabs: the chosen one sits in a soft green
-/// pill, like the other SkiFi apps.
+/// The footer with the app's main tabs, as a capsule of liquid glass that
+/// floats over the screens: they run underneath it. The chosen tab is a mint
+/// drop of glass that stretches as it travels to the next tab and settles
+/// back into shape.
 class KNavBar extends StatelessWidget {
   const KNavBar({super.key, required this.items, required this.index, required this.onTap});
   final List<KNavItem> items;
@@ -577,54 +658,98 @@ class KNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const double _bar = 64;
+  static const double _air = 12;
 
-  /// How much of the screen the footer takes above the phone's own bottom
-  /// inset: the bar and the line along its top.
-  static const double height = _bar + 1;
+  /// How much of the screen's bottom the footer takes, given the phone's own
+  /// bottom inset (the home bar): the capsule, with a little air around it.
+  static double areaFor(double inset) => _air + _bar + math.max(inset, _air);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(color: K.surface, border: Border(top: BorderSide(color: K.border))),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: _bar,
-          child: Row(children: [
-            for (var i = 0; i < items.length; i++)
-              Expanded(
-                child: Semantics(
-                  button: true,
-                  selected: i == index,
-                  label: items[i].label,
-                  child: InkWell(
-                    onTap: () {
-                      if (i != index) HapticFeedback.selectionClick();
-                      onTap(i);
+    final off = glassOff(context);
+    final inset = MediaQuery.paddingOf(context).bottom;
+    final still = MediaQuery.disableAnimationsOf(context);
+    // The page fades softly into the page colour at the very bottom, so the
+    // capsule never sits on a hard edge.
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [K.paper.withValues(alpha: 0), K.paper.withValues(alpha: off ? 1 : 0.55)],
+          stops: const [0, 0.8],
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(14, _air, 14, math.max(inset, _air)),
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
+            child: Glass(
+              blur: 22,
+              child: SizedBox(
+                height: _bar,
+                child: LayoutBuilder(builder: (context, box) {
+                  final slot = box.maxWidth / items.length;
+                  final rtl = Directionality.of(context) == TextDirection.rtl;
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween<double>(end: index.toDouble()),
+                    duration: still ? Duration.zero : const Duration(milliseconds: 460),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, p, _) {
+                      final travel = math.min(1.0, (index - p).abs());
+                      final w = (slot - 8) * (1 + 0.42 * travel);
+                      final h = (_bar - 10) * (1 - 0.16 * travel);
+                      final at = rtl ? box.maxWidth - (p + 1) * slot : p * slot;
+                      return Stack(children: [
+                        Positioned(
+                          left: at + (slot - w) / 2,
+                          top: (_bar - h) / 2,
+                          width: w,
+                          height: h,
+                          child: const IgnorePointer(child: Glass(tone: GlassTone.mint, shadow: false, child: SizedBox.expand())),
+                        ),
+                        Row(children: [
+                          for (var i = 0; i < items.length; i++)
+                            Expanded(
+                              child: Semantics(
+                                button: true,
+                                selected: i == index,
+                                label: items[i].label,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    if (i != index) HapticFeedback.selectionClick();
+                                    onTap(i);
+                                  },
+                                  child: ExcludeSemantics(
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Icon(i == index ? items[i].iconOn : items[i].icon, size: 22, color: i == index ? K.brand600 : K.ink2),
+                                      const SizedBox(height: 3),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        child: Text(items[i].label,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: T.tiny.copyWith(
+                                                fontSize: 11.5,
+                                                color: i == index ? K.ink : K.ink2,
+                                                fontWeight: i == index ? FontWeight.w800 : FontWeight.w600)),
+                                      ),
+                                    ]),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ]),
+                      ]);
                     },
-                    child: ExcludeSemantics(
-                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: 56,
-                          height: 30,
-                          decoration: BoxDecoration(color: i == index ? K.brand100 : Colors.transparent, borderRadius: BorderRadius.circular(999)),
-                          child: Icon(i == index ? items[i].iconOn : items[i].icon, size: 22, color: i == index ? K.brand600 : K.muted),
-                        ),
-                        const SizedBox(height: 4),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text(items[i].label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: T.tiny.copyWith(fontSize: 12, color: i == index ? K.ink : K.muted, fontWeight: i == index ? FontWeight.w700 : FontWeight.w600)),
-                        ),
-                      ]),
-                    ),
-                  ),
-                ),
+                  );
+                }),
               ),
-          ]),
+            ),
+          ),
         ),
       ),
     );
