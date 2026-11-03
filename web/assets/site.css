@@ -1,9 +1,10 @@
 /* Malayalam in Manjari (SIL Open Font License, assets/fonts/Manjari-OFL.txt) */
 @font-face{font-family:"Manjari";font-weight:400;font-style:normal;font-display:swap;src:url(/assets/fonts/manjari-regular.woff2) format("woff2");size-adjust:112%;unicode-range:U+0D00-0D7F,U+200C-200D,U+25CC}
 @font-face{font-family:"Manjari";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manjari-bold.woff2) format("woff2");size-adjust:112%;unicode-range:U+0D00-0D7F,U+200C-200D,U+25CC}
-/* Boystown, the new look for every public page. Loaded after app.css.
-   Titles in Bricolage Grotesque, text in Manrope, rounded cards, the
-   sunny yellow and the crew's own photos. Motion lives in motion.js. */
+/* The shared look for the public pages. Loaded after app.css.
+   Titles in Bricolage Grotesque, text in Manrope, rounded cards and the
+   sunny yellow. The liquid glass for Kuree's pages is in kuree.css, which
+   loads last. */
 :root{
   --deep:#032A09; --green:#24592B; --leaf:#3E9E58; --sun:#FFD84D;
   --c-sun:#FBF0B8; --c-mint:#DDEEDF; --c-peach:#F6E3D5; --c-sky:#E0E8F3;

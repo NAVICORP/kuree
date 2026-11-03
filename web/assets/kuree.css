@@ -1,30 +1,136 @@
-/* Kuree: the members' page and the site pages, on the Boystown styles
-   (app.css, site.css, kuri.css). Fonts are served from here. */
+/* Kuree: the members' page and the plain pages (privacy, terms, deleting an
+   account), on the shared site styles (app.css, site.css, kuri.css). Fonts
+   are served from here. The same liquid glass as the front page, on the bar
+   at the top and on the controls; never on what is read. No letter spacing. */
 @font-face{font-family:"Manrope";font-weight:400 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manrope.woff2) format("woff2")}
 @font-face{font-family:"Bricolage Grotesque";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/bricolage.woff2) format("woff2")}
 
 :root{--nav-h:0px}
 *{letter-spacing:0}
 
-/* the header box: deep green, no photo */
+/* ---------- liquid glass: the front page's recipe (home.css) ----------
+   A translucent fill over a blurred copy of what is behind, a 1px rim that
+   catches the light at the top left, a sheen along the top edge and a soft
+   shadow. Each surface only sets the --lg- values. .lg--flat drops the blur
+   for glass on a plain surface. Solid fallbacks are at the end. */
+.lg{
+  --lg-fill:rgba(255,255,255,.56);--lg-solid:#fff;
+  --lg-rim:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.28);
+  --lg-spec:rgba(255,255,255,.5);--lg-edge:rgba(15,36,19,.42);
+  --lg-shadow:0 12px 32px -14px rgba(3,42,9,.3),0 2px 8px -3px rgba(3,42,9,.12);
+  position:relative;isolation:isolate;
+  background:linear-gradient(180deg,var(--lg-spec),rgba(255,255,255,0) 52%),var(--lg-fill);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.35),var(--lg-shadow)}
+.lg::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,var(--lg-rim) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 58%,var(--lg-rim2) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.lg--flat{-webkit-backdrop-filter:none;backdrop-filter:none}
+.lg--dark{--lg-fill:rgba(255,255,255,.1);--lg-solid:#0A3D12;--lg-rim:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.16);--lg-spec:rgba(255,255,255,.13);
+  --lg-edge:rgba(255,255,255,.7);--lg-shadow:0 16px 34px -18px rgba(1,14,4,.75)}
+/* the refraction: Chromium only (k.js adds .lg-warp to the members' page) */
+.lg-warp .lg--warp{-webkit-backdrop-filter:blur(20px) url(#lgWarp) saturate(180%);backdrop-filter:blur(20px) url(#lgWarp) saturate(180%)}
+/* what can be pressed: a little bigger under the pointer, a little smaller
+   when pressed, and a soft light that follows the pointer (k.js sets --sx
+   and --sy; without it the light sits in the middle) */
+.lg-press{overflow:hidden;transition:transform .3s var(--e)}
+.lg-press::after{content:"";position:absolute;z-index:-1;left:50%;top:50%;width:160px;height:160px;margin:-80px 0 0 -80px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,255,255,.5),rgba(255,255,255,.16) 48%,rgba(255,255,255,0));
+  opacity:0;transform:translate(var(--sx,0px),var(--sy,0px));transition:opacity .35s}
+@media (hover:hover){
+  .lg-press:hover{transform:scale(1.02)}
+  .lg-press:hover::after{opacity:1}
+}
+.lg-press:active{transform:scale(.98)}
+.lg-press:active::after,.lg-press:focus-visible::after{opacity:1}
+
+/* soft light behind the glass: blurred greens, mint and a little sun */
+.amb{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;border-radius:inherit}
+.amb i{position:absolute;display:block;width:var(--s,420px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(closest-side,rgb(var(--c) / var(--a,.5)),rgb(var(--c) / calc(var(--a,.5) * .42)) 52%,rgb(var(--c) / 0));
+  animation:drift var(--t,26s) ease-in-out var(--d,0s) infinite alternate}
+.amb.is-off i{animation-play-state:paused}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(var(--dx,7%),var(--dy,-6%),0) scale(1.08)}
+  100%{transform:translate3d(calc(var(--dx,7%) * -.6),calc(var(--dy,-6%) * -.8),0) scale(.95)}}
+.b-leaf{--c:62 158 88}
+.b-green{--c:28 127 56}
+.b-glow{--c:127 209 143}
+.b-sun{--c:255 216 77}
+.b-lime{--c:178 222 112}
+.amb--top{position:absolute;inset:0 0 auto;height:300px}
+.amb--top i:nth-child(1){--s:420px;--a:.36;left:-4%;top:-210px;--t:30s}
+.amb--top i:nth-child(2){--s:380px;--a:.2;left:66%;top:-220px;--t:28s;--d:-10s}
+.amb--phead i:nth-child(1){--s:clamp(300px,40vw,560px);--a:.36;left:58%;top:-40%;--t:28s;--dx:-6%;--dy:8%}
+.amb--phead i:nth-child(2){--s:clamp(200px,26vw,360px);--a:.16;left:-8%;top:40%;--t:24s;--d:-6s}
+.amb--phead i:nth-child(3){--s:clamp(200px,24vw,320px);--a:.22;left:30%;top:50%;--t:26s;--d:-12s;--dx:10%}
+
+/* ---------- the bar at the top: a glass capsule that stays while the page
+   moves under it. Dark glass while the green header is under it (k.js). ---------- */
+.ktop{position:sticky;top:0;z-index:50;padding:calc(env(safe-area-inset-top) + 8px) var(--gap,12px) 0;pointer-events:none}
+.ktop__in{pointer-events:auto;max-width:1120px;margin:0 auto;height:56px;padding:0 8px 0 12px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-radius:999px;color:var(--ink);
+  --lg-fill:rgba(255,255,255,.62);--lg-spec:rgba(255,255,255,.55);
+  --lg-shadow:0 14px 34px -16px rgba(3,42,9,.34),0 2px 8px -4px rgba(3,42,9,.12);transition:color .35s}
+.ktop__in.is-dark{color:#fff;--lg-fill:rgba(3,42,9,.56);--lg-solid:#0A3D12;--lg-rim:rgba(255,255,255,.6);--lg-rim2:rgba(255,255,255,.16);--lg-spec:rgba(255,255,255,.13);
+  --lg-edge:rgba(255,255,255,.7);--lg-shadow:0 18px 40px -18px rgba(1,14,4,.7)}
+.ktop__in.is-dark :focus-visible{outline-color:var(--sun)}
+.ktop__mark{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font-family:var(--fh);font-weight:700;font-size:20px;line-height:1}
+.ktop__mark img{width:32px;height:32px;border-radius:9px;box-shadow:0 6px 14px -8px rgba(3,42,9,.6)}
+.kbar__upd{padding-right:10px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;transition:color .35s}
+.ktop__in.is-dark .kbar__upd{color:rgba(221,238,223,.84)}
+/* the bar's button: deep green tinted glass, small */
+.kbtn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:800;line-height:1;white-space:nowrap;text-decoration:none;color:#fff;
+  --lg-fill:rgba(15,36,19,.86);--lg-solid:var(--ink);--lg-rim:rgba(255,255,255,.55);--lg-rim2:rgba(255,255,255,.12);--lg-spec:rgba(255,255,255,.17);
+  --lg-edge:rgba(255,255,255,.6);--lg-shadow:0 10px 22px -12px rgba(15,36,19,.7)}
+@media(min-width:768px){
+  .ktop{padding-top:calc(env(safe-area-inset-top) + 12px)}
+  .ktop__in{height:60px;padding:0 10px 0 14px}
+  .kbtn{height:42px;padding:0 18px}
+}
+
+/* ---------- the members' page header: deep green, no photo ---------- */
 .phead{margin:var(--gap) var(--gap) 0;position:relative;overflow:hidden;isolation:isolate;height:auto;min-height:0}
 .phead::before{content:"";position:absolute;inset:0;z-index:-1;
   background:
     radial-gradient(520px 320px at 100% -10%,rgba(127,209,143,.30),transparent 62%),
     radial-gradient(420px 300px at -10% 115%,rgba(255,216,77,.14),transparent 60%),
     var(--deep)}
-.phead .wrap{padding-top:calc(env(safe-area-inset-top) + 34px);padding-bottom:30px}
-@media(min-width:768px){.phead .wrap{padding-top:64px;padding-bottom:54px}}
+.phead .wrap{padding-top:30px;padding-bottom:30px}
+@media(min-width:768px){.phead .wrap{padding-top:54px;padding-bottom:54px}}
 .phead h1{color:#fff}
 .phead .eyebrow{color:var(--sun);font-weight:700}
 .khead__group{color:var(--sun)}
 .badge--live{color:var(--brand-300);background:rgba(127,193,148,.16)}
+/* Download Report: clear glass on the green */
+.phead__cta .btn.lg{min-height:44px;padding-inline:18px;font-size:14.5px;border:0;color:#fff}
+.phead__cta .btn.lg:hover{background:linear-gradient(180deg,var(--lg-spec),rgba(255,255,255,0) 52%),var(--lg-fill);--lg-fill:rgba(255,255,255,.16)}
 
-/* the mark at the very top */
-.kbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 26px}
-.kbar__mark{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:var(--fh);font-weight:700;font-size:20px}
-.kbar__mark img{width:32px;height:32px;border-radius:9px}
-.kbar__upd{font-size:13px;font-weight:600;color:rgba(255,255,255,.7)}
+/* ---------- the members' page controls: glass on the paper, the content
+   (names, amounts, ticks, charts) stays solid ---------- */
+/* the month rail */
+.chip.lg{border:0;--lg-fill:rgba(255,255,255,.7);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.8);
+  --lg-shadow:0 0 0 1px rgba(15,36,19,.08),0 4px 10px -6px rgba(3,42,9,.35)}
+.chip.lg[aria-current="true"]{background:linear-gradient(180deg,var(--lg-spec),rgba(255,255,255,0) 52%),var(--lg-fill);
+  --lg-fill:rgba(228,241,232,.94);--lg-solid:var(--brand-100);--lg-edge:var(--accent);
+  --lg-shadow:inset 0 0 0 1.5px var(--accent),0 6px 14px -8px rgba(17,99,38,.5)}
+/* the month card's back and forward */
+.mnav .ibtn.lg{border:0;border-radius:50%;color:var(--text);
+  --lg-fill:rgba(255,255,255,.72);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.8);
+  --lg-shadow:0 0 0 1px rgba(15,36,19,.1),0 6px 14px -8px rgba(3,42,9,.4)}
+.mnav .ibtn.lg:hover,.mnav .ibtn.lg:focus-visible,.mnav .ibtn.lg:active{color:#fff;border-color:transparent;
+  background:linear-gradient(180deg,var(--lg-spec),rgba(255,255,255,0) 52%),var(--lg-fill);
+  --lg-fill:rgba(17,99,38,.92);--lg-solid:var(--brand-600);--lg-spec:rgba(255,255,255,.2);--lg-rim:rgba(255,255,255,.7);--lg-rim2:rgba(255,255,255,.2);
+  --lg-edge:rgba(255,255,255,.6);--lg-shadow:0 8px 18px -10px rgba(17,99,38,.8)}
+.mnav .ibtn.lg-press::after{background:radial-gradient(closest-side,rgba(255,255,255,.3),rgba(255,255,255,0))}
+/* the ledger's year picker and its menu */
+.ypick__btn.lg{border:0;--lg-fill:rgba(255,255,255,.72);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.8);
+  --lg-shadow:0 0 0 1px rgba(15,36,19,.1),0 6px 14px -8px rgba(3,42,9,.4)}
+.ypick.is-open .ypick__btn.lg{--lg-shadow:inset 0 0 0 1.5px var(--accent),0 0 0 3px var(--brand-100)}
+/* the menu sits over the ledger, so it is a frosted pane with little see-through */
+.ypick__menu.lg{position:absolute;border:0;--lg-fill:rgba(255,255,255,.88);--lg-spec:rgba(255,255,255,.6);
+  --lg-shadow:0 18px 44px -18px rgba(3,42,9,.45),0 2px 8px -3px rgba(3,42,9,.2)}
 
 /* footer */
 .kfoot{padding:34px var(--gap) calc(30px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:14px}
@@ -33,9 +139,13 @@
 .kfoot a:hover{text-decoration:underline}
 .kfoot p+p{margin-top:0}
 
-/* plain pages: privacy, terms, deleting an account, the home page */
+/* ---------- plain pages: privacy, terms, deleting an account ---------- */
 body:has(>.kpage){background:#FAFAF5}
-.kpage{max-width:720px;margin:0 auto;padding:30px 22px 72px}
+/* soft light at the top, behind the glass bar */
+body.kplain::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:0;height:320px;pointer-events:none;
+  background:radial-gradient(440px 230px at 8% 0%,rgba(127,209,143,.42),transparent 70%),radial-gradient(460px 230px at 52% -14%,rgba(62,158,88,.14),transparent 70%),
+    radial-gradient(380px 200px at 92% 0%,rgba(255,216,77,.2),transparent 70%)}
+.kpage{max-width:720px;margin:0 auto;padding:34px 22px 72px}
 .kpage h1{font-family:var(--fh);font-weight:700;font-size:clamp(36px,7vw,54px);line-height:1.02;margin:0 0 16px;text-wrap:balance}
 .kpage h2{font-family:var(--fh);font-weight:700;font-size:24px;line-height:1.2;margin:40px 0 10px}
 .kpage p,.kpage li{color:var(--text-2);font-size:16.5px;line-height:1.65}
@@ -45,8 +155,7 @@ body:has(>.kpage){background:#FAFAF5}
 .kpage li::marker{color:var(--leaf,#3E9E58)}
 .kpage a{color:var(--green);font-weight:700;text-underline-offset:3px}
 .kpage .lead{font-size:18.5px;line-height:1.6;color:var(--muted);max-width:46ch}
-.kpage__top{display:flex;align-items:center;gap:10px;width:max-content;margin:0 0 44px;padding:4px 0;text-decoration:none;color:var(--ink);font-family:var(--fh);font-weight:700;font-size:22px}
-.kpage__top img{width:36px;height:36px;border-radius:10px}
+@media(min-width:768px){.kpage{padding-top:52px}}
 .khero{display:grid;justify-items:center;text-align:center;gap:14px;padding:70px 20px 40px}
 .khero img{width:112px;height:112px;border-radius:28px;box-shadow:0 22px 50px -24px rgba(3,42,9,.7)}
 .khero h1{font-family:var(--fh);font-weight:700;font-size:clamp(46px,10vw,76px);line-height:1;margin:6px 0 0}
@@ -54,3 +163,30 @@ body:has(>.kpage){background:#FAFAF5}
 .kgone{display:grid;justify-items:center;text-align:center;gap:12px;padding:90px 20px}
 .kgone h1{font-family:var(--fh);font-weight:700;font-size:34px}
 .kgone p{color:var(--muted);max-width:36ch}
+
+/* ---------- motion and glass fallbacks ---------- */
+@media (prefers-reduced-motion:reduce){
+  .amb i{animation:none!important}
+  .lg-press:hover,.lg-press:active{transform:none}
+}
+/* no blur in this browser, or less transparency asked for: solid surfaces */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  html .lg{background-color:var(--lg-solid)}
+}
+@media (prefers-reduced-transparency:reduce){
+  html .lg{background-color:var(--lg-solid);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html.lg-warp .lg--warp{-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+/* more contrast asked for: solid, a clear rim, no soft light */
+@media (prefers-contrast:more){
+  html .lg,html.lg-warp .lg--warp,html .lg:hover{background:var(--lg-solid);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html .lg::before{background:var(--lg-edge)}
+  .lg-press::after,.amb,body.kplain::before{display:none}
+  .ktop__in .kbar__upd{color:inherit}
+}
+/* forced colours: the system draws every surface; glass keeps an outline */
+@media (forced-colors:active){
+  .amb,.lg-press::after,.lg::before,body.kplain::before{display:none}
+  .lg{-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid CanvasText!important}
+  a.lg,button.lg{border-color:LinkText!important}
+}
