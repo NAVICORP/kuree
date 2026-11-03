@@ -361,7 +361,9 @@ class _KuriScreenState extends State<KuriScreen> {
         bottomNavigationBar: AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           transitionBuilder: (c, a) => SizeTransition(sizeFactor: a, child: c),
-          child: dirty ? _saveBar(s) : const SizedBox.shrink(),
+          // With nothing to save, an empty strip the height of the footer
+          // still tells the list how much of its bottom the glass covers.
+          child: dirty ? _saveBar(s) : SizedBox(key: const ValueKey('none'), height: MediaQuery.paddingOf(context).bottom),
         ),
       ),
     );
