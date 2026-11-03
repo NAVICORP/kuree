@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/lang.dart';
 import '../l10n/strings.dart';
+import 'glass.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -32,23 +33,24 @@ class LanguageChip extends StatelessWidget {
     return Semantics(
       button: true,
       label: s.language,
-      child: Material(
-        color: K.surface,
-        shape: const StadiumBorder(side: BorderSide(color: K.border)),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => pickLanguage(context),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 44),
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 10, 8),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.translate_rounded, size: 18, color: K.green),
-                const SizedBox(width: Sp.sm),
-                Text(S.names[s.code]!, style: T.label.copyWith(color: K.ink)),
-                const SizedBox(width: 2),
-                const Icon(Icons.expand_more_rounded, size: 18, color: K.muted),
-              ]),
+      child: Glass(
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            customBorder: const StadiumBorder(),
+            onTap: () => pickLanguage(context),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 44),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 10, 8),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.translate_rounded, size: 18, color: K.green),
+                  const SizedBox(width: Sp.sm),
+                  Text(S.names[s.code]!, style: T.label.copyWith(color: K.ink)),
+                  const SizedBox(width: 2),
+                  const Icon(Icons.expand_more_rounded, size: 18, color: K.muted),
+                ]),
+              ),
             ),
           ),
         ),

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -331,4 +332,40 @@ class GlassHeaderIcon extends StatelessWidget {
       child: Glass(child: Center(child: Icon(icon, size: close ? 18 : 22, color: K.ink))),
     );
   }
+}
+
+/// Soft light behind glass that has little colour under it, such as the
+/// sign-in screen: greens, mint and a touch of sun, blurred into the page.
+class AmbientLight extends StatelessWidget {
+  const AmbientLight({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (glassOff(context)) return ColoredBox(color: K.paper, child: child);
+    return CustomPaint(painter: _Ambient(), child: child);
+  }
+}
+
+class _Ambient extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = K.paper);
+    void blob(Offset c, double r, Color colour) {
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()..shader = RadialGradient(colors: [colour, colour.withValues(alpha: 0)]).createShader(Rect.fromCircle(center: c, radius: r)),
+      );
+    }
+
+    final m = math.max(size.width, size.height);
+    blob(Offset(size.width * 0.1, size.height * 0.08), m * 0.42, K.brand300.withValues(alpha: 0.40));
+    blob(Offset(size.width * 0.95, size.height * 0.2), m * 0.30, K.sun.withValues(alpha: 0.30));
+    blob(Offset(size.width * 0.85, size.height * 0.9), m * 0.38, K.leaf.withValues(alpha: 0.26));
+    blob(Offset(size.width * 0.05, size.height * 0.75), m * 0.28, K.mint.withValues(alpha: 0.70));
+  }
+
+  @override
+  bool shouldRepaint(_Ambient old) => false;
 }
