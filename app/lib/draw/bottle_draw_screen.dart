@@ -20,6 +20,7 @@ import '../core/format.dart';
 import '../core/kuri.dart';
 import '../core/messages.dart';
 import '../l10n/strings.dart';
+import '../ui/glass.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import 'scene.dart';
@@ -295,17 +296,22 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
       alignment: Alignment.bottomCenter,
       child: SafeArea(
         top: false,
+        // Frosted glass over the scene: the bottle glows through it, softly.
         child: Container(
           margin: const EdgeInsets.all(Sp.md),
           constraints: BoxConstraints(maxWidth: 480, maxHeight: MediaQuery.of(context).size.height * 0.62),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(K.rLg), boxShadow: const [
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(K.rLg + 4), boxShadow: const [
             BoxShadow(color: Color(0x66000000), blurRadius: 40, offset: Offset(0, 16)),
           ]),
-          child: Material(
-            color: K.paper,
-            borderRadius: BorderRadius.circular(K.rLg),
-            clipBehavior: Clip.antiAlias,
-            child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(Sp.xl, Sp.xl, Sp.xl, 18), child: child),
+          child: Glass(
+            tone: GlassTone.sheet,
+            blur: 24,
+            shadow: false,
+            radius: K.rLg + 4,
+            child: Material(
+              type: MaterialType.transparency,
+              child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(Sp.xl, Sp.xl, Sp.xl, 18), child: child),
+            ),
           ),
         ),
       ),

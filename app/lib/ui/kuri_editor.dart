@@ -7,6 +7,7 @@ import '../core/api.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
 import '../l10n/strings.dart';
+import 'glass.dart';
 import 'sheets.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -311,115 +312,118 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     final cur = currencyOf(currency);
     final withNumber = phones.entries.where((e) => names.any((n) => nameKey(n) == e.key)).length;
     return Scaffold(
+      // The form runs under the floating Save bar; the list's padding keeps
+      // its last field clear of it. While the keyboard is up the bar waits
+      // behind it, and the form stops at the keyboard's top edge.
+      extendBody: MediaQuery.viewInsetsOf(context).bottom == 0,
       appBar: AppBar(title: Text(isNew ? s.newChit : s.editChit)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 130),
-        children: [
-          SectionTitle(s.sectionChit),
-          KCard(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              _field(s.fieldName, _name, hint: s.nameHint, caps: TextCapitalization.words),
-              const SizedBox(height: Sp.lg),
-              _field(s.fieldGroup, _group, hint: s.groupHint, caps: TextCapitalization.words),
-            ]),
-          ),
-          SectionTitle(s.sectionMoney),
-          KCard(
-            padding: EdgeInsets.zero,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              KChoice(label: s.currency, value: '${cur.name} (${cur.code})', icon: Icons.payments_outlined, onTap: _pickCurrency),
-              const Divider(),
-              Padding(
-                padding: const EdgeInsets.all(Sp.lg + 2),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Expanded(child: _field(s.eachSlotPays, _share, hint: '5000', money: true)),
-                    const SizedBox(width: Sp.md),
-                    Expanded(child: _field(s.lateFine, _fine, hint: s.fineNone, money: true)),
-                  ]),
-                  const SizedBox(height: Sp.lg),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
-                    child: Text(
-                      slots == 0
-                          ? s.slotsFromNames
-                          : share > 0
-                              ? s.potSummary(money(share * slots, currency), slots)
-                              : s.potSummaryNone(slots),
-                      style: T.label.copyWith(color: K.brand600),
+      body: Builder(
+        builder: (context) => ListView(
+          padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 24 + MediaQuery.paddingOf(context).bottom),
+          children: [
+            SectionTitle(s.sectionChit),
+            KCard(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                _field(s.fieldName, _name, hint: s.nameHint, caps: TextCapitalization.words),
+                const SizedBox(height: Sp.lg),
+                _field(s.fieldGroup, _group, hint: s.groupHint, caps: TextCapitalization.words),
+              ]),
+            ),
+            SectionTitle(s.sectionMoney),
+            KCard(
+              padding: EdgeInsets.zero,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                KChoice(label: s.currency, value: '${cur.name} (${cur.code})', icon: Icons.payments_outlined, onTap: _pickCurrency),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.all(Sp.lg + 2),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                      Expanded(child: _field(s.eachSlotPays, _share, hint: '5000', money: true)),
+                      const SizedBox(width: Sp.md),
+                      Expanded(child: _field(s.lateFine, _fine, hint: s.fineNone, money: true)),
+                    ]),
+                    const SizedBox(height: Sp.lg),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
+                      child: Text(
+                        slots == 0
+                            ? s.slotsFromNames
+                            : share > 0
+                                ? s.potSummary(money(share * slots, currency), slots)
+                                : s.potSummaryNone(slots),
+                        style: T.label.copyWith(color: K.brand600),
+                      ),
                     ),
-                  ),
-                ]),
-              ),
-            ]),
-          ),
-          SectionTitle(s.sectionDates),
-          KCard(
-            padding: EdgeInsets.zero,
-            child: Column(children: [
-              KChoice(label: s.firstMonth, value: '${monthName(startMonth)} $startYear', icon: Icons.event_outlined, onTap: _pickStart),
-              const Divider(),
-              KChoice(
-                label: s.collectionDay,
-                value: s.everyMonthDay(dayOf(collectDay)),
-                icon: Icons.savings_outlined,
-                onTap: () async {
-                  final d = await _pickDay(s.collectionDay, collectDay);
-                  if (d != null) setState(() => collectDay = d);
-                },
-              ),
-              const Divider(),
-              KChoice(
-                label: s.lastDayToPay,
-                value: lastDay < collectDay ? s.byMidnightNext(dayOf(lastDay)) : s.byMidnight(dayOf(lastDay)),
-                icon: Icons.schedule_rounded,
-                onTap: () async {
-                  final d = await _pickDay(s.lastDayToPay, lastDay);
-                  if (d != null) setState(() => lastDay = d);
-                },
-              ),
-            ]),
-          ),
-          SectionTitle(
-            s.slots,
-            trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
-          ),
-          for (var i = 0; i < rows.length; i++) ...[
-            _slotRow(i, s, cur),
-            const SizedBox(height: Sp.md - 2),
-          ],
-          SectionTitle(s.numbersForReminders, trailing: Pill(s.countOf(withNumber, names.length), color: K.surface2, fg: K.ink2)),
-          KCard(
-            padding: EdgeInsets.zero,
-            child: names.isEmpty
-                ? Padding(padding: const EdgeInsets.all(Sp.lg + 2), child: Text(s.addNamesFirst, style: T.small))
-                : Column(children: [
-                    for (var i = 0; i < names.length; i++) ...[
-                      if (i > 0) const Divider(),
-                      _phoneRow(names[i], s),
-                    ],
                   ]),
-          ),
-          const SizedBox(height: Sp.sm),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Sp.xs),
-            child: Text(s.numbersNote, style: T.small),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: K.surface, border: Border(top: BorderSide(color: K.border))),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(Sp.page, Sp.md, Sp.page, Sp.md),
-            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              if (error != null) ...[Notice(error!), const SizedBox(height: Sp.md - 2)],
-              KButton(label: isNew ? s.startTheChit : s.saveChanges, icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
-            ]),
-          ),
+                ),
+              ]),
+            ),
+            SectionTitle(s.sectionDates),
+            KCard(
+              padding: EdgeInsets.zero,
+              child: Column(children: [
+                KChoice(label: s.firstMonth, value: '${monthName(startMonth)} $startYear', icon: Icons.event_outlined, onTap: _pickStart),
+                const Divider(),
+                KChoice(
+                  label: s.collectionDay,
+                  value: s.everyMonthDay(dayOf(collectDay)),
+                  icon: Icons.savings_outlined,
+                  onTap: () async {
+                    final d = await _pickDay(s.collectionDay, collectDay);
+                    if (d != null) setState(() => collectDay = d);
+                  },
+                ),
+                const Divider(),
+                KChoice(
+                  label: s.lastDayToPay,
+                  value: lastDay < collectDay ? s.byMidnightNext(dayOf(lastDay)) : s.byMidnight(dayOf(lastDay)),
+                  icon: Icons.schedule_rounded,
+                  onTap: () async {
+                    final d = await _pickDay(s.lastDayToPay, lastDay);
+                    if (d != null) setState(() => lastDay = d);
+                  },
+                ),
+              ]),
+            ),
+            SectionTitle(
+              s.slots,
+              trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
+            ),
+            for (var i = 0; i < rows.length; i++) ...[
+              _slotRow(i, s, cur),
+              const SizedBox(height: Sp.md - 2),
+            ],
+            SectionTitle(s.numbersForReminders, trailing: Pill(s.countOf(withNumber, names.length), color: K.surface2, fg: K.ink2)),
+            KCard(
+              padding: EdgeInsets.zero,
+              child: names.isEmpty
+                  ? Padding(padding: const EdgeInsets.all(Sp.lg + 2), child: Text(s.addNamesFirst, style: T.small))
+                  : Column(children: [
+                      for (var i = 0; i < names.length; i++) ...[
+                        if (i > 0) const Divider(),
+                        _phoneRow(names[i], s),
+                      ],
+                    ]),
+            ),
+            const SizedBox(height: Sp.sm),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Sp.xs),
+              child: Text(s.numbersNote, style: T.small),
+            ),
+          ],
         ),
+      ),
+      bottomNavigationBar: GlassBar(
+        padding: const EdgeInsets.all(6),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (error != null) ...[
+            Padding(padding: const EdgeInsets.fromLTRB(4, 4, 4, 0), child: Notice(error!)),
+            const SizedBox(height: Sp.sm),
+          ],
+          KButton(label: isNew ? s.startTheChit : s.saveChanges, icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
+        ]),
       ),
     );
   }

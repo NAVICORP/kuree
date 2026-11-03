@@ -5,6 +5,7 @@ import '../core/api.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
 import '../l10n/strings.dart';
+import 'glass.dart';
 import 'sign_in.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -102,22 +103,11 @@ class _AdminsScreenState extends State<AdminsScreen> {
     final s = S.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(s.admins)),
-      floatingActionButton: owner
-          ? FloatingActionButton.extended(
-              onPressed: _add,
-              backgroundColor: K.deep,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              highlightElevation: 4,
-              shape: const StadiumBorder(),
-              icon: const Icon(Icons.person_add_alt_1_rounded),
-              label: Text(s.addAdmin, style: T.button.copyWith(color: Colors.white)),
-            )
-          : null,
+      floatingActionButton: owner ? GlassFab(icon: Icons.person_add_alt_1_rounded, label: s.addAdmin, onPressed: _add) : null,
       body: () {
         if (admins == null && error != null) return LoadFailed(message: error!, onRetry: _load);
         if (admins == null) return const Loading();
-        return ListView(padding: const EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 112), children: [
+        return ListView(padding: EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 96 + MediaQuery.paddingOf(context).bottom), children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Sp.xs),
             child: Text(s.adminsExplain, style: T.small),

@@ -7,6 +7,7 @@ import '../core/kuri.dart';
 import '../l10n/strings.dart';
 import 'account.dart';
 import 'collect_screen.dart';
+import 'glass.dart';
 import 'kuri_editor.dart';
 import 'kuri_screen.dart';
 import 'theme.dart';
@@ -161,18 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 21, fontWeight: FontWeight.w600, color: K.ink, letterSpacing: 0)),
         ]),
       ),
-      floatingActionButton: kuris == null || kuris!.isEmpty
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: _create,
-              backgroundColor: K.deep,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              highlightElevation: 4,
-              shape: const StadiumBorder(),
-              icon: const Icon(Icons.add_rounded),
-              label: Text(s.newChit, style: T.button.copyWith(color: Colors.white)),
-            ),
+      floatingActionButton: kuris == null || kuris!.isEmpty ? null : GlassFab(icon: Icons.add_rounded, label: s.newChit, onPressed: _create),
       body: _body(s),
     );
   }
@@ -201,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: K.green,
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 112),
+        padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 96 + MediaQuery.paddingOf(context).bottom),
         children: [
           if (kuris!.isEmpty)
             Padding(
@@ -230,11 +220,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// The tab on show above, the footer below. Not a Scaffold: each screen in a
-/// tab is its own Scaffold, so its messages still pop up just above its own
-/// bottom bar (Save, Start the chit). The screens are told that the footer
-/// takes the phone's bottom inset, and that the keyboard, which slides up
-/// over the footer, covers only as much as rises above it.
+/// The tab on show, with the footer floating over its bottom as glass. Not a
+/// Scaffold: each screen in a tab is its own Scaffold, so its messages and
+/// its own bars (Save, Start the chit) still sit just above the footer. The
+/// screens run to the bottom of the phone, under the glass, and are told
+/// that the footer covers that much of their bottom; the keyboard, which
+/// slides up over the footer, takes its place while it is up.
 class _TabShell extends StatelessWidget {
   const _TabShell({required this.body, required this.footer});
   final Widget body;
@@ -243,15 +234,17 @@ class _TabShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final under = KNavBar.height + mq.padding.bottom;
-    final inner = mq.removePadding(removeBottom: true).copyWith(
-          viewInsets: mq.viewInsets.copyWith(bottom: math.max(0.0, mq.viewInsets.bottom - under)),
-        );
+    final under = KNavBar.areaFor(mq.padding.bottom);
+    final cover = math.max(0.0, under - mq.viewInsets.bottom);
+    final inner = mq.copyWith(
+      padding: mq.padding.copyWith(bottom: cover),
+      viewPadding: mq.viewPadding.copyWith(bottom: math.max(mq.viewPadding.bottom, under)),
+    );
     return Material(
       color: K.paper,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Expanded(child: MediaQuery(data: inner, child: body)),
-        footer,
+      child: Stack(children: [
+        Positioned.fill(child: MediaQuery(data: inner, child: body)),
+        Positioned(left: 0, right: 0, bottom: 0, child: footer),
       ]),
     );
   }

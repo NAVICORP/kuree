@@ -136,7 +136,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final name = (me['name'] as String?) ?? '';
     return Scaffold(
       appBar: AppBar(titleSpacing: widget.tab ? Sp.xl : null, automaticallyImplyLeading: !widget.tab, title: Text(widget.tab ? s.tabProfile : s.account)),
-      body: ListView(padding: const EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40), children: [
+      body: ListView(padding: EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40 + MediaQuery.paddingOf(context).bottom), children: [
         KCard(
           child: Row(children: [
             Container(
