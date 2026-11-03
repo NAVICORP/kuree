@@ -154,8 +154,12 @@ function sendFile(req, res, file, cache) {
   res.end(req.method === 'HEAD' ? undefined : body);
 }
 
-/** A plain page (home, privacy, terms) in the Kuree shell. */
-function shell(title, body, { home = false, head = '', foot = '' } = {}) {
+/** A plain page (privacy, terms, deleting an account) in the Kuree shell: a
+    glass bar at the top with the mark (and "Get the app" unless cta is
+    false), soft light behind it. home leaves the bar out. */
+function shell(title, body, { home = false, head = '', foot = '', cta = true } = {}) {
+  const top = home ? '' : '<header class="ktop"><div class="ktop__in lg"><a class="ktop__mark" href="/"><img src="/assets/brand/icon-64.png" alt="" width="32" height="32">Kuree</a>' +
+    (cta ? '<a class="kbtn lg lg-press" href="/#get">Get the app</a>' : '') + '</div></header>';
   return stampAssets(`<!doctype html>
 <html lang="en">
 <head>
@@ -173,9 +177,9 @@ function shell(title, body, { home = false, head = '', foot = '' } = {}) {
 <link rel="stylesheet" href="/assets/kuree.css">
 ${head}
 </head>
-<body>
+<body class="kplain">
+${top}
 <main class="kpage">
-${home ? '' : '<a class="kpage__top" href="/"><img src="/assets/brand/icon-64.png" alt="" width="36" height="36">Kuree</a>'}
 ${body}
 </main>
 <footer class="kfoot"><p><a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="/delete-account">Delete an account</a></p><p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p></footer>
@@ -397,6 +401,7 @@ async function handle(req, res) {
     return sendBody(req, res, 200, TYPES['.html'], shell('Feature requests | Kuree', read('pages/admin-requests.html'), {
       head: '<meta name="robots" content="noindex, nofollow">\n<link rel="stylesheet" href="/assets/admin.css">',
       foot: '<script src="/assets/admin.js" defer></script>',
+      cta: false,
     }), { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow', 'referrer-policy': 'no-referrer', 'content-security-policy': CSP });
   }
 

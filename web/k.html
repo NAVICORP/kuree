@@ -39,14 +39,17 @@
 <symbol id="i-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></symbol>
 <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<filter id="lgWarp" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G"/></filter>
 </defs></svg>
+<div class="amb amb--top" aria-hidden="true"><i class="b-glow"></i><i class="b-sun"></i></div>
+<header class="ktop"><div class="ktop__in lg lg--warp" data-adapt><a class="ktop__mark" href="/" aria-label="Kuree"><img src="/assets/brand/icon-64.png" alt="" width="32" height="32">Kuree</a><span class="kbar__upd">{{UPDATED}}</span></div></header>
 <header class="phead">
+<div class="amb amb--phead" aria-hidden="true"><i class="b-glow"></i><i class="b-sun"></i><i class="b-lime"></i></div>
 <div class="wrap">
-<div class="kbar"><a class="kbar__mark" href="/" aria-label="Kuree"><img src="/assets/brand/icon-64.png" alt="" width="32" height="32">Kuree</a><span class="kbar__upd">{{UPDATED}}</span></div>
 <p class="eyebrow"><span class="badge badge--live"><span class="dot" aria-hidden="true"></span>{{BADGE}}</span><span class="khead__group">{{GROUP}}</span></p>
 <h1>{{NAME}}</h1>
 <p>{{LEAD}}</p>
-<div class="phead__cta"><a class="btn btn--glass" href="{{REPORT}}" download>
+<div class="phead__cta"><a class="btn btn--glass lg lg--dark lg-press" href="{{REPORT}}" download>
 <svg class="icon" aria-hidden="true"><use href="#i-down"/></svg>Download Report</a></div>
 </div></header>
 <main id="main"><div id="kapp"></div></main>
