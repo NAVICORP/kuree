@@ -380,7 +380,7 @@ class _KuriScreenState extends State<KuriScreen> {
           child: Row(children: [
             const Icon(Icons.edit_note_rounded, color: K.warn),
             const SizedBox(width: Sp.sm),
-            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.label.copyWith(color: K.ink))),
             Flexible(
               child: KButton(
                 label: s.undo,
