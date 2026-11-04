@@ -1,6 +1,8 @@
 /* The store pictures: each app screen in a phone on Kuree green with a
-   short caption, for the App Store (1290 x 2796) and Google Play
-   (1080 x 1920), plus the Play feature graphic (1024 x 500) and icon.
+   short caption, for the App Store (1206 x 2622, the size its iPhone slot asks for, in an
+   iPhone) and Google Play (1080 x 1920, in a plain Android phone with a punch-hole camera,
+   since Play asks for no other platform's devices), plus the Play feature graphic
+   (1024 x 500) and icon.
 
    node tools/store/make.cjs <folder with the store-*.png app screens> <out folder>
 
@@ -29,6 +31,9 @@ const FRAMES = [
 /* the iPhone status bar: time, signal, wifi, battery */
 const BAR = '<div class="bar"><span>9:41</span><span class="sys"><svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg class="wifi" viewBox="0 0 16 12"><path d="M1.4 4.7a9.6 9.6 0 0 1 13.2 0M3.9 7.4a6 6 0 0 1 8.2 0M6.5 10.1a2.3 2.3 0 0 1 3 0" stroke-width="1.9" stroke-linecap="round"/></svg><svg class="bat" viewBox="0 0 27 13"><rect x=".6" y=".6" width="22.8" height="11.8" rx="3.4" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-width="1.2"/><rect x="2.4" y="2.4" width="19.2" height="8.2" rx="2"/><path d="M25 4.4v4.2a2.3 2.3 0 0 0 0-4.2z" opacity=".45"/></svg></span></div>';
 
+/* an Android status bar: time on the left, wifi, signal and battery on the right */
+const DROID = '<div class="bar droid"><span>9:41</span><span class="sys"><svg class="wifi" viewBox="0 0 16 12"><path d="M1.4 4.7a9.6 9.6 0 0 1 13.2 0M3.9 7.4a6 6 0 0 1 8.2 0M6.5 10.1a2.3 2.3 0 0 1 3 0" stroke-width="1.9" stroke-linecap="round"/></svg><svg viewBox="0 0 12 12"><path d="M12 0v12H0z"/></svg><svg class="bat" viewBox="0 0 8 13"><rect x="1.5" y="0" width="5" height="1.6" rx=".5"/><rect x="0" y="1.4" width="8" height="11.6" rx="1.6"/></svg></span></div>';
+
 const url = (f) => 'file://' + path.resolve(f);
 
 function css(W) {
@@ -40,7 +45,7 @@ function css(W) {
   body{font-family:"Manrope",sans-serif;-webkit-font-smoothing:antialiased}`;
 }
 
-function framePage(W, H, shot, caption, isDraw) {
+function framePage(W, H, shot, caption, isDraw, android = false) {
   const s = W / 1290;                       /* everything is laid out for 1290 wide */
   const tall = H / W > 2;                   /* App Store frames are taller than Play ones */
   const capTop = (tall ? 230 : 150) * s;
@@ -49,8 +54,10 @@ function framePage(W, H, shot, caption, isDraw) {
      points (the 1290 x 2796 screenshots), bezel 3.3 mm, display corners 55 pt. */
   const devW = (tall ? 1010 : 860) * s;
   const devTop = (tall ? 640 : 470) * s;
-  const bez = devW * 0.0424, scrW = devW - bez * 2, scrH = scrW * 932 / 430;
-  const inner = scrW * 55 / 430, rad = inner + bez, pt = scrW / 430;
+  /* The Android phone: slimmer bezel, smaller corners, a round camera in the
+     screen instead of the island, both buttons on the right. */
+  const bez = devW * (android ? 0.03 : 0.0424), scrW = devW - bez * 2, scrH = scrW * 932 / 430;
+  const inner = scrW * (android ? 38 : 55) / 430, rad = inner + bez, pt = scrW / 430;
   return `<!doctype html><html><head><meta charset="utf-8"><style>${css(W)}
   body{height:${H}px;position:relative;color:#fff;
     background:radial-gradient(${1400 * s}px ${1200 * s}px at 80% 8%,#1A5A27 0%,#032A09 55%,#021A05 100%)}
@@ -65,6 +72,12 @@ function framePage(W, H, shot, caption, isDraw) {
   .dev::before{right:${-devW * 0.009}px;top:27%;height:11.5%;border-radius:0 ${4 * s}px ${4 * s}px 0}
   .dev::after{left:${-devW * 0.009}px;top:17%;height:22%;border-radius:${4 * s}px 0 0 ${4 * s}px;
     background:linear-gradient(#2E3631 0 15%,transparent 15% 29%,#2E3631 29% 60%,transparent 60% 69%,#2E3631 69% 100%)}
+  .droidp::after{left:auto;right:${-devW * 0.009}px;top:44%;height:13%;border-radius:0 ${4 * s}px ${4 * s}px 0;background:#2E3631}
+  .cam{position:absolute;left:50%;top:${12 * pt}px;width:${12 * pt}px;height:${12 * pt}px;margin-left:${-6 * pt}px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#2A3340 0 22%,#05070A 40%);box-shadow:0 0 0 ${1.5 * pt}px #000}
+  .bar.droid{height:${36 * pt}px;padding:0 ${22 * pt}px;font-family:"Manrope",sans-serif;font-size:${14 * pt}px;font-weight:600}
+  .droid .sys{gap:${5 * pt}px}
+  .droid .sys svg{height:${12 * pt}px}
   .scr{position:relative;width:${scrW}px;height:${scrH}px;border-radius:${inner}px;overflow:hidden;background:${isDraw ? '#032A09' : '#F3F5F0'}}
   .scr img{display:block;width:100%;height:100%;object-fit:${isDraw ? 'cover' : 'fill'}}
   .island{position:absolute;left:50%;top:${11 * pt}px;width:${126 * pt}px;height:${37.3 * pt}px;margin-left:${-63 * pt}px;border-radius:99px;background:#000}
@@ -76,7 +89,7 @@ function framePage(W, H, shot, caption, isDraw) {
   .sys .wifi{fill:none;stroke:currentColor}
   .home{position:absolute;left:50%;bottom:${8 * pt}px;width:${144 * pt}px;height:${5 * pt}px;margin-left:${-72 * pt}px;border-radius:9px;background:${isDraw ? 'rgba(255,255,255,.7)' : '#0F2413'}}
   </style></head><body><div class="glow"></div><h1>${caption}</h1>
-  <div class="dev"><div class="scr"><img src="${url(shot)}">${BAR}<i class="island"></i><i class="home"></i></div></div>
+  <div class="dev${android ? ' droidp' : ''}"><div class="scr"><img src="${url(shot)}">${android ? DROID + '<i class="cam"></i>' : BAR + '<i class="island"></i>'}<i class="home"></i></div></div>
   </body></html>`;
 }
 
@@ -95,7 +108,7 @@ function featurePage(shot) {
   .dev{position:absolute;left:650px;top:64px;width:300px;height:620.4px;border-radius:47.8px;padding:12.7px;background:#050806;
     box-shadow:inset 0 0 0 1.65px #59625B,inset 0 0 0 3.9px #1D2420,0 0 0 1px rgba(0,0,0,.4),0 40px 80px -20px rgba(0,0,0,.7)}
   .scr{position:relative;width:100%;height:100%;border-radius:35.1px;overflow:hidden;background:#F3F5F0}
-  .island{position:absolute;left:50%;top:7px;width:80.5px;height:23.8px;margin-left:-40.2px;border-radius:99px;background:#000}
+  .cam{position:absolute;left:50%;top:7.5px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#05070A;box-shadow:0 0 0 1px #000}
   .scr img{display:block;width:100%}
   .bar{position:absolute;left:0;right:0;top:0;height:37.7px;display:flex;align-items:center;justify-content:space-between;padding:0 19.8px 0 29.4px;
     color:#0F2413;font-family:-apple-system,"SF Pro Text","Manrope",sans-serif;font-weight:600;font-size:10.9px}
@@ -103,9 +116,10 @@ function featurePage(shot) {
   .sys svg{display:block;height:7.3px;width:auto;fill:currentColor}
   .sys .bat{height:8.3px}
   .sys .wifi{fill:none;stroke:currentColor}
+  .bar.droid{height:23px;padding:0 14px;font-family:"Manrope",sans-serif;font-size:9px}
   </style></head><body><div class="glow"></div>
   <div class="copy"><div class="mark"><img src="${url(ICON)}"><span>Kuree</span></div><p>Run your chit <b>from your phone</b></p></div>
-  <div class="dev"><div class="scr"><img src="${url(shot)}">${BAR}<i class="island"></i></div></div></body></html>`;
+  <div class="dev"><div class="scr"><img src="${url(shot)}">${DROID}<i class="cam"></i></div></div></body></html>`;
 }
 
 (async () => {
@@ -133,8 +147,8 @@ function featurePage(shot) {
   for (const [i, [name, caption]] of FRAMES.entries()) {
     const shot = pick(name);
     const isDraw = name.startsWith('draw');
-    await render(framePage(1290, 2796, shot, caption, isDraw), 1290, 2796, path.join(OUT, 'ios', `${i + 1}.png`));
-    await render(framePage(1080, 1920, shot, caption, isDraw), 1080, 1920, path.join(OUT, 'play', `${i + 1}.png`));
+    await render(framePage(1206, 2622, shot, caption, isDraw), 1206, 2622, path.join(OUT, 'ios', `${i + 1}.png`));
+    await render(framePage(1080, 1920, shot, caption, isDraw, true), 1080, 1920, path.join(OUT, 'play', `${i + 1}.png`));
   }
   await render(featurePage(pick('month')), 1024, 500, path.join(OUT, 'play', 'feature.png'));
   await render(`<!doctype html><html><head><style>*{margin:0}body{width:512px;height:512px}img{display:block;width:512px;height:512px}</style></head><body><img src="${url(ICON)}"></body></html>`,
