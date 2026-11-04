@@ -11,7 +11,7 @@ on:
     inputs:
       version:
         description: "App Store version to update"
-        default: "1.0.0"
+        default: "1.0.2"
   push:
     branches: [store-upload]
 
@@ -38,4 +38,4 @@ jobs:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
-        run: python3 .github/scripts/asc_screenshots.py "$RUNNER_TEMP/store/ios" "${{ inputs.version || '1.0.0' }}" en-US
+        run: python3 .github/scripts/asc_screenshots.py "$RUNNER_TEMP/store/ios" "${{ inputs.version || '1.0.2' }}" en-US

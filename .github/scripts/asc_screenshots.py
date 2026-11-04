@@ -101,7 +101,9 @@ def upload(set_id, path):
 
 
 def wait(shot_id, name):
-    for _ in range(90):
+    # Apple usually takes a few seconds a picture, but on a busy day one can
+    # sit for many minutes; give each up to 20.
+    for _ in range(300):
         a = call('GET', f'/appScreenshots/{shot_id}')['data']['attributes']
         state = (a.get('assetDeliveryState') or {}).get('state')
         if state == 'COMPLETE':
@@ -112,7 +114,7 @@ def wait(shot_id, name):
             print(f"::error::{name} was not accepted: {'; '.join(e.get('description', e.get('code', '')) for e in errs)}")
             return False
         time.sleep(4)
-    print(f'::error::{name} is still processing after 6 minutes.')
+    print(f'::error::{name} is still processing after 20 minutes.')
     return False
 
 
