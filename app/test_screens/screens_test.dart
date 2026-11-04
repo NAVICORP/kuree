@@ -31,8 +31,8 @@ Future<void> loadFonts() async {
 
   await family('Manrope', [for (final w in [500, 600, 700, 800]) 'assets/fonts/Manrope-$w.ttf']);
   await family('Bricolage', [for (final w in [600, 700, 800]) 'assets/fonts/BricolageGrotesque-$w.ttf']);
-  for (final s in ['Arabic', 'Malayalam', 'Tamil', 'Kannada', 'Devanagari']) {
-    await family('NotoSans$s', ['assets/fonts/NotoSans$s-500.ttf', 'assets/fonts/NotoSans$s-700.ttf']);
+  for (final f in ['Manjari', 'NotoNaskhArabic', 'NotoSansTamil', 'NotoSansKannada', 'NotoSansDevanagari']) {
+    await family(f, ['assets/fonts/$f-500.ttf', 'assets/fonts/$f-700.ttf']);
   }
   // Material icons, from the Flutter SDK running the test.
   final roots = <String>[

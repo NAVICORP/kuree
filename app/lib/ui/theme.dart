@@ -45,10 +45,12 @@ class K {
   ];
 }
 
-/// Fonts for the scripts Manrope and Bricolage do not have: Malayalam, Tamil,
-/// Kannada, Hindi (Devanagari) and Arabic. Latin letters and digits stay in
-/// Manrope or Bricolage; anything else falls through to these.
-const List<String> kFontFallback = ['NotoSansMalayalam', 'NotoSansTamil', 'NotoSansKannada', 'NotoSansDevanagari', 'NotoSansArabic'];
+/// Fonts for the scripts Manrope and Bricolage do not have: Malayalam
+/// (Manjari), Tamil, Kannada, Hindi (Devanagari) and Arabic (Noto Naskh
+/// Arabic). Latin letters and digits stay in Manrope or Bricolage; anything
+/// else falls through to these. Manjari and Naskh are enlarged in the font
+/// files to sit level with Manrope (tools/brand/script_fonts.py).
+const List<String> kFontFallback = ['Manjari', 'NotoSansTamil', 'NotoSansKannada', 'NotoSansDevanagari', 'NotoNaskhArabic'];
 
 /// Spacing: one scale for paddings and gaps.
 class Sp {
