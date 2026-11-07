@@ -1,7 +1,8 @@
 # Kuree on SkiFi's own server (kureeapp.com), on the shared SkiFi app base:
-# the database API and sign-in through SkAuth. The same image runs twice
-# (deploy/docker-compose.yml): as the API, and as the site in front of it
-# (server/site.mjs). Kuree has no server functions now; if one is added under
+# the database API and sign-in through SkAuth. The same image runs three
+# times (deploy/docker-compose.yml): as the API, as the site in front of it
+# (server/site.mjs), and as the push sender (server/push.mjs, which uses the
+# base image's `pg`). Kuree has no server functions now; if one is added under
 # supabase/functions/<name>/index.ts, add back
 # COPY supabase/functions /srv/app/functions below.
 FROM ghcr.io/navicorp/skifi-app:latest
