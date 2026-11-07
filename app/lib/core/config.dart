@@ -22,3 +22,16 @@ const String kGoogleServerClientId = String.fromEnvironment('KUREE_GOOGLE_SERVER
 /// build also needs its reversed form as a URL scheme (the workflow writes
 /// app/ios/Flutter/Google.xcconfig). Empty hides the Google button on iPhone.
 const String kGoogleIosClientId = String.fromEnvironment('KUREE_GOOGLE_IOS_CLIENT_ID');
+
+/// Push notifications (Firebase Cloud Messaging). The builds read these from
+/// the Firebase config files in the repository secrets FIREBASE_ANDROID_JSON
+/// and FIREBASE_IOS_PLIST (see .github/workflows/app.yml). Empty: no push,
+/// and the app works as before with only the reminders set on the phone.
+const String kFirebaseApiKey = String.fromEnvironment('KUREE_FB_API_KEY');
+const String kFirebaseAppId = String.fromEnvironment('KUREE_FB_APP_ID');
+const String kFirebaseSenderId = String.fromEnvironment('KUREE_FB_SENDER_ID');
+const String kFirebaseProjectId = String.fromEnvironment('KUREE_FB_PROJECT_ID');
+const String kFirebaseIosBundleId = String.fromEnvironment('KUREE_FB_IOS_BUNDLE_ID');
+
+bool get kPushConfigured =>
+    kFirebaseApiKey.isNotEmpty && kFirebaseAppId.isNotEmpty && kFirebaseSenderId.isNotEmpty && kFirebaseProjectId.isNotEmpty;

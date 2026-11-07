@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/api.dart';
+import 'core/notifications.dart';
 import 'l10n/lang.dart';
 import 'l10n/strings.dart';
 import 'ui/home.dart';
@@ -29,6 +30,10 @@ Future<void> main() async {
   ));
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
   runApp(const KureeApp());
+  // Reminders and pushes start alongside the first screen, so they never hold
+  // the launch screen. Asks nothing here; a tapped notification is picked up
+  // through Notifications.openChit whenever it arrives.
+  unawaited(Notifications.instance.init());
 }
 
 class KureeApp extends StatelessWidget {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../core/api.dart';
 import '../core/kuri.dart';
+import '../core/notifications.dart';
 import '../l10n/strings.dart';
 import 'account.dart';
 import 'collect_screen.dart';
@@ -39,7 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
       _asked = true;
       return;
     }
+    Notifications.instance.openChit.addListener(_openFromNotification);
     _load();
+  }
+
+  @override
+  void dispose() {
+    Notifications.instance.openChit.removeListener(_openFromNotification);
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -54,7 +62,13 @@ class _HomeScreenState extends State<HomeScreen> {
         error = null;
       });
       Api.instance.name = (me?['display'] as String?) ?? '';
-      if ((me?['name'] as String?)?.trim().isEmpty ?? true) _askName();
+      Notifications.instance.sync(list);
+      _openFromNotification();
+      if ((me?['name'] as String?)?.trim().isEmpty ?? true) {
+        _askName();
+      } else {
+        _offerReminders();
+      }
     } on ApiError catch (e) {
       if (mounted) setState(() => error = e.message);
     }
@@ -73,6 +87,59 @@ class _HomeScreenState extends State<HomeScreen> {
     } on ApiError catch (e) {
       if (mounted) toast(context, e.message, bad: true);
     }
+  }
+
+  /// A tapped reminder or push: opens its chit in the Chits tab, over
+  /// whatever is open there, once the chits have loaded.
+  void _openFromNotification() {
+    final id = Notifications.instance.openChit.value;
+    final list = kuris;
+    if (id == null || list == null || !mounted) return;
+    Notifications.instance.openChit.value = null;
+    final k = list.where((k) => k.id == id).firstOrNull;
+    if (k == null) return;
+    if (tab != 0) setState(() => tab = 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _open(k);
+    });
+  }
+
+  /// Once there is a chit, offers reminders (once): a short word on what they
+  /// are, then the phone's own question.
+  bool _offered = false;
+  Future<void> _offerReminders() async {
+    final list = kuris ?? const <KuriRecord>[];
+    if (_offered || list.isEmpty) return;
+    _offered = true;
+    if (!await Notifications.instance.shouldAsk(list) || !mounted) return;
+    final s = S.of(context);
+    final yes = await showKSheet<bool>(
+      context,
+      title: s.notifAskTitle,
+      builder: (ctx) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(color: K.mint, shape: BoxShape.circle),
+            child: const Icon(Icons.notifications_active_outlined, color: K.green, size: 22),
+          ),
+          const SizedBox(width: Sp.md + 2),
+          Expanded(child: Text(s.notifAskText, style: T.body.copyWith(color: K.ink2))),
+        ]),
+        const SizedBox(height: Sp.xl),
+        KButton(label: s.notifTurnOn, icon: Icons.notifications_rounded, expand: true, onPressed: () => Navigator.of(ctx).pop(true)),
+        const SizedBox(height: Sp.sm),
+        KButton(label: s.notifNotNow, kind: KButtonKind.ghost, expand: true, onPressed: () => Navigator.of(ctx).pop(false)),
+      ]),
+    );
+    if (yes != true) {
+      await Notifications.instance.declined();
+      return;
+    }
+    final ok = await Notifications.instance.turnOn();
+    if (!ok && mounted) toast(context, s.notifBlocked, bad: true);
   }
 
   /// Opens a chit inside a footer tab (Chits unless told otherwise), so the

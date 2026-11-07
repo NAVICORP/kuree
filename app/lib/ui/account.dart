@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/api.dart';
 import '../core/config.dart';
 import '../core/format.dart';
+import '../core/notifications.dart';
 import '../l10n/lang.dart';
 import '../l10n/strings.dart';
 import 'feature_request_screen.dart';
@@ -29,6 +30,9 @@ class _AccountScreenState extends State<AccountScreen> {
   late Map<String, dynamic> me = Map<String, dynamic>.from(widget.me);
   bool deleting = false;
 
+  /// The reminders switch is busy asking the phone.
+  bool switching = false;
+
   /// True for the Kuree team, who also see every request sent in.
   bool owner = false;
 
@@ -48,6 +52,22 @@ class _AccountScreenState extends State<AccountScreen> {
       if (mounted && r is Map) setState(() => me = Map<String, dynamic>.from(r));
     } on ApiError catch (e) {
       if (mounted) toast(context, e.message, bad: true);
+    }
+  }
+
+  Future<void> _setReminders(bool value) async {
+    if (switching) return;
+    final s = S.of(context);
+    setState(() => switching = true);
+    try {
+      if (value) {
+        final ok = await Notifications.instance.turnOn();
+        if (!ok && mounted) toast(context, s.notifBlocked, bad: true);
+      } else {
+        await Notifications.instance.turnOff();
+      }
+    } finally {
+      if (mounted) setState(() => switching = false);
     }
   }
 
@@ -161,8 +181,16 @@ class _AccountScreenState extends State<AccountScreen> {
         _label(s.secPreferences),
         KCard(
           padding: EdgeInsets.zero,
-          child: _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
-              value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
+          child: Column(children: [
+            _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
+                value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
+            const Divider(),
+            ValueListenableBuilder<bool>(
+              valueListenable: Notifications.instance.on,
+              builder: (context, on, _) => _switchRow(Icons.notifications_none_rounded, s.reminders, s.notifSub, on,
+                  switching ? null : _setReminders),
+            ),
+          ]),
         ),
         _label(s.secHelp),
         KCard(
@@ -208,6 +236,32 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsetsDirectional.fromSTEB(Sp.sm, Sp.xl, Sp.sm, Sp.sm),
         child: Text(text, style: T.small),
       );
+
+  /// A row with a switch at the end and a short line under its name.
+  Widget _switchRow(IconData icon, String text, String sub, bool value, ValueChanged<bool>? onChanged) {
+    return InkWell(
+      onTap: onChanged == null ? null : () => onChanged(!value),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 52),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 10, 10),
+          child: Row(children: [
+            Icon(icon, color: K.green, size: 20),
+            const SizedBox(width: Sp.md + 2),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(text, style: T.body.copyWith(color: K.ink)),
+                const SizedBox(height: 2),
+                Text(sub, style: T.small),
+              ]),
+            ),
+            const SizedBox(width: Sp.sm),
+            Switch(value: value, onChanged: onChanged),
+          ]),
+        ),
+      ),
+    );
+  }
 
   Widget _row(IconData icon, String text, VoidCallback? onTap, {bool bad = false, String? value}) {
     return InkWell(
