@@ -253,9 +253,12 @@ class _LaunchScreenState extends State<LaunchScreen> with SingleTickerProviderSt
           },
           child: Semantics(
             label: s.launchOpening,
-            child: ValueListenableBuilder<double>(
-              valueListenable: _clock,
-              builder: (context, t, _) => _scene(context, t, still, solid),
+            child: Material(
+              type: MaterialType.transparency,
+              child: ValueListenableBuilder<double>(
+                valueListenable: _clock,
+                builder: (context, t, _) => _scene(context, t, still, solid),
+              ),
             ),
           ),
         );
@@ -275,10 +278,10 @@ class _LaunchScreenState extends State<LaunchScreen> with SingleTickerProviderSt
 
     final grow = 1 + pose.lift * 0.05 + out * 0.10;
     final card = Matrix4.identity()
-      ..setEntry(3, 2, 0.0013)
-      ..multiply(Matrix4.translationValues(tilt.dx * 10, tilt.dy * 10 - pose.lift * 9 + pose.bob, 0))
-      ..rotateX(-tilt.dy * 0.34)
-      ..rotateY(tilt.dx * 0.40)
+      ..setEntry(3, 2, 0.0024)
+      ..multiply(Matrix4.translationValues(tilt.dx * 16, tilt.dy * 14 - pose.lift * 9 + pose.bob, 0))
+      ..rotateX(-tilt.dy * 0.50)
+      ..rotateY(tilt.dx * 0.56)
       ..rotateZ(pose.wobble + spin * 0.12)
       ..multiply(Matrix4.diagonal3Values(grow + squash * 0.35, grow + squash * 0.25, 1));
 
@@ -297,13 +300,13 @@ class _LaunchScreenState extends State<LaunchScreen> with SingleTickerProviderSt
       child: Stack(fit: StackFit.expand, children: [
         // Deep green with soft light, which comes up out of the plain green
         // of the launch screen and shifts a little against the tilt.
-        CustomPaint(painter: _Backdrop(glow: pose.glow, shift: -tilt * 16, solid: solid)),
+        CustomPaint(painter: _Backdrop(glow: pose.glow, shift: -tilt * 28, solid: solid)),
         Center(
           child: SizedBox.square(
             dimension: LaunchScreen.markSize,
             child: Stack(clipBehavior: Clip.none, fit: StackFit.expand, children: [
               Transform.translate(
-                offset: -tilt * 6,
+                offset: -tilt * 10,
                 child: CustomPaint(
                   painter: _Ring(
                     show: pose.ring,
@@ -316,21 +319,7 @@ class _LaunchScreenState extends State<LaunchScreen> with SingleTickerProviderSt
                 ),
               ),
               // The card's own shadow on the glass, deeper as it lifts.
-              Transform.translate(
-                offset: Offset(tilt.dx * 4, 58 + pose.lift * 8),
-                child: Center(
-                  child: Container(
-                    width: 150 - pose.lift * 14,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withValues(alpha: 0.30 * pose.lift), blurRadius: 22 + pose.lift * 8, spreadRadius: -2),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              CustomPaint(painter: _Contact(lift: pose.lift, shift: tilt.dx * 6)),
               Transform(
                 alignment: Alignment.center,
                 transform: card,
@@ -560,12 +549,14 @@ class _Ring extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round
         ..strokeWidth = 2.6
+        // The gradient starts a little before the arc, so the round cap at
+        // the tail picks up its clear end rather than wrapping to the head.
         ..shader = SweepGradient(
-          startAngle: 0,
-          endAngle: len,
+          startAngle: 0.3,
+          endAngle: len + 0.3,
           colors: [K.sun.withValues(alpha: 0), K.sun.withValues(alpha: 0.85 * fadeArc), white.withValues(alpha: fadeArc)],
           stops: const [0, 0.7, 1],
-          transform: GradientRotation(start),
+          transform: GradientRotation(start - 0.3),
         ).createShader(track);
       if (!solid) {
         canvas.drawArc(track, start, len, false, Paint()
@@ -591,6 +582,28 @@ class _Ring extends CustomPainter {
   @override
   bool shouldRepaint(_Ring old) =>
       old.show != show || old.sweep != sweep || old.grow != grow || old.pulse != pulse || old.solid != solid || old.still != still;
+}
+
+/// The card's soft shadow on the glass under it: none while it lies flat
+/// (as on the launch screen), deeper and wider as it lifts.
+class _Contact extends CustomPainter {
+  _Contact({required this.lift, required this.shift});
+  final double lift, shift;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (lift <= 0) return;
+    final c = size.center(Offset(shift, 62 + lift * 8));
+    canvas.drawOval(
+      Rect.fromCenter(center: c, width: 150 - lift * 16, height: 20),
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.34 * lift.clamp(0.0, 1.0))
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 12 + lift * 4),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_Contact old) => old.lift != lift || old.shift != shift;
 }
 
 /// "Try again", as a clear glass capsule on the green.

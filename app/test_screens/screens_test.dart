@@ -184,6 +184,9 @@ void main() {
     await g.up();
     await tester.pump(const Duration(milliseconds: 900));
     await tester.pump(const Duration(milliseconds: 400));
+    // "Still loading" came at 2.5 s; let it fade in.
+    await tester.pump(const Duration(milliseconds: 150));
+    await tester.pump(const Duration(milliseconds: 200));
     await still(tester, '00c-loading-still');
   });
 
