@@ -116,6 +116,12 @@ class S {
   /// Try again
   String get tryAgain => _get('tryAgain');
 
+  /// Opening Kuree
+  String get launchOpening => _get('launchOpening');
+
+  /// Still loading…
+  String get launchStillLoading => _get('launchStillLoading');
+
   /// Language
   String get language => _get('language');
 
@@ -1304,6 +1310,8 @@ const Map<String, String> _en = {
   'close': 'Close',
   'yes': 'Yes',
   'tryAgain': 'Try again',
+  'launchOpening': 'Opening Kuree',
+  'launchStillLoading': 'Still loading…',
   'language': 'Language',
   'languagePhone': 'Same as phone',
   'agoJustNow': 'just now',
@@ -1746,6 +1754,8 @@ const Map<String, String> _ar = {
   'close': 'إغلاق',
   'yes': 'نعم',
   'tryAgain': 'حاول مرة أخرى',
+  'launchOpening': 'جارٍ فتح Kuree',
+  'launchStillLoading': 'لا يزال التحميل جاريًا…',
   'language': 'اللغة',
   'languagePhone': 'لغة الهاتف',
   'agoJustNow': 'الآن',
@@ -2188,6 +2198,8 @@ const Map<String, String> _ml = {
   'close': 'അടയ്ക്കുക',
   'yes': 'അതെ',
   'tryAgain': 'വീണ്ടും ശ്രമിക്കുക',
+  'launchOpening': 'Kuree തുറക്കുന്നു',
+  'launchStillLoading': 'ഇപ്പോഴും ലോഡ് ചെയ്യുന്നു…',
   'language': 'ഭാഷ',
   'languagePhone': 'ഫോണിലെ ഭാഷ',
   'agoJustNow': 'ഇപ്പോൾ',
@@ -2630,6 +2642,8 @@ const Map<String, String> _ta = {
   'close': 'மூடு',
   'yes': 'ஆம்',
   'tryAgain': 'மீண்டும் முயலவும்',
+  'launchOpening': 'Kuree திறக்கிறது',
+  'launchStillLoading': 'இன்னும் ஏற்றுகிறது…',
   'language': 'மொழி',
   'languagePhone': 'தொலைபேசியின் மொழி',
   'agoJustNow': 'இப்போது',
@@ -3072,6 +3086,8 @@ const Map<String, String> _kn = {
   'close': 'ಮುಚ್ಚಿ',
   'yes': 'ಹೌದು',
   'tryAgain': 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+  'launchOpening': 'Kuree ತೆರೆಯುತ್ತಿದೆ',
+  'launchStillLoading': 'ಇನ್ನೂ ಲೋಡ್ ಆಗುತ್ತಿದೆ…',
   'language': 'ಭಾಷೆ',
   'languagePhone': 'ಫೋನಿನ ಭಾಷೆ',
   'agoJustNow': 'ಈಗಷ್ಟೇ',
@@ -3514,6 +3530,8 @@ const Map<String, String> _hi = {
   'close': 'बंद करें',
   'yes': 'हाँ',
   'tryAgain': 'फिर से कोशिश करें',
+  'launchOpening': 'Kuree खुल रहा है',
+  'launchStillLoading': 'अभी भी लोड हो रहा है…',
   'language': 'भाषा',
   'languagePhone': 'फ़ोन की भाषा',
   'agoJustNow': 'अभी',

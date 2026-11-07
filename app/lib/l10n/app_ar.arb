@@ -74,6 +74,8 @@
   "close": "إغلاق",
   "yes": "نعم",
   "tryAgain": "حاول مرة أخرى",
+  "launchOpening": "جارٍ فتح Kuree",
+  "launchStillLoading": "لا يزال التحميل جاريًا…",
   "language": "اللغة",
   "languagePhone": "لغة الهاتف",
   "agoJustNow": "الآن",

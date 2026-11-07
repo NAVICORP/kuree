@@ -104,6 +104,8 @@
   "close": "Close",
   "yes": "Yes",
   "tryAgain": "Try again",
+  "launchOpening": "Opening Kuree",
+  "launchStillLoading": "Still loading…",
   "language": "Language",
   "languagePhone": "Same as phone",
   "agoJustNow": "just now",

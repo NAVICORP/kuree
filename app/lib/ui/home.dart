@@ -6,6 +6,7 @@ import '../core/api.dart';
 import '../core/kuri.dart';
 import '../core/notifications.dart';
 import '../l10n/strings.dart';
+import '../core/startup.dart';
 import 'account.dart';
 import 'collect_screen.dart';
 import 'glass.dart';
@@ -53,7 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _load() async {
     if (widget.preview != null) return;
     try {
-      final results = await Future.wait([Api.instance.rpc('my_kuris'), Api.instance.rpc('whoami')]);
+      // The first time, the loading screen has usually fetched them already.
+      final results = await (Startup.instance.take() ?? Future.wait([Api.instance.rpc('my_kuris'), Api.instance.rpc('whoami')]));
       final list = (results[0] as List? ?? const []).whereType<Map>().map((e) => KuriRecord.fromJson(Map<String, dynamic>.from(e))).toList();
       if (!mounted) return;
       setState(() {

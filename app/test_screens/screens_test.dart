@@ -1,6 +1,7 @@
 // Renders every main screen to a picture, so the design can be checked
 // without a phone. Run with: flutter test test_screens --update-goldens
 // The pictures land in test_screens/shots/.
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -17,6 +18,7 @@ import 'package:kuree/ui/account.dart';
 import 'package:kuree/ui/home.dart';
 import 'package:kuree/ui/kuri_editor.dart';
 import 'package:kuree/ui/kuri_screen.dart';
+import 'package:kuree/ui/launch.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
 
@@ -154,6 +156,53 @@ void main() {
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
+  }
+
+  // The loading screen, caught mid-motion: no settle() here, which would run
+  // the intro to its end.
+  Future<void> still(WidgetTester tester, String name) =>
+      expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/$name.png'));
+
+  testWidgets('loading', (tester) async {
+    sized(tester);
+    await tester.runAsync(LaunchScreen.prepare);
+    final never = Completer<void>();
+    await tester.pumpWidget(phone(LaunchScreen(work: () => never.future, child: const SizedBox())));
+    // The card lifting, the light crossing it, the ring taking shape.
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
+    await still(tester, '00-loading');
+    // A finger dragging up and to the right: the card tilts towards it.
+    await tester.pump(const Duration(milliseconds: 500));
+    final g = await tester.startGesture(const Offset(195, 422));
+    for (var i = 0; i < 6; i++) {
+      await g.moveBy(const Offset(18, -22));
+      await tester.pump(const Duration(milliseconds: 40));
+    }
+    await tester.pump(const Duration(milliseconds: 200));
+    await still(tester, '00b-loading-tilt');
+    await g.up();
+    await tester.pump(const Duration(milliseconds: 900));
+    await tester.pump(const Duration(milliseconds: 400));
+    // "Still loading" came at 2.5 s; let it fade in.
+    await tester.pump(const Duration(milliseconds: 150));
+    await tester.pump(const Duration(milliseconds: 200));
+    await still(tester, '00c-loading-still');
+  });
+
+  for (final code in ['en', 'ar']) {
+    testWidgets('$code: loading offline', (tester) async {
+      sized(tester);
+      await tester.runAsync(LaunchScreen.prepare);
+      final words = S.forCode(code);
+      await tester.pumpWidget(phone(
+        LaunchScreen(work: () async => throw ApiError(words.errNoConnection), child: const SizedBox()),
+        code == 'en' ? null : code,
+      ));
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump(const Duration(milliseconds: 500));
+      await still(tester, code == 'en' ? '00d-loading-offline' : '$code-00d-loading-offline');
+    });
   }
 
   testWidgets('sign in', (tester) async {
