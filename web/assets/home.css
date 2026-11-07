@@ -1,4 +1,5 @@
-/* kureeapp.com: the landing page. Boystown greens, Manrope and Bricolage. */
+/* kureeapp.com: the landing page. Kuree's greens and sun yellow, Manrope and
+   Bricolage, in the same liquid glass as Pursee's page. No letter spacing. */
 @font-face{font-family:"Manrope";font-weight:400 800;font-style:normal;font-display:swap;src:url(/assets/fonts/manrope.woff2) format("woff2")}
 @font-face{font-family:"Bricolage Grotesque";font-weight:500 800;font-style:normal;font-display:swap;src:url(/assets/fonts/bricolage.woff2) format("woff2")}
 
@@ -11,7 +12,7 @@
   --sec:120px; /* the space between sections: 120 on desktop, 96 on tablets, 72 on phones */
 }
 *,*::before,*::after{box-sizing:border-box;letter-spacing:0}
-html{scroll-behavior:smooth;scroll-padding-top:84px;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:96px;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--fb);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden}
 img{display:block;max-width:100%}
 a{color:inherit}
@@ -24,40 +25,119 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 :focus-visible{outline:3px solid var(--green);outline-offset:3px;border-radius:12px}
 /* yellow on the dark green cards, green on the light page, so the focus ring always shows */
-.hero :focus-visible,.draw :focus-visible,.cta :focus-visible,.card--big :focus-visible,.getbar :focus-visible{outline-color:var(--sun)}
+.hero :focus-visible,.draw :focus-visible,.cta :focus-visible,.card--big :focus-visible,.is-dark :focus-visible{outline-color:var(--sun)}
+
+/* ------------------------------------------------------------ liquid glass
+   Glass is only for the layer that floats over content: the bar at the top,
+   buttons and pills, the cards round the hero phone, the phones' own bars,
+   the "Get the app" bar. Never for reading. One glass surface is:
+   - a translucent fill over a blurred, more saturated copy of what is behind
+   - a 1px rim that catches the light at the top left (::before, a gradient
+     border cut out with a mask)
+   - a sheen along the top edge (the first background layer)
+   - a soft shadow under it
+   Each surface only sets the --lg- values. The fallbacks at the end of this
+   file swap in solid fills when blur is missing, or when less transparency or
+   more contrast is asked for. .lg--flat is the same look without the blur,
+   for glass on a plain surface (inside the phone pictures), where a blur
+   would show nothing and only cost time. */
+.lg{
+  --lg-fill:rgba(255,255,255,.56);--lg-solid:#fff;
+  --lg-rim:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.28);
+  --lg-spec:rgba(255,255,255,.5);--lg-edge:rgba(15,36,19,.42);
+  --lg-shadow:0 12px 32px -14px rgba(3,42,9,.3),0 2px 8px -3px rgba(3,42,9,.12);
+  position:relative;isolation:isolate;
+  background:linear-gradient(180deg,var(--lg-spec),rgba(255,255,255,0) 52%),var(--lg-fill);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.35),var(--lg-shadow)}
+.lg::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,var(--lg-rim) 0%,rgba(255,255,255,.12) 34%,rgba(255,255,255,0) 58%,var(--lg-rim2) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.lg--flat{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* on the dark green panels: a clear pane that lets the green through */
+.lg--dark{--lg-fill:rgba(255,255,255,.1);--lg-solid:#0A3D12;--lg-rim:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.16);--lg-spec:rgba(255,255,255,.13);
+  --lg-edge:rgba(255,255,255,.7);--lg-shadow:0 16px 34px -18px rgba(1,14,4,.75)}
+/* the refraction: Chromium only (home.js adds .lg-warp), a light ripple in
+   what is behind; everywhere else the plain blur above stays */
+.lg-warp .lg--warp{-webkit-backdrop-filter:blur(20px) url(#lgWarp) saturate(180%);backdrop-filter:blur(20px) url(#lgWarp) saturate(180%)}
+
+/* what can be pressed: a little bigger under the pointer, a little smaller
+   when pressed, and a soft light that follows the pointer (home.js sets
+   --sx and --sy). Transform and opacity only. */
+.lg-press{overflow:hidden;transition:transform .3s var(--ease)}
+.lg-press::after{content:"";position:absolute;z-index:-1;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,255,255,.5),rgba(255,255,255,.16) 48%,rgba(255,255,255,0));
+  opacity:0;transform:translate(var(--sx,0px),var(--sy,0px));transition:opacity .35s}
+@media (hover:hover){
+  .lg-press:hover{transform:scale(1.02)}
+  .lg-press:hover::after{opacity:1}
+}
+.lg-press:active{transform:scale(.98)}
+.lg-press:active::after,.lg-press:focus-visible::after{opacity:1}
+
+/* soft light behind the glass: blurred greens, mint and a little sun,
+   drifting slowly. Decoration only. */
+.amb{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;border-radius:inherit}
+.amb i{position:absolute;display:block;width:var(--s,420px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(closest-side,rgb(var(--c) / var(--a,.5)),rgb(var(--c) / calc(var(--a,.5) * .42)) 52%,rgb(var(--c) / 0));
+  animation:drift var(--t,26s) ease-in-out var(--d,0s) infinite alternate}
+.amb.is-off i{animation-play-state:paused}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(var(--dx,7%),var(--dy,-6%),0) scale(1.08)}
+  100%{transform:translate3d(calc(var(--dx,7%) * -.6),calc(var(--dy,-6%) * -.8),0) scale(.95)}}
+.b-leaf{--c:62 158 88}
+.b-green{--c:28 127 56}
+.b-glow{--c:127 209 143}
+.b-mint{--c:170 216 182}
+.b-sun{--c:255 216 77}
+.b-lime{--c:178 222 112}
 
 /* ------------------------------------------------------------ buttons, pills */
+/* buttons are tinted glass: the colour of the button, a little see-through */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 24px;border-radius:999px;border:0;
-  font-family:var(--fb);font-size:16.5px;font-weight:800;text-decoration:none;white-space:nowrap;
-  transition:transform .25s var(--ease),background-color .25s,box-shadow .25s}
-.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:translateY(0) scale(.98)}
-.btn--sun{background:var(--sun);color:var(--deep);box-shadow:0 14px 30px -14px rgba(255,216,77,.75)}
-.btn--sun:hover{box-shadow:0 18px 36px -14px rgba(255,216,77,.9)}
-.btn--glass{background:rgba(255,255,255,.09);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
-.btn--glass:hover{background:rgba(255,255,255,.15)}
-.btn--ink{background:var(--ink);color:#fff;box-shadow:0 12px 26px -14px rgba(15,36,19,.7)}
-.btn--ink:hover{background:var(--deep2)}
+  font-family:var(--fb);font-size:16.5px;font-weight:800;text-decoration:none;white-space:nowrap}
+.btn--sun{--lg-fill:rgba(255,216,77,.9);--lg-solid:var(--sun);--lg-rim:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.45);--lg-spec:rgba(255,255,255,.45);
+  --lg-edge:rgba(3,42,9,.5);--lg-shadow:0 14px 30px -14px rgba(255,216,77,.75);color:var(--deep)}
+.btn--glass{color:#fff}
+.btn--ink{--lg-fill:rgba(15,36,19,.86);--lg-solid:var(--ink);--lg-rim:rgba(255,255,255,.55);--lg-rim2:rgba(255,255,255,.12);--lg-spec:rgba(255,255,255,.17);
+  --lg-edge:rgba(255,255,255,.6);--lg-shadow:0 12px 26px -14px rgba(15,36,19,.7);color:#fff}
 .btn--sm{height:44px;padding:0 18px;font-size:14.5px}
 .btn .ic{width:19px;height:19px}
 
 .pill{display:inline-flex;align-items:center;gap:9px;padding:8px 15px;border-radius:999px;font-size:14px;font-weight:700;width:max-content;max-width:100%}
-.pill--glass{background:rgba(255,255,255,.08);color:var(--mint);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.pill--glass{color:var(--mint)}
 .pill .ic{width:17px;height:17px;color:var(--sun)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--sun);box-shadow:0 0 0 0 rgba(255,216,77,.6);animation:pulse 2.4s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,216,77,.55)}70%{box-shadow:0 0 0 9px rgba(255,216,77,0)}100%{box-shadow:0 0 0 0 rgba(255,216,77,0)}}
 .kicker{color:var(--green);font-weight:800;font-size:15px}
 
 /* ------------------------------------------------------------ nav */
-.nav{position:sticky;top:0;z-index:50;background:rgba(250,250,245,.78);-webkit-backdrop-filter:saturate(1.6) blur(16px);backdrop-filter:saturate(1.6) blur(16px);transition:box-shadow .3s}
-.nav.is-stuck{box-shadow:0 1px 0 var(--line),0 10px 30px -22px rgba(15,36,19,.35)}
-.nav__in{max-width:1200px;margin:0 auto;padding:0 24px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--fh);font-weight:700;font-size:23px;color:var(--ink)}
+/* a glass capsule that stays at the top. It turns to dark glass while a dark
+   panel is under it (home.js), as Apple's glass does over dark content. */
+.nav{position:sticky;top:0;z-index:50;padding:12px 12px 10px;pointer-events:none}
+.nav__in{pointer-events:auto;max-width:1180px;margin:0 auto;padding:0 10px 0 14px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-radius:999px;
+  --lg-fill:rgba(255,255,255,.6);--lg-spec:rgba(255,255,255,.55);
+  --lg-shadow:0 14px 34px -16px rgba(3,42,9,.34),0 2px 8px -4px rgba(3,42,9,.12)}
+.nav.is-stuck .nav__in{--lg-shadow:0 18px 40px -16px rgba(3,42,9,.4),0 2px 8px -4px rgba(3,42,9,.14)}
+.nav__in.is-dark{--lg-fill:rgba(3,42,9,.56);--lg-solid:#0A3D12;--lg-rim:rgba(255,255,255,.6);--lg-rim2:rgba(255,255,255,.16);--lg-spec:rgba(255,255,255,.13);
+  --lg-edge:rgba(255,255,255,.7);--lg-shadow:0 18px 40px -18px rgba(1,14,4,.7)}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--fh);font-weight:700;font-size:23px;color:var(--ink);transition:color .35s}
 .brand img{width:34px;height:34px;border-radius:10px;box-shadow:0 6px 14px -8px rgba(3,42,9,.6)}
 .nav__links{display:flex;gap:6px}
-.nav__links a{padding:9px 14px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;color:var(--muted);transition:background-color .2s,color .2s}
-.nav__links a:hover{background:rgba(15,36,19,.05);color:var(--ink)}
-@media (max-width:860px){.nav__links{display:none}.nav__in{height:64px}}
+.nav__links a{position:relative;isolation:isolate;padding:9px 14px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;color:#33473A;transition:color .2s,transform .3s var(--ease)}
+/* the light that comes up under a link: a smaller pane inside the bar */
+.nav__links a::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.4));box-shadow:inset 0 1px 0 #fff,0 6px 14px -8px rgba(3,42,9,.3)}
+.nav__links a:hover{color:var(--ink)}
+.nav__links a:hover::before{opacity:1}
+.nav__in.is-dark .brand,.nav__in.is-dark .nav__links a:hover{color:#fff}
+.nav__in.is-dark .nav__links a{color:rgba(221,238,223,.8)}
+.nav__in.is-dark .nav__links a::before{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.nav__in.is-dark .btn--ink{--lg-fill:rgba(255,216,77,.92);--lg-solid:var(--sun);--lg-rim:rgba(255,255,255,.95);--lg-rim2:rgba(255,255,255,.45);--lg-spec:rgba(255,255,255,.45);
+  --lg-edge:rgba(3,42,9,.5);--lg-shadow:0 10px 24px -12px rgba(255,216,77,.6);color:var(--deep)}
+@media (max-width:860px){.nav__links{display:none}}
 
 /* ------------------------------------------------------------ hero */
 .hero{position:relative;margin:0 12px;border-radius:40px;overflow:hidden;isolation:isolate;color:#fff;
@@ -79,12 +159,11 @@ svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-lin
 .hero__link .ic,.cta__link .ic{width:18px;height:18px;transition:transform .25s var(--ease)}
 .hero__link:hover .ic,.cta__link:hover .ic{transform:translateX(3px)}
 
-/* the store buttons: black, in the style of the official badges */
+/* the store buttons: in the style of the official badges, in smoked glass */
 .stores{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-.store{display:inline-flex;align-items:center;justify-content:center;gap:11px;width:196px;height:58px;padding:0 16px 0 14px;border-radius:14px;background:#000;color:#fff;text-decoration:none;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 16px 30px -18px rgba(0,0,0,.8);transition:transform .25s var(--ease),box-shadow .25s}
-a.store:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 20px 34px -18px rgba(0,0,0,.85)}
-a.store:active{transform:translateY(0) scale(.98)}
+.store{display:inline-flex;align-items:center;justify-content:center;gap:11px;width:196px;height:58px;padding:0 16px 0 14px;border-radius:14px;color:#fff;text-decoration:none;
+  --lg-fill:rgba(0,0,0,.44);--lg-solid:#000;--lg-rim:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.18);--lg-spec:rgba(255,255,255,.14);--lg-edge:rgba(255,255,255,.7);
+  --lg-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 16px 30px -18px rgba(0,0,0,.8)}
 .store svg{width:29px;height:29px;flex:none;stroke:none}
 .store[data-store="ios"] svg{width:38px;height:38px;margin:-5px -2px -2px -5px}
 .store__txt{display:grid;text-align:left;line-height:1}
@@ -132,14 +211,19 @@ a.store:active{transform:translateY(0) scale(.98)}
 .scr__bar{display:flex;align-items:center;justify-content:space-between;padding:.4em 2em 1.2em;flex:none}
 .scr__bar small{display:block;font-size:1.25em;font-weight:600;color:var(--muted)}
 .scr__bar b{display:block;font-size:2em;font-weight:800;line-height:1.1}
-.scr__icons{display:flex;gap:1.6em;color:var(--ink)}
-.scr__icons svg{width:2.3em;height:2.3em}
+/* the screen's own controls are small glass, as in iOS 26 */
+.scr .lg{--lg-fill:rgba(255,255,255,.62);--lg-spec:rgba(255,255,255,.7);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.5);
+  --lg-shadow:0 0 0 1px rgba(15,36,19,.07),0 .5em 1.2em -.6em rgba(15,36,19,.3)}
+.scr__icons{display:flex;gap:1.3em;padding:.65em 1.1em;border-radius:3em;color:var(--ink)}
+.scr__icons svg{width:2.1em;height:2.1em}
 .scr__hero{margin:0 1.6em;padding:1.6em 1.6em 1.5em;border-radius:2.8em;color:#fff;flex:none;
   background:radial-gradient(120% 120% at 20% 0%,#2E6B37 0%,#0F4419 45%,#062B0C 100%);box-shadow:0 1.6em 3em -1.8em rgba(3,42,9,.7)}
 .scr__mrow{display:flex;align-items:center;justify-content:space-between;gap:.6em}
 .scr__mrow>span{display:inline-flex;align-items:center;gap:.35em;font-size:1.35em;font-weight:700;white-space:nowrap}
 .scr__mrow>span svg{width:1.15em;height:1.15em}
-.scr__cb{display:grid;place-items:center;width:3.4em;height:3.4em;border-radius:50%;background:rgba(255,255,255,.13)}
+.scr__cb{display:grid;place-items:center;width:3.4em;height:3.4em;border-radius:50%}
+.scr .scr__cb{--lg-fill:rgba(255,255,255,.13);--lg-solid:#1D5A28;--lg-spec:rgba(255,255,255,.16);--lg-rim:rgba(255,255,255,.62);--lg-rim2:rgba(255,255,255,.14);
+  --lg-shadow:0 .4em 1em -.5em rgba(1,14,4,.6)}
 .scr__amt{font-family:var(--fh);font-size:3.7em;font-weight:800;line-height:1;margin-top:.45em;font-variant-numeric:tabular-nums}
 .scr__of{font-size:1.3em;color:rgba(221,238,223,.86);margin-top:.35em}
 .scr__prog{height:.8em;border-radius:1em;background:rgba(255,255,255,.18);margin:1.4em 0 1em;overflow:hidden}
@@ -157,9 +241,10 @@ a.store:active{transform:translateY(0) scale(.98)}
 .scr__pot.is-won{background:#FFFBEA;box-shadow:0 0 0 .2em var(--sun)}
 .scr__pot.is-won .scr__potic{background:var(--sun);transform:rotate(-8deg) scale(1.06)}
 .scr__btns{display:flex;gap:.8em;margin:1em 1.6em 0;flex:none;transition:opacity .4s}
-.scr__b{display:inline-flex;align-items:center;gap:.45em;height:2.8em;padding:0 1em;border-radius:2em;font-size:1.35em;font-weight:700;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.scr__b{display:inline-flex;align-items:center;gap:.45em;height:2.8em;padding:0 1em;border-radius:2em;font-size:1.35em;font-weight:700}
 .scr__b svg{width:1.2em;height:1.2em}
-.scr__b--sun{background:var(--sun);box-shadow:none}
+.scr .scr__b--sun{--lg-fill:rgba(255,216,77,.94);--lg-solid:var(--sun);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.45);--lg-spec:rgba(255,255,255,.45);
+  --lg-shadow:0 .5em 1.1em -.6em rgba(160,120,0,.55)}
 .scr__listwrap{margin:1.2em 1.6em 0;flex:1;min-height:0;border-radius:2.2em 2.2em 0 0;background:#fff;box-shadow:0 0 0 1px var(--line);overflow:hidden;
   -webkit-mask-image:linear-gradient(#000 78%,transparent);mask-image:linear-gradient(#000 78%,transparent)}
 .scr__list{transition:transform .9s var(--ease)}
@@ -180,7 +265,12 @@ a.store:active{transform:translateY(0) scale(.98)}
 @keyframes tickpop{0%{transform:scale(.6)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
 
 /* the cards floating around the phone */
-.float{position:absolute;z-index:2;background:#fff;color:var(--ink);border-radius:22px;box-shadow:0 28px 60px -24px rgba(0,0,0,.55),0 0 0 1px rgba(15,36,19,.04);animation:float 8s ease-in-out infinite}
+/* light glass over the dark hero: the phone's edge, the 3D pieces and the
+   glow show through, frosted. The grey text is a shade darker than
+   elsewhere so it still reads on the frost. */
+.float{position:absolute;z-index:2;color:var(--ink);border-radius:22px;animation:float 8s ease-in-out infinite;--muted:#3B4E3F;
+  --lg-fill:rgba(234,245,236,.72);--lg-solid:#EEF6EF;--lg-spec:rgba(255,255,255,.62);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.45);
+  --lg-shadow:inset 0 0 22px rgba(255,255,255,.3),0 28px 60px -24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
 @keyframes float{0%,100%{translate:0 0}50%{translate:0 -12px}}
 .float--msg{left:calc(50% - 350px);top:50%;width:252px;padding:14px 14px 15px;animation-delay:-2s}
 .float__head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--green);margin-bottom:9px}
@@ -200,10 +290,59 @@ a.store:active{transform:translateY(0) scale(.98)}
 .float--fine b{display:block;font-size:14.5px}
 .float--fine small{display:block;font-size:13px;color:var(--muted);font-weight:600}
 
+/* where the light sits, section by section: always behind the glass */
+.amb--top{position:absolute;inset:0 0 auto;height:320px}
+.amb--top i:nth-child(1){--s:440px;--a:.4;left:2%;top:-200px;--t:30s}
+.amb--top i:nth-child(2){--s:420px;--a:.2;left:38%;top:-240px;--t:26s;--d:-8s}
+.amb--top i:nth-child(3){--s:360px;--a:.22;left:72%;top:-210px;--t:28s;--d:-14s}
+.amb--hero i:nth-child(1){--s:clamp(340px,44vw,640px);--a:.42;left:50%;top:-16%;--t:30s;--dx:-6%;--dy:8%}
+.amb--hero i:nth-child(2){--s:clamp(240px,26vw,380px);--a:.34;left:41%;top:42%;--t:24s;--d:-6s}
+.amb--hero i:nth-child(3){--s:clamp(200px,22vw,330px);--a:.3;left:73%;top:4%;--t:22s;--d:-3s;--dx:-8%;--dy:10%}
+.amb--hero i:nth-child(4){--s:clamp(200px,22vw,320px);--a:.18;left:76%;top:58%;--t:26s;--d:-9s;--dx:-6%;--dy:-8%}
+.amb--hero i:nth-child(5){--s:clamp(300px,34vw,480px);--a:.3;left:-6%;top:46%;--t:28s;--d:-12s}
+.amb--card i:nth-child(1){--s:440px;--a:.26;left:44%;top:20%;--t:26s}
+.amb--card i:nth-child(2){--s:300px;--a:.12;left:72%;top:58%;--t:24s;--d:-7s}
+.amb--draw i:nth-child(1){--s:clamp(320px,36vw,520px);--a:.32;left:-8%;top:4%;--t:28s}
+.amb--draw i:nth-child(2){--s:clamp(200px,22vw,300px);--a:.14;left:14%;top:60%;--t:22s;--d:-5s;--dx:10%}
+.amb--draw i:nth-child(3){--s:clamp(300px,34vw,500px);--a:.32;left:56%;top:-12%;--t:30s;--d:-10s}
+.amb--draw i:nth-child(4){--s:clamp(220px,22vw,300px);--a:.2;left:80%;top:56%;--t:26s;--d:-14s}
+.amb--rem i:nth-child(1){--s:clamp(300px,34vw,480px);--a:.26;left:-4%;top:6%;--t:28s}
+.amb--rem i:nth-child(2){--s:clamp(220px,24vw,340px);--a:.18;left:64%;top:40%;--t:24s;--d:-8s}
+.amb--link i:nth-child(1){--s:clamp(320px,36vw,520px);--a:.34;left:2%;top:4%;--t:28s}
+.amb--link i:nth-child(2){--s:clamp(220px,24vw,340px);--a:.22;left:24%;top:54%;--t:24s;--d:-6s}
+.amb--link i:nth-child(3){--s:clamp(260px,28vw,400px);--a:.3;left:58%;top:40%;--t:26s;--d:-11s}
+.amb--link i:nth-child(4){--s:clamp(220px,22vw,320px);--a:.16;left:72%;top:-8%;--t:30s;--d:-3s}
+.amb--faq i:nth-child(1){--s:420px;--a:.2;left:6%;top:18%;--t:28s}
+.amb--faq i:nth-child(2){--s:340px;--a:.12;left:70%;top:46%;--t:24s;--d:-9s}
+.amb--cta i:nth-child(1){--s:clamp(340px,40vw,560px);--a:.36;left:28%;top:-46%;--t:28s}
+.amb--cta i:nth-child(2){--s:clamp(200px,22vw,300px);--a:.2;left:22%;top:50%;--t:24s;--d:-6s;--dx:12%}
+.amb--cta i:nth-child(3){--s:clamp(200px,22vw,300px);--a:.14;left:56%;top:56%;--t:26s;--d:-12s;--dx:-12%}
+.amb--cta i:nth-child(4){--s:clamp(240px,26vw,380px);--a:.24;left:38%;top:58%;--t:22s;--d:-4s}
+@media (max-width:1080px){
+  .amb--hero i:nth-child(1){left:18%;top:40%}
+  .amb--hero i:nth-child(2){left:-12%;top:30%}
+  .amb--hero i:nth-child(3){left:58%;top:52%}
+  .amb--hero i:nth-child(4){left:0;top:72%;--a:.14}
+  .amb--hero i:nth-child(5){left:28%;top:16%}
+  .amb--draw i:nth-child(3){left:30%;top:46%}
+  .amb--draw i:nth-child(4){left:70%;top:80%}
+}
+@media (max-width:640px){
+  .amb--top i:nth-child(2){display:none}
+  .amb--rem i:nth-child(1){left:-30%;top:2%}
+  .amb--rem i:nth-child(2){left:30%;top:56%}
+  .amb--link i:nth-child(1){left:-10%;top:2%}
+  .amb--link i:nth-child(3){left:40%;top:62%}
+  .amb--faq i:nth-child(1){left:-30%}
+  .amb--faq i:nth-child(2){left:40%}
+}
+
 /* ------------------------------------------------------------ sections */
 .sec{padding:var(--sec) 0}
 .sec--tight{padding:0 0 30px}
 .sec--mint{margin:0 12px;border-radius:40px;background:linear-gradient(180deg,#E9F3EA,#DDEEDF)}
+/* the sections with soft light behind them keep it inside */
+#reminders,#faq,.sec--mint{position:relative;isolation:isolate}
 .sec__head{text-align:center;display:grid;justify-items:center;gap:12px;margin-bottom:56px}
 .sec h2,.draw h2{font-size:clamp(38px,4.8vw,66px);line-height:1.02}
 .sec__head h2{max-width:15ch}
@@ -221,7 +360,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 /* the same height in every small card, text from the top, so the titles in a row line up */
 .card__copy{display:grid;gap:8px;align-content:start;min-height:88px}
 .card__copy p{color:var(--muted);font-size:16.5px;line-height:1.5;text-wrap:pretty}
-.card--big{grid-column:span 2;grid-row:span 2;color:#fff;display:grid;grid-template-columns:1fr 1.05fr;align-items:start;gap:32px;padding:40px;
+.card--big{grid-column:span 2;grid-row:span 2;color:#fff;display:grid;grid-template-columns:1fr 1.05fr;align-items:start;gap:32px;padding:40px;isolation:isolate;
   background:radial-gradient(110% 90% at 90% 0%,#195425 0%,var(--deep) 55%,#021A05 100%)}
 .card--big .card__copy{align-self:start}
 .card--big .card__copy p{color:rgba(221,238,223,.82);font-size:18px}
@@ -293,9 +432,10 @@ a.store:active{transform:translateY(0) scale(.98)}
 .draw h2{max-width:13ch}
 .ticks{display:grid;gap:14px;margin-top:4px}
 .ticks li{display:flex;align-items:center;gap:14px;font-weight:700;font-size:16.5px}
-.ticks i{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);flex:none}
+.ticks i{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;flex:none}
 .ticks .ic{color:var(--sun)}
-.ticks--dark i{background:#fff;box-shadow:0 0 0 1px var(--line)}
+.ticks--dark i{--lg-fill:rgba(255,255,255,.66);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.55);--lg-spec:rgba(255,255,255,.7);
+  --lg-shadow:0 0 0 1px rgba(36,89,43,.08),0 8px 18px -10px rgba(3,42,9,.45)}
 .ticks--dark .ic{color:var(--green)}
 .draw__ctl{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .draw__stage{display:grid;justify-items:center;gap:16px}
@@ -332,9 +472,13 @@ a.store:active{transform:translateY(0) scale(.98)}
 .remind__row b{display:block;font-size:16px}
 .remind__row small{display:block;font-size:13.5px;color:var(--muted);font-weight:600}
 .vav{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#EFF3EC;font-style:normal;font-weight:800;flex:none}
-.mini{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:800;box-shadow:inset 0 0 0 1.5px var(--line);white-space:nowrap}
+/* the little buttons in the rows are the app's own glass buttons */
+.mini{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:800;white-space:nowrap;
+  --lg-fill:rgba(255,255,255,.7);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.5);--lg-spec:rgba(255,255,255,.7);
+  --lg-shadow:0 0 0 1px rgba(15,36,19,.09),0 6px 14px -10px rgba(3,42,9,.4)}
 .mini .ic{width:16px;height:16px}
-.mini--ink{background:var(--deep);color:#fff;box-shadow:none}
+.mini--ink{color:#fff;--lg-fill:rgba(3,42,9,.9);--lg-solid:var(--deep);--lg-rim:rgba(255,255,255,.55);--lg-rim2:rgba(255,255,255,.12);--lg-spec:rgba(255,255,255,.17);
+  --lg-edge:rgba(255,255,255,.6);--lg-shadow:0 8px 18px -10px rgba(3,42,9,.7)}
 
 .phone--link{--w:310px;transition:transform .5s var(--ease)}
 .phone--link:hover{transform:translateY(-6px)}
@@ -342,8 +486,10 @@ a.store:active{transform:translateY(0) scale(.98)}
 .web__top{height:15cqw;flex:none;background:#ECEFE6}
 .web__bar{position:absolute;z-index:4;left:0;right:0;bottom:0;height:24cqw;display:flex;justify-content:center;padding-top:4cqw;
   background:linear-gradient(rgba(236,239,230,0),rgba(236,239,230,.92) 45%)}
-.web__url{display:inline-flex;align-items:center;gap:1.6cqw;height:11.6cqw;padding:0 7.5cqw;border-radius:99px;background:rgba(255,255,255,.94);
-  box-shadow:0 2cqw 6cqw -2cqw rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.05);font:600 4.1cqw/1 -apple-system,"SF Pro Text",var(--fb);color:#111}
+/* Safari's address bar, glass over the page scrolling under it */
+.web__url{display:inline-flex;align-items:center;gap:1.6cqw;height:11.6cqw;padding:0 7.5cqw;border-radius:99px;
+  --lg-fill:rgba(255,255,255,.66);--lg-spec:rgba(255,255,255,.6);--lg-rim:#fff;--lg-rim2:rgba(255,255,255,.5);
+  --lg-shadow:0 2cqw 6cqw -2cqw rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.05);font:600 4.1cqw/1 -apple-system,"SF Pro Text",var(--fb);color:#111}
 .web__url .ic{width:3.4cqw;height:3.4cqw;stroke-width:2.6}
 .scroller{flex:1;min-height:0;overflow:hidden;container-type:size}
 .scroller img{width:100%;height:auto;animation:scrollshot 26s ease-in-out 1s infinite alternate}
@@ -357,10 +503,15 @@ a.store:active{transform:translateY(0) scale(.98)}
 .faq details[open]{box-shadow:0 0 0 1px var(--line),0 24px 40px -34px rgba(15,36,19,.5)}
 .faq summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;font-weight:800;font-size:18px;cursor:pointer;list-style:none}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary i{position:relative;width:32px;height:32px;border-radius:50%;background:#F0F3EE;flex:none;transition:background-color .3s,transform .35s var(--ease)}
+/* the toggle is a small glass bead: mint when closed, sun yellow when open */
+.faq summary i{position:relative;width:32px;height:32px;border-radius:50%;flex:none;transition:background-color .3s,transform .35s var(--ease);
+  background-color:#E2F0E5;background-image:radial-gradient(90% 70% at 32% 8%,rgba(255,255,255,.95),rgba(255,255,255,0) 62%);
+  box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 rgba(36,89,43,.14),inset 0 0 0 1px rgba(36,89,43,.1),0 5px 12px -6px rgba(3,42,9,.4)}
 .faq summary i::before,.faq summary i::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:2.2px;margin:-1.1px 0 0 -6.5px;border-radius:2px;background:var(--ink);transition:transform .35s var(--ease)}
 .faq summary i::after{transform:rotate(90deg)}
-.faq details[open] summary i{background:var(--sun);transform:rotate(180deg)}
+.faq details[open] summary i{background-color:var(--sun);transform:rotate(180deg);
+  background-image:radial-gradient(90% 70% at 68% 92%,rgba(255,255,255,.6),rgba(255,255,255,0) 62%);
+  box-shadow:inset -1px -1px 0 rgba(255,255,255,.75),inset 1px 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(160,120,0,.18),0 6px 14px -6px rgba(170,130,0,.6)}
 .faq details[open] summary i::after{transform:rotate(0)}
 .faq details p{padding:0 24px 22px;color:var(--muted);font-size:16.5px;max-width:62ch;text-wrap:pretty}
 
@@ -412,7 +563,7 @@ a.store:active{transform:translateY(0) scale(.98)}
 @media (max-width:640px){
   body{font-size:16px}
   .wrap{padding:0 18px}
-  .nav__in{height:60px;padding:0 18px}
+  html{scroll-padding-top:84px}
   .brand{font-size:21px}
   .brand img{width:32px;height:32px}
   .btn{height:52px;padding:0 20px;font-size:16px}
@@ -513,16 +664,23 @@ a.store:active{transform:translateY(0) scale(.98)}
   .foot nav a{padding:12px 7px;font-size:14px}
 
   /* the bar at the bottom with "Get the app" */
+  /* glass, light over the light page and dark over the dark panels (home.js) */
   .getbar{position:fixed;z-index:60;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:11px;
-    padding:9px 9px 9px 10px;border-radius:22px;background:rgba(3,42,9,.92);color:#fff;-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);
-    box-shadow:0 18px 40px -16px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.1);
-    transform:translateY(140%);opacity:0;transition:transform .45s var(--ease),opacity .3s}
+    padding:9px 9px 9px 10px;border-radius:24px;color:var(--ink);
+    --lg-fill:rgba(255,255,255,.62);--lg-spec:rgba(255,255,255,.6);--lg-shadow:0 18px 40px -16px rgba(3,42,9,.5),0 2px 8px -4px rgba(3,42,9,.16);
+    transform:translateY(140%);opacity:0;transition:transform .45s var(--ease),opacity .3s,color .35s}
+  .getbar.is-dark{color:#fff;--lg-fill:rgba(3,42,9,.6);--lg-solid:#0A3D12;--lg-rim:rgba(255,255,255,.6);--lg-rim2:rgba(255,255,255,.16);--lg-spec:rgba(255,255,255,.13);
+    --lg-edge:rgba(255,255,255,.7);--lg-shadow:0 18px 40px -16px rgba(0,0,0,.6)}
   .getbar.on{transform:none;opacity:1}
   .getbar img{width:40px;height:40px;border-radius:11px;flex:none}
   .getbar p{flex:1;min-width:0;display:grid;line-height:1.2}
   .getbar b{font-family:var(--fh);font-size:17px}
-  .getbar span{font-size:13px;color:rgba(221,238,223,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .getbar span{font-size:13px;color:#3B4E3F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .35s}
+  .getbar.is-dark span{color:rgba(221,238,223,.82)}
   .getbar .btn{flex:none}
+  .nav{padding:8px}
+  .nav__in{height:56px;padding:0 8px 0 12px}
+  .nav .btn--sm{height:40px;padding:0 16px}
 }
 @media (max-width:370px){
   .store{gap:7px;padding:0 8px}
@@ -593,4 +751,36 @@ body{overflow-x:clip}
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .rise,.stage,.js .reveal{opacity:1;transform:none}
   .float--win{opacity:1;scale:1}
+  /* glass stays still: no grow on hover, no shrink on press, the light stays put */
+  .lg-press:hover,.lg-press:active{transform:none}
+}
+
+/* ------------------------------------------------------------ glass fallbacks
+   No blur in this browser, or the reader asked for less transparency: every
+   glass surface becomes a solid one in its own colour, with its rim and
+   shadow kept. Asked for more contrast: solid too, the soft light goes, the
+   rim becomes a clear line and the grey text a shade darker. */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  html .lg{background-color:var(--lg-solid)}
+}
+@media (prefers-reduced-transparency:reduce){
+  html .lg{background-color:var(--lg-solid);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html.lg-warp .lg--warp{-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+@media (prefers-contrast:more){
+  :root{--muted:#3E5042}
+  html .lg,html.lg-warp .lg--warp{background:var(--lg-solid);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html .lg::before{background:var(--lg-edge)}
+  .lg-press::after,.amb{display:none}
+  .float{--muted:#2F4033}
+  .lead,.cta p{color:#fff}
+  .split__copy .lead{color:var(--muted)}
+  .getbar span{color:inherit}
+}
+/* Windows high contrast and other forced colours: the system draws every
+   surface; glass keeps a plain outline so buttons still read as buttons */
+@media (forced-colors:active){
+  .amb,.lg-press::after,.lg::before{display:none}
+  .lg{-webkit-backdrop-filter:none;backdrop-filter:none;border:1px solid CanvasText}
+  a.lg,button.lg{border-color:LinkText}
 }

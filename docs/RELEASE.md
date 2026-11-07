@@ -8,7 +8,6 @@
 2. **Dokploy compose.** New compose `kuree` from GitHub `NAVICORP/kuree`, branch `main`, compose path `./deploy/docker-compose.yml`. Domains `kureeapp.com`, `www.kureeapp.com` and `kuree.skifi.co` to service `site`, port 8000, HTTPS on. Deploy.
 3. **DNS.** kureeapp.com is on Cloudflare: A records for `@` and `www` to the VPS (179.198.218.204). The old `kuree` record on skifi.co stays, so links already shared still work; the site moves them to kureeapp.com.
 4. Open https://kureeapp.com/health. It says `{"ok":true}`.
-5. **Boystown.** Sign in to the app as Ishaque (email ishaque@skifi.co, or WhatsApp if that email is on the same SkiFi account). The home screen offers "Bring in the Boystown 5K Kuri". Tap it once. Anees is added as an admin.
 
 ## 2. Accounts (once)
 
@@ -30,6 +29,7 @@
    - App access: give the review account (section 5).
    - Ads: none. Data safety: collects phone number or email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kureeapp.com/delete-account.
    - Financial features: Kuree only keeps records; it does not move money.
+7. **Updates.** Raise `version:` in `app/pubspec.yaml` (1.0.1, 1.0.2, ...) in the PR. The version code is the App run number, so every build on main is higher than the last. After the merge, the App run on main builds the bundle. Then Actions > Google Play drafts > Run workflow saves the bundle, the release notes, the pictures and the listing text as drafts (setup in [STORE.md](STORE.md), "Publishing from GitHub"). Check them in Play Console and press Send changes for review on the Publishing overview. Don't send while an earlier release is still in review: Google may put the app at the back of the review queue.
 
 ## 4. iPhone
 

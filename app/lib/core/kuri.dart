@@ -67,7 +67,7 @@ class DrawInfo {
 }
 
 class Month {
-  Month({required this.n, this.winner, Map<String, bool>? paid, Map<String, bool>? fines, this.note = '', this.draw, Map<String, dynamic>? extra})
+  Month({required this.n, this.winner, Map<String, bool>? paid, Map<String, bool>? fines, this.fineAmt, this.note = '', this.draw, Map<String, dynamic>? extra})
       : paid = paid ?? {},
         fines = fines ?? {},
         extra = extra ?? {};
@@ -75,6 +75,10 @@ class Month {
   int? winner;
   final Map<String, bool> paid;
   final Map<String, bool> fines;
+
+  /// The fine for each late payment this month, kept when the chit's fine
+  /// changed after these fines were marked. Null: the chit's fine.
+  int? fineAmt;
   String note;
   DrawInfo? draw;
   final Map<String, dynamic> extra;
@@ -84,13 +88,14 @@ class Month {
 
   factory Month.fromJson(Map<String, dynamic> j) {
     final extra = Map<String, dynamic>.from(j)
-      ..remove('n')..remove('winner')..remove('paid')..remove('fines')..remove('note')..remove('draw');
+      ..remove('n')..remove('winner')..remove('paid')..remove('fines')..remove('fineAmt')..remove('note')..remove('draw');
     final w = j['winner'];
     return Month(
       n: _int(j['n'], 1),
       winner: w == null ? null : (_int(w, 0) > 0 ? _int(w, 0) : null),
       paid: _flags(j['paid']),
       fines: _flags(j['fines']),
+      fineAmt: j['fineAmt'] == null ? null : _int(j['fineAmt'], 0),
       note: '${j['note'] ?? ''}',
       draw: j['draw'] is Map ? DrawInfo.fromJson(Map<String, dynamic>.from(j['draw'] as Map)) : null,
       extra: extra,
@@ -103,6 +108,7 @@ class Month {
         'winner': winner,
         'paid': {for (final e in paid.entries) if (e.value) e.key: true},
         'fines': {for (final e in fines.entries) if (e.value) e.key: true},
+        if (fineAmt != null) 'fineAmt': fineAmt,
         'note': note,
         if (draw != null) 'draw': draw!.toJson(),
       };
@@ -243,7 +249,21 @@ class KuriDoc {
 
   int fineCount(Month m) => payers.where((p) => m.isFined(p.id)).length;
 
-  int fineSum(Month m) => fineCount(m) * fine;
+  /// The fine for each late payment in month m.
+  int fineFor(Month m) => m.fineAmt ?? fine;
+
+  int fineSum(Month m) => fineCount(m) * fineFor(m);
+
+  /// A new fine for the chit. Fines already marked keep the amount they were
+  /// marked at; every other late payment takes the new one.
+  void setFine(int value) {
+    if (value == fine) return;
+    for (final m in months) {
+      if (m.fineAmt == null && m.fines.values.any((v) => v)) m.fineAmt = fine;
+      if (m.fineAmt == value) m.fineAmt = null;
+    }
+    fine = value;
+  }
 
   int get allFines => months.fold(0, (t, m) => t + fineSum(m));
 

@@ -1,7 +1,7 @@
 name: kuree
 description: Run your chit. Payments, late fines, the monthly draw and a private link for members.
 publish_to: none
-version: 1.0.0+1
+version: 1.0.3+4
 
 environment:
   sdk: ^3.5.0
@@ -51,17 +51,17 @@ flutter:
           weight: 700
         - asset: assets/fonts/BricolageGrotesque-800.ttf
           weight: 800
-    - family: NotoSansArabic
+    - family: NotoNaskhArabic
       fonts:
-        - asset: assets/fonts/NotoSansArabic-500.ttf
+        - asset: assets/fonts/NotoNaskhArabic-500.ttf
           weight: 500
-        - asset: assets/fonts/NotoSansArabic-700.ttf
+        - asset: assets/fonts/NotoNaskhArabic-700.ttf
           weight: 700
-    - family: NotoSansMalayalam
+    - family: Manjari
       fonts:
-        - asset: assets/fonts/NotoSansMalayalam-500.ttf
+        - asset: assets/fonts/Manjari-500.ttf
           weight: 500
-        - asset: assets/fonts/NotoSansMalayalam-700.ttf
+        - asset: assets/fonts/Manjari-700.ttf
           weight: 700
     - family: NotoSansTamil
       fonts:

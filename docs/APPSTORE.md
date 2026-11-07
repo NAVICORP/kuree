@@ -77,7 +77,7 @@ RUN IT TOGETHER
 - Every change is kept. Undo, or bring back any earlier version.
 - Download every month and every payment as an Excel sheet.
 
-Sign in with a code on WhatsApp or by email. Delete your account any time from the Account screen.
+Sign in with a code on WhatsApp or by email. Delete your account any time from your Profile.
 
 Privacy: https://kureeapp.com/privacy
 Terms: https://kureeapp.com/terms
@@ -129,7 +129,7 @@ The bottle draw only decides which member receives this month's pot, which is th
 
 Members see a read-only web page from a private link the admin shares, for example https://kureeapp.com/k/demo
 
-To delete the account: tap the round initial at the top right of the home screen, then Delete account.
+To delete the account: tap Profile in the footer, then Delete account.
 ```
 
 ## 6. Age rating questionnaire

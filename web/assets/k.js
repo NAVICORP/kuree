@@ -56,7 +56,9 @@
   function paid(m, id) { return !!(m.paid && m.paid[id]); }
   function fined(m, id) { return !!(m.fines && m.fines[id]); }
   function paidSum(m) { var t = 0; PAYERS.forEach(function (p) { if (paid(m, p.id)) t += p.amt; }); return t; }
-  function fineSum(m) { var t = 0; PAYERS.forEach(function (p) { if (fined(m, p.id)) t += FINE(); }); return t; }
+  /* a month keeps the fine it was marked at when the chit's fine changed later */
+  function fineOf(m) { return m.fineAmt != null ? Number(m.fineAmt) || 0 : FINE(); }
+  function fineSum(m) { var t = 0; PAYERS.forEach(function (p) { if (fined(m, p.id)) t += fineOf(m); }); return t; }
   function allFines() { var t = 0; data.months.forEach(function (m) { t += fineSum(m); }); return t; }
   function status(m) {
     if (PAYERS.length && PAYERS.every(function (p) { return paid(m, p.id); }) && m.winner) return "done";
@@ -97,9 +99,9 @@
   }
   function yearPicker(years, on) {
     return '<div class="ypick">' +
-      '<button class="ypick__btn" type="button" aria-haspopup="listbox" aria-expanded="false"' +
+      '<button class="ypick__btn lg lg--flat lg-press" type="button" aria-haspopup="listbox" aria-expanded="false"' +
         ' aria-label="Year shown: ' + on + '. Pick another."><span>' + on + "</span>" + svgi("i-chev") + "</button>" +
-      '<div class="ypick__menu" role="listbox" aria-label="Year">' +
+      '<div class="ypick__menu lg" role="listbox" aria-label="Year">' +
       years.map(function (y) {
         return '<button class="ypick__opt' + (y === on ? " on" : "") + '" type="button" role="option"' +
           ' aria-selected="' + (y === on) + '" data-v="' + y + '">' + y + (y === on ? svgi("i-check") : "") + "</button>";
@@ -200,7 +202,7 @@
       '<div class="sechead"><h2>Months</h2></div><div class="railwrap"><div class="rail" role="tablist" aria-label="Chit months">');
     data.months.forEach(function (x) {
       var st = status(x), lbl = st === "done" ? "Settled" : (st === "open" ? "In progress" : "Upcoming");
-      h.push('<button class="chip ' + st + '" role="tab" data-month="' + x.n + '" aria-current="' + (x.n === sel) + '">' +
+      h.push('<button class="chip lg lg--flat lg-press ' + st + '" role="tab" data-month="' + x.n + '" aria-current="' + (x.n === sel) + '">' +
         "<small>Month " + x.n + "</small><b>" + msh(x.n) + " " + cdate(x.n).getFullYear() + "</b><i>" + lbl + "</i></button>");
     });
     h.push("</div></div>");
@@ -210,12 +212,12 @@
     var dl = dline(m.n);
     h.push('<div style="margin-top:20px" class="mcard"><div class="mcard__head"><div>' +
       '<div class="mnav">' +
-        '<button class="ibtn" type="button" data-step="-1"' + (sel <= 1 ? " disabled" : "") + ' aria-label="Previous month">' + svgi("i-prev") + "</button>" +
+        '<button class="ibtn lg lg--flat lg-press" type="button" data-step="-1"' + (sel <= 1 ? " disabled" : "") + ' aria-label="Previous month">' + svgi("i-prev") + "</button>" +
         "<h3>Month " + m.n + ", " + mlabel(m.n) + "</h3>" +
-        '<button class="ibtn" type="button" data-step="1"' + (sel >= n ? " disabled" : "") + ' aria-label="Next month">' + svgi("i-next") + "</button>" +
+        '<button class="ibtn lg lg--flat lg-press" type="button" data-step="1"' + (sel >= n ? " disabled" : "") + ' aria-label="Next month">' + svgi("i-next") + "</button>" +
       "</div>" +
       '<div class="mcard__meta"><span>Collection ' + ord(cdate(m.n).getDate()) + "</span><span>Last date " + ord(dl.getDate()) + ", midnight</span>" +
-        (FINE() ? "<span>Late fine " + money(FINE()) + "</span>" : "") + "</div>" +
+        (fineOf(m) ? "<span>Late fine " + money(fineOf(m)) + "</span>" : "") + "</div>" +
       '<div class="mcard__meta"><span><b class="num">' + money(got) + '</b> of <span class="num">' + money(POT) + "</span> collected</span>" +
       (fines ? '<span class="num">+ ' + money(fines) + " in fines</span>" : "") + "</div>" +
       '<div class="bar" role="img" aria-label="' + pct + '% collected"><i style="width:' + pct + '%"></i></div></div>' +
@@ -227,7 +229,7 @@
       "</div>");
     PAYERS.forEach(function (p) {
       var isw = m.winner === p.slot, pd = paid(m, p.id), fd = fined(m, p.id);
-      var due = p.amt + (fd ? FINE() : 0);
+      var due = p.amt + (fd ? fineOf(m) : 0);
       var dw = w[p.slot];
       var draw = isw ? '<span class="badge badge--win" title="Took the pot in month ' + m.n + '" aria-label="Took the pot in month ' + m.n + '">' + svgi("i-trophy") + m.n + "</span>"
         : (dw ? '<span class="badge badge--drawn" title="Took the pot in month ' + dw + '" aria-label="Took the pot in month ' + dw + '">' + svgi("i-trophy") + dw + "</span>"
@@ -238,7 +240,7 @@
         '<div class="prow__name" title="' + esc(p.name) + '">' + esc(p.name) + (pl ? ' <span class="badge badge--plain">' + pl + "</span>" : "") + "</div>" +
         '<dl class="prow__facts">' +
           '<div><dt>Payment</dt><dd><span class="badge ' + (pd ? "badge--ok" : "badge--wait") + '">' + (pd ? "Paid" : "Pending") + "</span>" +
-            (fd ? ' <span class="badge badge--bad" title="Paid after the last date, ' + money(FINE()) + ' late fine">Late</span>' : "") + "</dd></div>" +
+            (fd ? ' <span class="badge badge--bad" title="Paid after the last date, ' + money(fineOf(m)) + ' late fine">Late</span>' : "") + "</dd></div>" +
           '<div><dt>Amount due</dt><dd><span class="fval num">' + money(due) + "</span>" + (fd ? " <small>incl. fine</small>" : "") + "</dd></div>" +
           '<div class="f-draw"><dt>Draw</dt><dd>' + draw + "</dd></div>" +
         "</dl></div>");
@@ -296,7 +298,7 @@
         if (wn) {
           h.push('<td><span class="mk w" role="img" title="Took the pot in month ' + x.n + '" aria-label="Took the pot">' + svgi("i-trophy") + "</span></td>");
         } else if (fd) {
-          var ft = "Paid after the last date, " + money(FINE()) + " late fine added to the pot";
+          var ft = "Paid after the last date, " + money(fineOf(x)) + " late fine added to the pot";
           h.push('<td class="td--2"><span class="mk y" role="img" aria-label="Paid">' + svgi("i-check") + "</span>" +
             '<span class="mk f" role="img" title="' + ft + '" aria-label="' + ft + '">' + svgi("i-alert") + "</span></td>");
         } else {
@@ -462,4 +464,66 @@
   prepare(seed.data);
   render();
   stampUpdated();
+})();
+
+/* The glass, looks only (the chit's data is not touched here): the bar at
+   the top turns to dark glass while the green header is under it, as Apple's
+   glass does; the soft light only drifts while it is on screen; the light
+   ripple is switched on in Chromium alone; and on glass buttons a soft light
+   follows the pointer. */
+(function () {
+  "use strict";
+  var mm = function (q) { return window.matchMedia && matchMedia(q).matches; };
+  var brands = navigator.userAgentData && navigator.userAgentData.brands;
+  var chromium = !!(brands && brands.some(function (b) { return /Chromium/.test(b.brand); }));
+  if (chromium && window.CSS && CSS.supports("backdrop-filter", "blur(1px)") &&
+      !mm("(prefers-reduced-transparency: reduce)") && !mm("(prefers-contrast: more)") && !mm("(forced-colors: active)")) {
+    document.documentElement.classList.add("lg-warp");
+  }
+
+  var bars = [].slice.call(document.querySelectorAll("[data-adapt]")), darks = [].slice.call(document.querySelectorAll(".phead")), raf = 0;
+  function tone() {
+    raf = 0;
+    bars.forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (!r.width) return;
+      var cy = r.top + r.height / 2, dark = false;
+      for (var i = 0; i < darks.length && !dark; i++) {
+        var d = darks[i].getBoundingClientRect();
+        if (d.top <= cy && d.bottom >= cy && Math.min(r.right, d.right) - Math.max(r.left, d.left) >= r.width * 0.6) dark = true;
+      }
+      el.classList.toggle("is-dark", dark);
+    });
+  }
+  function soon() { if (!raf) raf = requestAnimationFrame(tone); }
+  if (bars.length) {
+    window.addEventListener("scroll", soon, { passive: true });
+    window.addEventListener("resize", soon);
+    tone();
+  }
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.target.classList.toggle("is-off", !e.isIntersecting); });
+    }, { rootMargin: "120px 0px" });
+    [].forEach.call(document.querySelectorAll(".amb"), function (el) { io.observe(el); });
+  }
+
+  if (mm("(prefers-reduced-motion: reduce)")) return;
+  var el = null, px = 0, py = 0, praf = 0;
+  function place() {
+    praf = 0;
+    if (!el || !el.isConnected) return;
+    var r = el.getBoundingClientRect();
+    el.style.setProperty("--sx", (px - r.left - r.width / 2).toFixed(1) + "px");
+    el.style.setProperty("--sy", (py - r.top - r.height / 2).toFixed(1) + "px");
+  }
+  function track(e) {
+    var t = e.target && e.target.closest ? e.target.closest(".lg-press") : null;
+    if (!t) return;
+    el = t; px = e.clientX; py = e.clientY;
+    if (!praf) praf = requestAnimationFrame(place);
+  }
+  document.addEventListener("pointermove", track, { passive: true });
+  document.addEventListener("pointerdown", track, { passive: true });
 })();

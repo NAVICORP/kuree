@@ -13,6 +13,7 @@ import 'package:kuree/ui/kuri_editor.dart';
 import 'package:kuree/ui/kuri_screen.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
+import 'package:kuree/ui/widgets.dart';
 
 import 'support.dart';
 
@@ -89,6 +90,38 @@ void main() {
         await settle(tester);
         await scrollThrough(tester);
         expect(tester.takeException(), isNull);
+        // The footer tabs: who is still to pay, and the profile.
+        await tapText(tester, s.tabCollect);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
+        await tapText(tester, s.tabProfile);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('a chit opened from Chits, with the footer below', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(HomeScreen(preview: ([chit], {'display': 'Ishaque', 'name': 'Ishaque'})), code));
+        await settle(tester);
+        await tester.tap(find.text(chit.doc.name).first);
+        await settle(tester);
+        expect(find.byType(KuriScreen), findsOneWidget);
+        expect(find.byType(KNavBar), findsOneWidget);
+        if (code == 'ar') expect(Directionality.of(tester.element(find.byType(KNavBar))), TextDirection.rtl);
+        // The chit runs under the glass footer, to the bottom of the phone.
+        expect(tester.getRect(find.byType(KuriScreen)).bottom, moreOrLessEquals(tester.getRect(find.byType(KNavBar)).bottom));
+        expect(tester.takeException(), isNull);
+        // An unsaved change: the Save bar sits above the footer.
+        final naif = find.bySemanticsLabel(s.semPaid('Naif'));
+        await tester.ensureVisible(naif);
+        await tester.pump();
+        final at = tester.getRect(naif);
+        await tester.tap(naif, warnIfMissed: false);
+        await settle(tester);
+        expect(find.text(s.notSavedYet), findsOneWidget, reason: 'tick at $at, chit at ${tester.getRect(find.byType(KuriScreen))}');
+        expect(tester.getRect(find.text(s.notSavedYet)).bottom, lessThanOrEqualTo(tester.getRect(find.byType(KNavBar)).top));
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
       });
 
       testWidgets('a month, its members and reminders', (tester) async {
@@ -136,6 +169,28 @@ void main() {
         await settle(tester);
         await scrollThrough(tester);
         expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('the first month, as a calendar', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(const KuriEditorScreen(), code));
+        await settle(tester);
+        await tester.scrollUntilVisible(find.text(s.firstMonth), 200, scrollable: find.byType(Scrollable).first);
+        await tapText(tester, s.firstMonth);
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.byTooltip(s.nextYear));
+        await settle(tester);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('the collection day, as a calendar', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(const KuriEditorScreen(), code));
+        await settle(tester);
+        await tester.scrollUntilVisible(find.text(s.collectionDay), 200, scrollable: find.byType(Scrollable).first);
+        await tapText(tester, s.collectionDay);
+        expect(tester.takeException(), isNull);
+        expect(find.text('31'), findsOneWidget);
       });
 
       testWidgets('editing a chit', (tester) async {

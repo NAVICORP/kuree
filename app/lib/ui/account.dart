@@ -12,11 +12,14 @@ import 'language.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Your name, the app's language, feature requests, signing out and deleting
-/// the account.
+/// Your profile: name and sign-in, then the app's language, help, the legal
+/// pages and the account itself, in labelled groups. Shown as the Profile tab.
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key, required this.me});
+  const AccountScreen({super.key, required this.me, this.tab = false});
   final Map<String, dynamic> me;
+
+  /// True when shown as the Profile tab in the footer, not opened on its own.
+  final bool tab;
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -132,13 +135,13 @@ class _AccountScreenState extends State<AccountScreen> {
     final email = me['email'] as String?;
     final name = (me['name'] as String?) ?? '';
     return Scaffold(
-      appBar: AppBar(title: Text(s.account)),
-      body: ListView(padding: const EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40), children: [
+      appBar: AppBar(titleSpacing: widget.tab ? Sp.xl : null, automaticallyImplyLeading: !widget.tab, title: Text(widget.tab ? s.tabProfile : s.account)),
+      body: ListView(padding: EdgeInsets.fromLTRB(Sp.page, Sp.sm, Sp.page, 40 + MediaQuery.paddingOf(context).bottom), children: [
         KCard(
           child: Row(children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 46,
+              height: 46,
               alignment: Alignment.center,
               decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
               child: Text(initials(name.isEmpty ? 'K' : name), style: T.h3.copyWith(color: K.heroText)),
@@ -155,13 +158,16 @@ class _AccountScreenState extends State<AccountScreen> {
             KButton(label: s.edit, small: true, kind: KButtonKind.secondary, onPressed: _rename),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.secPreferences),
+        KCard(
+          padding: EdgeInsets.zero,
+          child: _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
+              value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
+        ),
+        _label(s.secHelp),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
-            _row(Icons.translate_rounded, s.language, () => pickLanguage(context),
-                value: Lang.instance.chosen == null ? '${S.names[s.code]} (${s.languagePhone})' : S.names[s.code]),
-            const Divider(),
             _row(Icons.lightbulb_outline_rounded, s.requestFeature, () {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FeatureRequestScreen()));
             }),
@@ -171,20 +177,20 @@ class _AccountScreenState extends State<AccountScreen> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FeatureInboxScreen()));
               }),
             ],
+            const Divider(),
+            _row(Icons.mail_outline_rounded, s.contact, () => launchUrl(Uri.parse('mailto:$kSupportEmail?subject=Kuree'))),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.secLegal),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
             _row(Icons.privacy_tip_outlined, s.privacy, () => launchUrl(Uri.parse(kPrivacyUrl), mode: LaunchMode.externalApplication)),
             const Divider(),
             _row(Icons.description_outlined, s.terms, () => launchUrl(Uri.parse(kTermsUrl), mode: LaunchMode.externalApplication)),
-            const Divider(),
-            _row(Icons.mail_outline_rounded, s.contact, () => launchUrl(Uri.parse('mailto:$kSupportEmail?subject=Kuree'))),
           ]),
         ),
-        const SizedBox(height: Sp.md + 2),
+        _label(s.account),
         KCard(
           padding: EdgeInsets.zero,
           child: Column(children: [
@@ -197,24 +203,37 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  /// A quiet group heading, like Preferences or Help.
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(Sp.sm, Sp.xl, Sp.sm, Sp.sm),
+        child: Text(text, style: T.small),
+      );
+
   Widget _row(IconData icon, String text, VoidCallback? onTap, {bool bad = false, String? value}) {
     return InkWell(
       onTap: onTap,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 56),
+        constraints: const BoxConstraints(minHeight: 52),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(18, 14, 14, 14),
-          child: Row(children: [
-            Icon(icon, color: bad ? K.bad : K.ink2, size: 22),
-            const SizedBox(width: Sp.md + 2),
-            Expanded(child: Text(text, style: T.bodyStrong.copyWith(color: bad ? K.bad : K.ink))),
-            if (value != null) ...[
-              const SizedBox(width: Sp.sm),
-              Flexible(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small)),
-            ],
-            const SizedBox(width: Sp.xs),
-            const Icon(Icons.chevron_right_rounded, color: K.border2),
-          ]),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
+          // The value (English) sits at the end, next to the arrow, like the
+          // arrows on the other rows; a long one stops at under half the row.
+          child: LayoutBuilder(
+            builder: (context, box) => Row(children: [
+              Icon(icon, color: bad ? K.bad : K.green, size: 20),
+              const SizedBox(width: Sp.md + 2),
+              Expanded(child: Text(text, style: T.body.copyWith(color: bad ? K.bad : K.ink))),
+              if (value != null) ...[
+                const SizedBox(width: Sp.sm),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: box.maxWidth * 0.45),
+                  child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.end, style: T.small),
+                ),
+              ],
+              const SizedBox(width: Sp.xs),
+              const Icon(Icons.chevron_right_rounded, color: K.border2),
+            ]),
+          ),
         ),
       ),
     );

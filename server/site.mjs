@@ -38,6 +38,7 @@ const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp',
   '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
   '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 const TEXT = new Set(['.html', '.js', '.css', '.json', '.svg', '.txt']);
@@ -153,8 +154,12 @@ function sendFile(req, res, file, cache) {
   res.end(req.method === 'HEAD' ? undefined : body);
 }
 
-/** A plain page (home, privacy, terms) in the Kuree shell. */
-function shell(title, body, { home = false, head = '', foot = '' } = {}) {
+/** A plain page (privacy, terms, deleting an account) in the Kuree shell: a
+    glass bar at the top with the mark (and "Get the app" unless cta is
+    false), soft light behind it. home leaves the bar out. */
+function shell(title, body, { home = false, head = '', foot = '', cta = true } = {}) {
+  const top = home ? '' : '<header class="ktop"><div class="ktop__in lg"><a class="ktop__mark" href="/"><img src="/assets/brand/icon-64.png" alt="" width="32" height="32">Kuree</a>' +
+    (cta ? '<a class="kbtn lg lg-press" href="/#get">Get the app</a>' : '') + '</div></header>';
   return stampAssets(`<!doctype html>
 <html lang="en">
 <head>
@@ -172,9 +177,9 @@ function shell(title, body, { home = false, head = '', foot = '' } = {}) {
 <link rel="stylesheet" href="/assets/kuree.css">
 ${head}
 </head>
-<body>
+<body class="kplain">
+${top}
 <main class="kpage">
-${home ? '' : '<a class="kpage__top" href="/"><img src="/assets/brand/icon-64.png" alt="" width="36" height="36">Kuree</a>'}
 ${body}
 </main>
 <footer class="kfoot"><p><a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="/delete-account">Delete an account</a></p><p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p></footer>
@@ -188,6 +193,16 @@ const PAGES = {
   '/terms': ['Terms | Kuree', 'pages/terms.html'],
   '/delete-account': ['Deleting an account | Kuree', 'pages/delete-account.html'],
 };
+
+// Every public page, with the date its file last changed. Members' pages
+// (/k/...) and the admin are private and stay out.
+function sitemap() {
+  const day = (rel) => statSync(path.join(ROOT, rel)).mtime.toISOString().slice(0, 10);
+  const pages = [['/', 'home.html'], ...Object.entries(PAGES).map(([u, pg]) => [u, pg[1]])];
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    pages.map(([u, f]) => `  <url><loc>${ORIGIN}${u === '/' ? '/' : u}</loc><lastmod>${day(f)}</lastmod></url>`).join('\n') +
+    '\n</urlset>\n';
+}
 
 // ---------------------------------------------------------------- a kuri from its link
 
@@ -386,6 +401,7 @@ async function handle(req, res) {
     return sendBody(req, res, 200, TYPES['.html'], shell('Feature requests | Kuree', read('pages/admin-requests.html'), {
       head: '<meta name="robots" content="noindex, nofollow">\n<link rel="stylesheet" href="/assets/admin.css">',
       foot: '<script src="/assets/admin.js" defer></script>',
+      cta: false,
     }), { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow', 'referrer-policy': 'no-referrer', 'content-security-policy': CSP });
   }
 
@@ -394,7 +410,13 @@ async function handle(req, res) {
     return sendBody(req, res, 200, TYPES['.html'], shell(page[0], read(page[1]), { home: !!page[2] }),
       { 'cache-control': 'public, max-age=300', 'content-security-policy': CSP });
   }
-  if (p === '/robots.txt') return sendBody(req, res, 200, TYPES['.txt'], 'User-agent: *\nDisallow: /k/\nDisallow: /admin/\n', { 'cache-control': 'public, max-age=3600' });
+  if (p === '/robots.txt') {
+    return sendBody(req, res, 200, TYPES['.txt'], `User-agent: *\nDisallow: /k/\nDisallow: /admin/\n\nSitemap: ${ORIGIN}/sitemap.xml\n`,
+      { 'cache-control': 'public, max-age=3600' });
+  }
+  // What Kuree is, in plain words, for AI assistants and search (llmstxt.org).
+  if (p === '/llms.txt') return sendBody(req, res, 200, TYPES['.txt'], read('llms.txt'), { 'cache-control': 'public, max-age=3600' });
+  if (p === '/sitemap.xml') return sendBody(req, res, 200, TYPES['.xml'], sitemap(), { 'cache-control': 'public, max-age=3600' });
   if (p === '/favicon.ico') return sendFile(req, res, path.join(ROOT, 'favicon.ico'), 'public, max-age=86400');
   if (p.startsWith('/assets/')) {
     let rel;

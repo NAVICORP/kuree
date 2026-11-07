@@ -68,15 +68,6 @@ class S {
   /// What should we call you?
   String get askNameTitle => _get('askNameTitle');
 
-  /// Your 5K chit is in.
-  String get importDone => _get('importDone');
-
-  /// Bring in your 5K chit
-  String get importTitle => _get('importTitle');
-
-  /// Bring in
-  String get importButton => _get('importButton');
-
   /// New chit
   String get newChit => _get('newChit');
 
@@ -296,6 +287,27 @@ class S {
   /// Number added. Press Save to keep it.
   String get numberAddedPressSave => _get('numberAddedPressSave');
 
+  /// Add names below. Each name is one slot, and the chit runs one month per slot.
+  String get slotsFromNames => _get('slotsFromNames');
+
+  /// Late fine {fine}
+  String fineChip(Object fine) => _fill('fineChip', {'fine': fine});
+
+  /// {fine} for each late payment
+  String fineEach(Object fine) => _fill('fineEach', {'fine': fine});
+
+  /// Add a late fine
+  String get addLateFine => _get('addLateFine');
+
+  /// Added to that month's pot for each late payment. Fines already marked keep their amount.
+  String get fineSheetText => _get('fineSheetText');
+
+  /// Late fine is now {fine}. Press Save to keep it.
+  String fineChangedPressSave(Object fine) => _fill('fineChangedPressSave', {'fine': fine});
+
+  /// No late fine from now on. Press Save to keep it.
+  String get fineOffPressSave => _get('fineOffPressSave');
+
   /// Make a new link?
   String get newLinkTitle => _get('newLinkTitle');
 
@@ -394,6 +406,12 @@ class S {
 
   /// Next month
   String get nextMonth => _get('nextMonth');
+
+  /// Previous year
+  String get prevYear => _get('prevYear');
+
+  /// Next year
+  String get nextYear => _get('nextYear');
 
   /// Month {n}, {label}
   String monthNLabel(Object n, Object label) => _fill('monthNLabel', {'n': n, 'label': label});
@@ -1171,6 +1189,30 @@ class S {
 
   /// Account deleted
   String get frSignedOut => _get('frSignedOut');
+
+  /// Chits
+  String get tabChits => _get('tabChits');
+
+  /// To collect
+  String get tabCollect => _get('tabCollect');
+
+  /// Profile
+  String get tabProfile => _get('tabProfile');
+
+  /// Still to pay this month, across your chits.
+  String get collectIntro => _get('collectIntro');
+
+  /// Everyone has paid this month, in every chit.
+  String get nothingToCollect => _get('nothingToCollect');
+
+  /// Preferences
+  String get secPreferences => _get('secPreferences');
+
+  /// Help
+  String get secHelp => _get('secHelp');
+
+  /// Legal
+  String get secLegal => _get('secLegal');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1249,9 +1291,6 @@ const Map<String, String> _en = {
   'lang_hi': 'Hindi',
   'account': 'Account',
   'askNameTitle': 'What should we call you?',
-  'importDone': 'Your 5K chit is in.',
-  'importTitle': 'Bring in your 5K chit',
-  'importButton': 'Bring in',
   'newChit': 'New chit',
   'noChits': 'No chits yet.',
   'startChit': 'Start a chit',
@@ -1325,6 +1364,13 @@ const Map<String, String> _en = {
   'savedMonthGoesTo': 'Saved. Month {n} goes to {name}.',
   'drawDonePressSave': 'Draw done. Press Save to publish it.',
   'numberAddedPressSave': 'Number added. Press Save to keep it.',
+  'slotsFromNames': 'Add names below. Each name is one slot, and the chit runs one month per slot.',
+  'fineChip': 'Late fine {fine}',
+  'fineEach': '{fine} for each late payment',
+  'addLateFine': 'Add a late fine',
+  'fineSheetText': 'Added to that month\'s pot for each late payment. Fines already marked keep their amount.',
+  'fineChangedPressSave': 'Late fine is now {fine}. Press Save to keep it.',
+  'fineOffPressSave': 'No late fine from now on. Press Save to keep it.',
   'newLinkTitle': 'Make a new link?',
   'newLinkText': 'The old link stops working straight away. Share the new one in the group.',
   'newLinkYes': 'Make a new link',
@@ -1358,6 +1404,8 @@ const Map<String, String> _en = {
   'undo': 'Undo',
   'prevMonth': 'Previous month',
   'nextMonth': 'Next month',
+  'prevYear': 'Previous year',
+  'nextYear': 'Next year',
   'monthNLabel': 'Month {n}, {label}',
   'collectedOf': 'of {pot} collected',
   'collectedOfFines': 'of {pot} collected, plus {fines} in fines',
@@ -1617,6 +1665,14 @@ const Map<String, String> _en = {
   'frSaved': 'Saved.',
   'frFrom': 'From',
   'frSignedOut': 'Account deleted',
+  'tabChits': 'Chits',
+  'tabCollect': 'To collect',
+  'tabProfile': 'Profile',
+  'collectIntro': 'Still to pay this month, across your chits.',
+  'nothingToCollect': 'Everyone has paid this month, in every chit.',
+  'secPreferences': 'Preferences',
+  'secHelp': 'Help',
+  'secLegal': 'Legal',
 };
 
 const Map<String, String> _ar = {
@@ -1678,9 +1734,6 @@ const Map<String, String> _ar = {
   'lang_hi': 'الهندية',
   'account': 'الحساب',
   'askNameTitle': 'بماذا نناديك؟',
-  'importDone': 'وصلت جمعية 5K الخاصة بك.',
-  'importTitle': 'أحضر جمعية 5K الخاصة بك',
-  'importButton': 'إحضار',
   'newChit': 'جمعية جديدة',
   'noChits': 'لا توجد جمعيات بعد.',
   'startChit': 'ابدأ جمعية',
@@ -1754,6 +1807,13 @@ const Map<String, String> _ar = {
   'savedMonthGoesTo': 'تم الحفظ. الشهر {n} من نصيب {name}.',
   'drawDonePressSave': 'تم السحب. اضغط حفظ لنشره.',
   'numberAddedPressSave': 'تمت إضافة الرقم. اضغط حفظ للاحتفاظ به.',
+  'slotsFromNames': 'أضف الأسماء في الأسفل. كل اسم سهم واحد، والجمعية شهر واحد لكل سهم.',
+  'fineChip': 'غرامة التأخير {fine}',
+  'fineEach': '{fine} لكل دفعة متأخرة',
+  'addLateFine': 'أضف غرامة تأخير',
+  'fineSheetText': 'تُضاف إلى جمعية ذلك الشهر عن كل دفعة متأخرة. الغرامات المسجلة من قبل تبقى بمبلغها.',
+  'fineChangedPressSave': 'غرامة التأخير الآن {fine}. اضغط حفظ للاحتفاظ بها.',
+  'fineOffPressSave': 'لا غرامة تأخير من الآن. اضغط حفظ للاحتفاظ بذلك.',
   'newLinkTitle': 'إنشاء رابط جديد؟',
   'newLinkText': 'يتوقف الرابط القديم عن العمل فورًا. شارك الرابط الجديد في المجموعة.',
   'newLinkYes': 'إنشاء رابط جديد',
@@ -1787,6 +1847,8 @@ const Map<String, String> _ar = {
   'undo': 'تراجع',
   'prevMonth': 'الشهر السابق',
   'nextMonth': 'الشهر التالي',
+  'prevYear': 'السنة السابقة',
+  'nextYear': 'السنة التالية',
   'monthNLabel': 'الشهر {n}، {label}',
   'collectedOf': 'تم تحصيله من {pot}',
   'collectedOfFines': 'تم تحصيله من {pot}، إضافة إلى غرامات {fines}',
@@ -2046,6 +2108,14 @@ const Map<String, String> _ar = {
   'frSaved': 'تم الحفظ.',
   'frFrom': 'من',
   'frSignedOut': 'حساب محذوف',
+  'tabChits': 'الجمعيات',
+  'tabCollect': 'للتحصيل',
+  'tabProfile': 'الملف الشخصي',
+  'collectIntro': 'ما زال عليهم الدفع هذا الشهر، في كل جمعياتك.',
+  'nothingToCollect': 'دفع الجميع هذا الشهر في كل الجمعيات.',
+  'secPreferences': 'التفضيلات',
+  'secHelp': 'المساعدة',
+  'secLegal': 'قانوني',
 };
 
 const Map<String, String> _ml = {
@@ -2107,9 +2177,6 @@ const Map<String, String> _ml = {
   'lang_hi': 'ഹിന്ദി',
   'account': 'അക്കൗണ്ട്',
   'askNameTitle': 'നിങ്ങളെ എന്ത് പേരിൽ വിളിക്കണം?',
-  'importDone': 'നിങ്ങളുടെ 5K ചിട്ടി എത്തി.',
-  'importTitle': 'നിങ്ങളുടെ 5K ചിട്ടി കൊണ്ടുവരൂ',
-  'importButton': 'കൊണ്ടുവരിക',
   'newChit': 'പുതിയ ചിട്ടി',
   'noChits': 'ഇതുവരെ ചിട്ടികളൊന്നുമില്ല.',
   'startChit': 'ഒരു ചിട്ടി തുടങ്ങൂ',
@@ -2183,6 +2250,13 @@ const Map<String, String> _ml = {
   'savedMonthGoesTo': 'സേവ് ചെയ്തു. മാസം {n} {name}-ന്.',
   'drawDonePressSave': 'നറുക്കെടുപ്പ് കഴിഞ്ഞു. പ്രസിദ്ധീകരിക്കാൻ സേവ് അമർത്തുക.',
   'numberAddedPressSave': 'നമ്പർ ചേർത്തു. സൂക്ഷിക്കാൻ സേവ് അമർത്തുക.',
+  'slotsFromNames': 'താഴെ പേരുകൾ ചേർക്കുക. ഓരോ പേരും ഒരു സ്ലോട്ടാണ്, ഓരോ സ്ലോട്ടിനും ഒരു മാസം.',
+  'fineChip': 'വൈകിയതിനുള്ള പിഴ {fine}',
+  'fineEach': 'വൈകിയ ഓരോ അടവിനും {fine}',
+  'addLateFine': 'വൈകിയതിനുള്ള പിഴ ചേർക്കുക',
+  'fineSheetText': 'വൈകിയ ഓരോ അടവിനും ആ മാസത്തെ ചിട്ടിത്തുകയിൽ ചേരും. മുമ്പ് രേഖപ്പെടുത്തിയ പിഴകൾ അതേ തുകയിൽ തുടരും.',
+  'fineChangedPressSave': 'വൈകിയതിനുള്ള പിഴ ഇപ്പോൾ {fine}. സൂക്ഷിക്കാൻ സേവ് അമർത്തുക.',
+  'fineOffPressSave': 'ഇനി മുതൽ വൈകിയതിനുള്ള പിഴ ഇല്ല. സൂക്ഷിക്കാൻ സേവ് അമർത്തുക.',
   'newLinkTitle': 'പുതിയ ലിങ്ക് ഉണ്ടാക്കണോ?',
   'newLinkText': 'പഴയ ലിങ്ക് ഉടൻ പ്രവർത്തിക്കാതാകും. പുതിയത് ഗ്രൂപ്പിൽ പങ്കിടുക.',
   'newLinkYes': 'പുതിയ ലിങ്ക് ഉണ്ടാക്കുക',
@@ -2216,6 +2290,8 @@ const Map<String, String> _ml = {
   'undo': 'പഴയപടിയാക്കുക',
   'prevMonth': 'മുൻ മാസം',
   'nextMonth': 'അടുത്ത മാസം',
+  'prevYear': 'മുൻ വർഷം',
+  'nextYear': 'അടുത്ത വർഷം',
   'monthNLabel': 'മാസം {n}, {label}',
   'collectedOf': '{pot}-ൽ പിരിഞ്ഞത്',
   'collectedOfFines': '{pot}-ൽ പിരിഞ്ഞത്, കൂടാതെ {fines} പിഴ',
@@ -2475,6 +2551,14 @@ const Map<String, String> _ml = {
   'frSaved': 'സേവ് ചെയ്തു.',
   'frFrom': 'അയച്ചത്',
   'frSignedOut': 'അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്തു',
+  'tabChits': 'ചിട്ടികൾ',
+  'tabCollect': 'പിരിക്കാനുള്ളത്',
+  'tabProfile': 'പ്രൊഫൈൽ',
+  'collectIntro': 'ഈ മാസം ഇനിയും അടയ്ക്കാനുള്ളവർ, നിങ്ങളുടെ എല്ലാ ചിട്ടികളിലും.',
+  'nothingToCollect': 'ഈ മാസം എല്ലാ ചിട്ടികളിലും എല്ലാവരും അടച്ചു.',
+  'secPreferences': 'മുൻഗണനകൾ',
+  'secHelp': 'സഹായം',
+  'secLegal': 'നിയമപരം',
 };
 
 const Map<String, String> _ta = {
@@ -2536,9 +2620,6 @@ const Map<String, String> _ta = {
   'lang_hi': 'இந்தி',
   'account': 'கணக்கு',
   'askNameTitle': 'உங்களை என்ன பெயரில் அழைக்கலாம்?',
-  'importDone': 'உங்கள் 5K சீட்டு வந்துவிட்டது.',
-  'importTitle': 'உங்கள் 5K சீட்டைக் கொண்டு வாருங்கள்',
-  'importButton': 'கொண்டு வா',
   'newChit': 'புதிய சீட்டு',
   'noChits': 'இன்னும் சீட்டுகள் இல்லை.',
   'startChit': 'ஒரு சீட்டைத் தொடங்குங்கள்',
@@ -2612,6 +2693,13 @@ const Map<String, String> _ta = {
   'savedMonthGoesTo': 'சேமிக்கப்பட்டது. மாதம் {n} {name} க்கு.',
   'drawDonePressSave': 'குலுக்கல் முடிந்தது. வெளியிட சேமி என்பதை அழுத்தவும்.',
   'numberAddedPressSave': 'எண் சேர்க்கப்பட்டது. வைத்திருக்க சேமி என்பதை அழுத்தவும்.',
+  'slotsFromNames': 'கீழே பெயர்களைச் சேர்க்கவும். ஒவ்வொரு பெயரும் ஒரு ஸ்லாட், ஒவ்வொரு ஸ்லாட்டுக்கும் ஒரு மாதம்.',
+  'fineChip': 'தாமதக் கட்டணம் {fine}',
+  'fineEach': 'ஒவ்வொரு தாமதமான செலுத்துதலுக்கும் {fine}',
+  'addLateFine': 'தாமதக் கட்டணம் சேர்க்கவும்',
+  'fineSheetText': 'ஒவ்வொரு தாமதமான செலுத்துதலுக்கும் அந்த மாதச் சீட்டுத் தொகையில் சேரும். ஏற்கெனவே குறித்த கட்டணங்கள் அதே தொகையில் இருக்கும்.',
+  'fineChangedPressSave': 'தாமதக் கட்டணம் இப்போது {fine}. வைத்திருக்க சேமி என்பதை அழுத்தவும்.',
+  'fineOffPressSave': 'இனி தாமதக் கட்டணம் இல்லை. வைத்திருக்க சேமி என்பதை அழுத்தவும்.',
   'newLinkTitle': 'புதிய இணைப்பை உருவாக்கவா?',
   'newLinkText': 'பழைய இணைப்பு உடனே வேலை செய்யாது. புதியதைக் குழுவில் பகிருங்கள்.',
   'newLinkYes': 'புதிய இணைப்பை உருவாக்கு',
@@ -2645,6 +2733,8 @@ const Map<String, String> _ta = {
   'undo': 'செயல்தவிர்',
   'prevMonth': 'முந்தைய மாதம்',
   'nextMonth': 'அடுத்த மாதம்',
+  'prevYear': 'முந்தைய ஆண்டு',
+  'nextYear': 'அடுத்த ஆண்டு',
   'monthNLabel': 'மாதம் {n}, {label}',
   'collectedOf': '{pot} இல் வசூலானது',
   'collectedOfFines': '{pot} இல் வசூலானது, கூடுதலாக {fines} அபராதம்',
@@ -2904,6 +2994,14 @@ const Map<String, String> _ta = {
   'frSaved': 'சேமிக்கப்பட்டது.',
   'frFrom': 'அனுப்பியவர்',
   'frSignedOut': 'கணக்கு நீக்கப்பட்டது',
+  'tabChits': 'சீட்டுகள்',
+  'tabCollect': 'வசூலிக்க',
+  'tabProfile': 'சுயவிவரம்',
+  'collectIntro': 'இந்த மாதம் இன்னும் செலுத்த வேண்டியவர்கள், உங்கள் எல்லா சீட்டுகளிலும்.',
+  'nothingToCollect': 'இந்த மாதம் எல்லா சீட்டுகளிலும் எல்லோரும் செலுத்திவிட்டனர்.',
+  'secPreferences': 'விருப்பங்கள்',
+  'secHelp': 'உதவி',
+  'secLegal': 'சட்டம்',
 };
 
 const Map<String, String> _kn = {
@@ -2965,9 +3063,6 @@ const Map<String, String> _kn = {
   'lang_hi': 'ಹಿಂದಿ',
   'account': 'ಖಾತೆ',
   'askNameTitle': 'ನಿಮ್ಮನ್ನು ಯಾವ ಹೆಸರಿನಿಂದ ಕರೆಯಲಿ?',
-  'importDone': 'ನಿಮ್ಮ 5K ಚೀಟಿ ಬಂದಿದೆ.',
-  'importTitle': 'ನಿಮ್ಮ 5K ಚೀಟಿಯನ್ನು ತನ್ನಿ',
-  'importButton': 'ತನ್ನಿ',
   'newChit': 'ಹೊಸ ಚೀಟಿ',
   'noChits': 'ಇನ್ನೂ ಯಾವುದೇ ಚೀಟಿ ಇಲ್ಲ.',
   'startChit': 'ಒಂದು ಚೀಟಿ ಆರಂಭಿಸಿ',
@@ -3041,6 +3136,13 @@ const Map<String, String> _kn = {
   'savedMonthGoesTo': 'ಉಳಿಸಲಾಗಿದೆ. ತಿಂಗಳು {n} {name} ಅವರಿಗೆ.',
   'drawDonePressSave': 'ಡ್ರಾ ಮುಗಿಯಿತು. ಪ್ರಕಟಿಸಲು ಉಳಿಸಿ ಒತ್ತಿ.',
   'numberAddedPressSave': 'ಸಂಖ್ಯೆ ಸೇರಿಸಲಾಗಿದೆ. ಇಟ್ಟುಕೊಳ್ಳಲು ಉಳಿಸಿ ಒತ್ತಿ.',
+  'slotsFromNames': 'ಕೆಳಗೆ ಹೆಸರುಗಳನ್ನು ಸೇರಿಸಿ. ಪ್ರತಿ ಹೆಸರು ಒಂದು ಸ್ಲಾಟ್, ಪ್ರತಿ ಸ್ಲಾಟ್‌ಗೆ ಒಂದು ತಿಂಗಳು.',
+  'fineChip': 'ತಡ ದಂಡ {fine}',
+  'fineEach': 'ಪ್ರತಿ ತಡ ಪಾವತಿಗೆ {fine}',
+  'addLateFine': 'ತಡ ದಂಡ ಸೇರಿಸಿ',
+  'fineSheetText': 'ಪ್ರತಿ ತಡ ಪಾವತಿಗೆ ಆ ತಿಂಗಳ ಚೀಟಿ ಮೊತ್ತಕ್ಕೆ ಸೇರುತ್ತದೆ. ಈಗಾಗಲೇ ಗುರುತಿಸಿದ ದಂಡಗಳು ಅದೇ ಮೊತ್ತದಲ್ಲಿ ಉಳಿಯುತ್ತವೆ.',
+  'fineChangedPressSave': 'ತಡ ದಂಡ ಈಗ {fine}. ಇಟ್ಟುಕೊಳ್ಳಲು ಉಳಿಸಿ ಒತ್ತಿ.',
+  'fineOffPressSave': 'ಇನ್ನು ಮುಂದೆ ತಡ ದಂಡ ಇಲ್ಲ. ಇಟ್ಟುಕೊಳ್ಳಲು ಉಳಿಸಿ ಒತ್ತಿ.',
   'newLinkTitle': 'ಹೊಸ ಲಿಂಕ್ ಮಾಡಬೇಕೆ?',
   'newLinkText': 'ಹಳೆಯ ಲಿಂಕ್ ತಕ್ಷಣ ಕೆಲಸ ನಿಲ್ಲಿಸುತ್ತದೆ. ಹೊಸದನ್ನು ಗುಂಪಿನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ.',
   'newLinkYes': 'ಹೊಸ ಲಿಂಕ್ ಮಾಡಿ',
@@ -3074,6 +3176,8 @@ const Map<String, String> _kn = {
   'undo': 'ರದ್ದುಗೊಳಿಸಿ',
   'prevMonth': 'ಹಿಂದಿನ ತಿಂಗಳು',
   'nextMonth': 'ಮುಂದಿನ ತಿಂಗಳು',
+  'prevYear': 'ಹಿಂದಿನ ವರ್ಷ',
+  'nextYear': 'ಮುಂದಿನ ವರ್ಷ',
   'monthNLabel': 'ತಿಂಗಳು {n}, {label}',
   'collectedOf': '{pot} ರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ',
   'collectedOfFines': '{pot} ರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ, ಜೊತೆಗೆ {fines} ದಂಡ',
@@ -3333,6 +3437,14 @@ const Map<String, String> _kn = {
   'frSaved': 'ಉಳಿಸಲಾಗಿದೆ.',
   'frFrom': 'ಕಳುಹಿಸಿದವರು',
   'frSignedOut': 'ಖಾತೆ ಅಳಿಸಲಾಗಿದೆ',
+  'tabChits': 'ಚೀಟಿಗಳು',
+  'tabCollect': 'ಸಂಗ್ರಹಿಸಲು',
+  'tabProfile': 'ಪ್ರೊಫೈಲ್',
+  'collectIntro': 'ಈ ತಿಂಗಳು ಇನ್ನೂ ಪಾವತಿಸಬೇಕಾದವರು, ನಿಮ್ಮ ಎಲ್ಲ ಚೀಟಿಗಳಲ್ಲಿ.',
+  'nothingToCollect': 'ಈ ತಿಂಗಳು ಎಲ್ಲ ಚೀಟಿಗಳಲ್ಲಿ ಎಲ್ಲರೂ ಪಾವತಿಸಿದ್ದಾರೆ.',
+  'secPreferences': 'ಆದ್ಯತೆಗಳು',
+  'secHelp': 'ಸಹಾಯ',
+  'secLegal': 'ಕಾನೂನು',
 };
 
 const Map<String, String> _hi = {
@@ -3394,9 +3506,6 @@ const Map<String, String> _hi = {
   'lang_hi': 'हिन्दी',
   'account': 'खाता',
   'askNameTitle': 'हम आपको किस नाम से बुलाएँ?',
-  'importDone': 'आपकी 5K चिट आ गई है।',
-  'importTitle': 'अपनी 5K चिट लाएँ',
-  'importButton': 'लाएँ',
   'newChit': 'नई चिट',
   'noChits': 'अभी कोई चिट नहीं है।',
   'startChit': 'एक चिट शुरू करें',
@@ -3470,6 +3579,13 @@ const Map<String, String> _hi = {
   'savedMonthGoesTo': 'सेव हो गया। महीना {n} की रकम {name} को।',
   'drawDonePressSave': 'ड्रॉ हो गया। प्रकाशित करने के लिए सेव दबाएँ।',
   'numberAddedPressSave': 'नंबर जुड़ गया। रखने के लिए सेव दबाएँ।',
+  'slotsFromNames': 'नीचे नाम जोड़ें। हर नाम एक स्लॉट है, और हर स्लॉट के लिए एक महीना।',
+  'fineChip': 'देरी का जुर्माना {fine}',
+  'fineEach': 'हर देर से भुगतान पर {fine}',
+  'addLateFine': 'देरी का जुर्माना जोड़ें',
+  'fineSheetText': 'हर देर से भुगतान पर उस महीने की रकम में जुड़ता है। पहले से लगे जुर्माने अपनी रकम पर ही रहेंगे।',
+  'fineChangedPressSave': 'देरी का जुर्माना अब {fine} है। रखने के लिए सेव दबाएँ।',
+  'fineOffPressSave': 'अब से देरी का जुर्माना नहीं। रखने के लिए सेव दबाएँ।',
   'newLinkTitle': 'नया लिंक बनाएँ?',
   'newLinkText': 'पुराना लिंक तुरंत काम करना बंद कर देगा। नया लिंक ग्रुप में शेयर करें।',
   'newLinkYes': 'नया लिंक बनाएँ',
@@ -3503,6 +3619,8 @@ const Map<String, String> _hi = {
   'undo': 'पहले जैसा करें',
   'prevMonth': 'पिछला महीना',
   'nextMonth': 'अगला महीना',
+  'prevYear': 'पिछला साल',
+  'nextYear': 'अगला साल',
   'monthNLabel': 'महीना {n}, {label}',
   'collectedOf': '{pot} में से जमा',
   'collectedOfFines': '{pot} में से जमा, साथ में {fines} जुर्माना',
@@ -3762,6 +3880,14 @@ const Map<String, String> _hi = {
   'frSaved': 'सेव हो गया।',
   'frFrom': 'भेजने वाले',
   'frSignedOut': 'खाता हटा दिया गया',
+  'tabChits': 'चिट',
+  'tabCollect': 'वसूली बाकी',
+  'tabProfile': 'प्रोफ़ाइल',
+  'collectIntro': 'इस महीने अभी भुगतान बाकी, आपके सभी चिट में।',
+  'nothingToCollect': 'इस महीने हर चिट में सबने भुगतान कर दिया है।',
+  'secPreferences': 'पसंद',
+  'secHelp': 'मदद',
+  'secLegal': 'कानूनी',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

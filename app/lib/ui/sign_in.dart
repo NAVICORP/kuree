@@ -8,6 +8,7 @@ import '../core/api.dart';
 import '../core/config.dart';
 import '../core/format.dart';
 import '../l10n/strings.dart';
+import 'glass.dart';
 import 'language.dart';
 import 'theme.dart';
 import 'widgets.dart';
@@ -194,19 +195,9 @@ class _SignInScreenState extends State<SignInScreen> {
     final s = S.of(context);
     return Scaffold(
       backgroundColor: K.paper,
-      body: Stack(children: [
-        Positioned(
-          top: -220,
-          left: -100,
-          right: -100,
-          child: Container(
-            height: 520,
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(colors: [Color(0x29116326), Color(0x00116326)], radius: 0.6),
-            ),
-          ),
-        ),
-        SafeArea(
+      // Soft green and sun light behind a frosted glass card.
+      body: AmbientLight(
+        child: SafeArea(
           child: Column(children: [
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(Sp.lg, Sp.sm, Sp.lg, 0),
@@ -230,7 +221,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(height: 6),
                       Text(_sub(s), textAlign: TextAlign.center, style: T.body.copyWith(color: K.muted)),
                       const SizedBox(height: 26),
-                      KCard(
+                      Glass(
+                        tone: GlassTone.sheet,
+                        blur: 24,
+                        radius: K.rLg,
                         padding: const EdgeInsets.fromLTRB(Sp.xl, 22, Sp.xl, Sp.xl),
                         child: AnimatedSize(
                           duration: const Duration(milliseconds: 200),
@@ -254,7 +248,7 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ]),
         ),
-      ]),
+      ),
     );
   }
 
@@ -347,7 +341,7 @@ class _SignInScreenState extends State<SignInScreen> {
             textDirection: TextDirection.ltr,
             autofillHints: const [AutofillHints.oneTimeCode],
             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
-            style: const TextStyle(fontFamily: 'Manrope', fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: 0).merge(T.tabular),
+            style: const TextStyle(fontFamily: 'Manrope', fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 0).merge(T.tabular),
             decoration: const InputDecoration(hintText: '000000'),
             onChanged: (v) {
               if (v.length == 6) _verify();

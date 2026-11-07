@@ -1,10 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../core/api.dart';
-import '../core/format.dart';
 import '../core/kuri.dart';
 import '../l10n/strings.dart';
 import 'account.dart';
+import 'collect_screen.dart';
+import 'glass.dart';
 import 'kuri_editor.dart';
 import 'kuri_screen.dart';
 import 'theme.dart';
@@ -25,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<KuriRecord>? kuris;
   Map<String, dynamic>? me;
   String? error;
-  bool importing = false;
 
   @override
   void initState() {
@@ -73,121 +75,124 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _open(KuriRecord k) async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => KuriScreen(record: k)));
+  /// Opens a chit inside a footer tab (Chits unless told otherwise), so the
+  /// footer stays below it. The list refreshes when it closes.
+  Future<void> _open(KuriRecord k, [int inTab = 0]) async {
+    final nav = _navs[inTab].currentState;
+    if (nav == null) return;
+    await nav.push(MaterialPageRoute<void>(builder: (_) => KuriScreen(record: k)));
     _load();
   }
 
   Future<void> _create() async {
-    final made = await Navigator.of(context).push<KuriRecord>(MaterialPageRoute(builder: (_) => const KuriEditorScreen()));
+    final nav = _navs[0].currentState;
+    if (nav == null) return;
+    final made = await nav.push<KuriRecord>(MaterialPageRoute(builder: (_) => const KuriEditorScreen()));
     if (made == null || !mounted) return;
     await _open(made);
   }
 
-  Future<void> _importBoystown() async {
-    final s = S.of(context);
-    setState(() => importing = true);
-    try {
-      final r = await Api.instance.function('import-boystown');
-      if (!mounted) return;
-      toast(context, s.importDone);
-      await _load();
-      if (r is Map && r['kuri'] is Map) {
-        final rec = KuriRecord.fromJson(Map<String, dynamic>.from(r['kuri'] as Map));
-        if (mounted) await _open(rec);
-      }
-    } on ApiError catch (e) {
-      if (mounted) toast(context, e.message, bad: true);
-    } finally {
-      if (mounted) setState(() => importing = false);
+
+  /// The footer tab on show: 0 chits, 1 to collect, 2 profile.
+  int tab = 0;
+
+  /// Each footer tab has its own pile of open screens, like the tab bar on an
+  /// iPhone: a chit opened from a tab opens inside it, with the footer still
+  /// below, and the tab keeps it open while another tab is looked at.
+  final List<GlobalKey<NavigatorState>> _navs = List.generate(3, (i) => GlobalKey<NavigatorState>(debugLabel: 'tab $i'));
+
+  /// Another tab: shows it as it was left. The tab already on show: back to
+  /// its first screen. A chit with unsaved changes asks before it closes.
+  void _tap(int i) {
+    if (i != tab) {
+      setState(() => tab = i);
+      return;
     }
+    final nav = _navs[i].currentState;
+    if (nav == null || !nav.canPop()) return;
+    nav.popUntil((r) => r.isFirst || r.popDisposition == RoutePopDisposition.doNotPop);
+    if (nav.canPop()) nav.maybePop();
   }
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final name = (me?['display'] as String?) ?? '';
+    return _TabShell(
+      body: IndexedStack(
+        index: tab,
+        sizing: StackFit.expand,
+        children: [_stack(0, _chitsTab(s)), _stack(1, _collectTab(s)), _stack(2, _profileTab())],
+      ),
+      footer: KNavBar(
+        index: tab,
+        onTap: _tap,
+        items: [
+          KNavItem(Icons.savings_outlined, Icons.savings_rounded, s.tabChits),
+          KNavItem(Icons.payments_outlined, Icons.payments_rounded, s.tabCollect),
+          KNavItem(Icons.person_outline_rounded, Icons.person_rounded, s.tabProfile),
+        ],
+      ),
+    );
+  }
+
+  /// One tab's own navigator. Its first screen is a page, so it is rebuilt
+  /// whenever the chits or the person change. The phone's back button and the
+  /// back swipe close the tab's open screens first, then leave the app.
+  Widget _stack(int i, Widget first) {
+    return NavigatorPopHandler<Object?>(
+      enabled: i == tab,
+      onPopWithResult: (_) {
+        if (i == tab) _navs[i].currentState?.maybePop();
+      },
+      child: Navigator(
+        key: _navs[i],
+        pages: [MaterialPage<void>(key: ValueKey('tab-$i'), child: first)],
+        onDidRemovePage: (_) {},
+      ),
+    );
+  }
+
+  Widget _chitsTab(S s) {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: Sp.xl,
         title: Row(children: [
-          ClipRRect(borderRadius: BorderRadius.circular(9), child: Image.asset('assets/brand/icon.png', width: 32, height: 32)),
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.asset('assets/brand/icon.png', width: 28, height: 28)),
           const SizedBox(width: 10),
-          const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 24, fontWeight: FontWeight.w700, color: K.ink, letterSpacing: 0)),
+          const Text('Kuree', style: TextStyle(fontFamily: 'Bricolage', fontSize: 21, fontWeight: FontWeight.w600, color: K.ink, letterSpacing: 0)),
         ]),
-        actions: [
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 10),
-            child: Tooltip(
-              message: s.account,
-              child: Semantics(
-                button: true,
-                label: s.account,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () async {
-                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AccountScreen(me: me ?? const {})));
-                    _load();
-                  },
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Center(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(color: K.deep, shape: BoxShape.circle),
-                        child: Text(initials(name.isEmpty ? 'K' : name), style: T.label.copyWith(color: K.heroText, fontWeight: FontWeight.w800)),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
-      floatingActionButton: kuris == null || kuris!.isEmpty
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: _create,
-              backgroundColor: K.deep,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              highlightElevation: 4,
-              shape: const StadiumBorder(),
-              icon: const Icon(Icons.add_rounded),
-              label: Text(s.newChit, style: T.button.copyWith(color: Colors.white)),
-            ),
+      floatingActionButton: kuris == null || kuris!.isEmpty ? null : GlassFab(icon: Icons.add_rounded, label: s.newChit, onPressed: _create),
       body: _body(s),
     );
+  }
+
+  Widget _collectTab(S s) {
+    return Scaffold(
+      appBar: AppBar(titleSpacing: Sp.xl, title: Text(s.tabCollect)),
+      body: kuris == null
+          ? (error != null ? LoadFailed(message: error!, onRetry: _load) : const Loading())
+          : CollectList(kuris: kuris!, onOpen: (k) => _open(k, 1), onRefresh: _load),
+    );
+  }
+
+  /// Name, language, help, legal and the account, as a tab. Rebuilt when the
+  /// person's details come back from the server.
+  Widget _profileTab() {
+    final who = me;
+    if (who == null) return const Scaffold(body: Loading());
+    return AccountScreen(key: ValueKey(who), me: who, tab: true);
   }
 
   Widget _body(S s) {
     if (kuris == null && error != null) return LoadFailed(message: error!, onRetry: _load);
     if (kuris == null) return const Loading();
-    final canImport = me?['can_import_boystown'] == true;
     return RefreshIndicator(
       color: K.green,
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 112),
+        padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 96 + MediaQuery.paddingOf(context).bottom),
         children: [
-          if (canImport) ...[
-            KCard(
-              color: K.sunSoft,
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
-              child: Row(children: [
-                const Icon(Icons.download_rounded, color: K.deep),
-                const SizedBox(width: Sp.md),
-                Expanded(child: Text(s.importTitle, style: T.bodyStrong)),
-                const SizedBox(width: Sp.sm),
-                KButton(label: s.importButton, small: true, busy: importing, onPressed: _importBoystown),
-              ]),
-            ),
-            const SizedBox(height: Sp.lg),
-          ],
           if (kuris!.isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 72),
@@ -211,6 +216,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// The tab on show, with the footer floating over its bottom as glass. Not a
+/// Scaffold: each screen in a tab is its own Scaffold, so its messages and
+/// its own bars (Save, Start the chit) still sit just above the footer. The
+/// screens run to the bottom of the phone, under the glass, and are told
+/// that the footer covers that much of their bottom; the keyboard, which
+/// slides up over the footer, takes its place while it is up.
+class _TabShell extends StatelessWidget {
+  const _TabShell({required this.body, required this.footer});
+  final Widget body;
+  final Widget footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final under = KNavBar.areaFor(mq.padding.bottom);
+    final cover = math.max(0.0, under - mq.viewInsets.bottom);
+    final inner = mq.copyWith(
+      padding: mq.padding.copyWith(bottom: cover),
+      viewPadding: mq.viewPadding.copyWith(bottom: math.max(mq.viewPadding.bottom, under)),
+    );
+    return Material(
+      color: K.paper,
+      child: Stack(children: [
+        Positioned.fill(child: MediaQuery(data: inner, child: body)),
+        Positioned(left: 0, right: 0, bottom: 0, child: footer),
+      ]),
     );
   }
 }
@@ -250,7 +285,7 @@ class KuriCard extends StatelessWidget {
         Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Expanded(
             child: Wrap(crossAxisAlignment: WrapCrossAlignment.end, spacing: 6, children: [
-              Text(k.money(got), style: T.h2.copyWith(fontSize: 24).merge(T.tabular)),
+              Text(k.money(got), style: T.h2.merge(T.tabular)),
               Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Text(s.ofAmount(k.money(k.pot)), style: T.small),

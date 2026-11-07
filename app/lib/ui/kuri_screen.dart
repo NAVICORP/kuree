@@ -14,6 +14,7 @@ import '../core/messages.dart';
 import '../draw/bottle_draw_screen.dart';
 import '../l10n/strings.dart';
 import 'admins_screen.dart';
+import 'glass.dart';
 import 'history_screen.dart';
 import 'kuri_editor.dart';
 import 'sheets.dart';
@@ -135,7 +136,8 @@ class _KuriScreenState extends State<KuriScreen> {
       return;
     }
     final month = m;
-    await Navigator.of(context).push(MaterialPageRoute(
+    // The draw fills the whole screen, over the footer.
+    await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
       fullscreenDialog: true,
       builder: (_) => BottleDrawScreen(
         title: doc.fullName,
@@ -220,6 +222,15 @@ class _KuriScreenState extends State<KuriScreen> {
     }
   }
 
+  /// The chit's late fine, changed here without opening Edit.
+  Future<void> _editFine() async {
+    final value = await askFine(context, doc.fine, doc.currency);
+    if (value == null || value == doc.fine || !mounted) return;
+    _change(() => doc.setFine(value));
+    final s = S.of(context);
+    toast(context, value > 0 ? s.fineChangedPressSave(doc.money(value)) : s.fineOffPressSave);
+  }
+
   Future<void> _edit() async {
     final s = S.of(context);
     if (dirty && !await confirm(context, title: s.saveFirstTitle, text: s.saveFirstText, yes: s.save)) return;
@@ -255,6 +266,7 @@ class _KuriScreenState extends State<KuriScreen> {
       PickOption('report', s.spreadsheet, sub: s.spreadsheetSub, icon: Icons.table_chart_outlined),
       PickOption('history', s.history, sub: s.historySub, icon: Icons.history_rounded),
       PickOption('admins', s.admins, sub: s.adminsSub, icon: Icons.admin_panel_settings_outlined),
+      PickOption('fine', s.lateFine, sub: doc.fine > 0 ? s.fineEach(doc.money(doc.fine)) : s.addLateFine, icon: Icons.schedule_rounded),
       PickOption('edit', s.editChit, sub: s.editChitSub, icon: Icons.tune_rounded),
       if (rec.isOwner) PickOption('delete', s.deleteChit, icon: Icons.delete_outline_rounded),
     ]);
@@ -271,6 +283,8 @@ class _KuriScreenState extends State<KuriScreen> {
         if (restored == true) await _reload();
       case 'admins':
         await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AdminsScreen(record: rec)));
+      case 'fine':
+        await _editFine();
       case 'edit':
         await _edit();
       case 'delete':
@@ -294,76 +308,79 @@ class _KuriScreenState extends State<KuriScreen> {
         }
       },
       child: Scaffold(
+        extendBody: MediaQuery.viewInsetsOf(context).bottom == 0,
         appBar: AppBar(
           titleSpacing: Sp.xs,
           title: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (doc.group.trim().isNotEmpty)
               Text(doc.group, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.small.copyWith(color: K.green, fontWeight: FontWeight.w800)),
-            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 19)),
+            Text(doc.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.h3.copyWith(fontSize: 17)),
           ]),
           actions: [
-            IconButton(tooltip: s.membersLink, icon: const Icon(Icons.link_rounded), onPressed: _link),
-            IconButton(tooltip: s.more, icon: const Icon(Icons.more_horiz_rounded), onPressed: _menu),
+            RoundIcon(Icons.link_rounded, tooltip: s.membersLink, onTap: _link),
+            RoundIcon(Icons.more_horiz_rounded, tooltip: s.more, onTap: _menu),
             const SizedBox(width: Sp.xs),
           ],
         ),
-        body: RefreshIndicator(
-          color: K.green,
-          onRefresh: () async {
-            if (dirty) {
-              toast(context, s.saveChangesFirst);
-              return;
-            }
-            await _reload();
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 120),
-            children: [
-              _hero(s),
-              const SizedBox(height: Sp.md + 2),
-              _winner(s),
-              const SizedBox(height: Sp.md + 2),
-              _actions(s),
-              const SizedBox(height: Sp.md + 2),
-              _members(s),
-              const SizedBox(height: Sp.xl),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                const Icon(Icons.history_rounded, size: 16, color: K.muted),
-                const SizedBox(width: 6),
-                Flexible(child: Text(s.historyKept, style: T.small, textAlign: TextAlign.center)),
-              ]),
-              if (rec.updatedBy != null && rec.updatedAt != null) ...[
-                const SizedBox(height: Sp.xs),
-                Text(s.lastSavedBy(rec.updatedBy!, ago(rec.updatedAt!)), style: T.small, textAlign: TextAlign.center),
+        // The body runs under the footer and the Save bar; its own padding
+        // says how much of its bottom they cover.
+        body: Builder(
+          builder: (context) => RefreshIndicator(
+            color: K.green,
+            onRefresh: () async {
+              if (dirty) {
+                toast(context, s.saveChangesFirst);
+                return;
+              }
+              await _reload();
+            },
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(Sp.page, Sp.xs, Sp.page, 32 + MediaQuery.paddingOf(context).bottom),
+              children: [
+                _hero(s),
+                const SizedBox(height: Sp.md + 2),
+                _winner(s),
+                const SizedBox(height: Sp.md + 2),
+                _actions(s),
+                const SizedBox(height: Sp.md + 2),
+                _members(s),
+                const SizedBox(height: Sp.xl),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Icon(Icons.history_rounded, size: 16, color: K.muted),
+                  const SizedBox(width: 6),
+                  Flexible(child: Text(s.historyKept, style: T.small, textAlign: TextAlign.center)),
+                ]),
+                if (rec.updatedBy != null && rec.updatedAt != null) ...[
+                  const SizedBox(height: Sp.xs),
+                  Text(s.lastSavedBy(rec.updatedBy!, ago(rec.updatedAt!)), style: T.small, textAlign: TextAlign.center),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         bottomNavigationBar: AnimatedSwitcher(
           duration: const Duration(milliseconds: 220),
           transitionBuilder: (c, a) => SizeTransition(sizeFactor: a, child: c),
-          child: dirty ? _saveBar(s) : const SizedBox.shrink(),
+          // With nothing to save, an empty strip the height of the footer
+          // still tells the list how much of its bottom the glass covers.
+          child: dirty ? _saveBar(s) : SizedBox(key: const ValueKey('none'), height: MediaQuery.paddingOf(context).bottom),
         ),
       ),
     );
   }
 
+  /// Unsaved changes: a glass bar floats over the bottom of the chit, just
+  /// above the footer, with Undo and Save.
   Widget _saveBar(S s) {
-    return Container(
+    return KeyedSubtree(
       key: const ValueKey('save'),
-      decoration: const BoxDecoration(
-        color: K.surface,
-        border: Border(top: BorderSide(color: K.border)),
-        boxShadow: [BoxShadow(color: Color(0x14032A09), blurRadius: 20, offset: Offset(0, -6))],
-      ),
-      child: SafeArea(
-        top: false,
+      child: GlassBar(
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 16, 12),
+          padding: const EdgeInsetsDirectional.only(start: 2),
           child: Row(children: [
             const Icon(Icons.edit_note_rounded, color: K.warn),
             const SizedBox(width: Sp.sm),
-            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+            Expanded(child: Text(s.notSavedYet, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.label.copyWith(color: K.ink))),
             Flexible(
               child: KButton(
                 label: s.undo,
@@ -600,7 +617,18 @@ class _KuriScreenState extends State<KuriScreen> {
         ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 10),
-          child: Text(s.tickHelp, style: T.small),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(s.tickHelp, style: T.small),
+            const SizedBox(height: Sp.sm),
+            // The fine a Late adds, and the way to change it.
+            KButton(
+              label: doc.fine > 0 ? s.fineChip(doc.money(doc.fine)) : s.addLateFine,
+              icon: doc.fine > 0 ? Icons.edit_outlined : Icons.add_rounded,
+              kind: KButtonKind.secondary,
+              small: true,
+              onPressed: _editFine,
+            ),
+          ]),
         ),
         const Divider(),
         if (rows.isEmpty)
@@ -629,7 +657,7 @@ class _MemberRow extends StatelessWidget {
     final paid = month.isPaid(payer.id), late = month.isFined(payer.id), won = month.winner == payer.slot;
     final part = doc.partLabel(payer);
     var status = paid ? s.statusPaid(doc.money(payer.amt)) : s.statusPending(doc.money(payer.amt));
-    if (late) status = s.statusLateFine(status, doc.money(doc.fine));
+    if (late) status = s.statusLateFine(status, doc.money(doc.fineFor(month)));
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
@@ -649,7 +677,7 @@ class _MemberRow extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 6, runSpacing: 2, crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Text(doc.nameOf(payer), style: T.bodyStrong.copyWith(fontSize: 16)),
+              Text(doc.nameOf(payer), style: T.bodyStrong),
               if (part != null) Pill(part),
             ]),
             const SizedBox(height: 2),
@@ -688,14 +716,14 @@ class _Tick extends StatelessWidget {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 160),
-          width: 48,
-          height: 48,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: on ? K.green : K.surface,
             shape: BoxShape.circle,
             border: Border.all(color: on ? K.green : K.border2, width: 2),
           ),
-          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 24),
+          child: Icon(Icons.check_rounded, color: on ? Colors.white : K.border2, size: 21),
         ),
       ),
     );
@@ -726,7 +754,7 @@ class _LateButton extends StatelessWidget {
           child: Center(
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 160),
-              height: 36,
+              height: 32,
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: on ? K.badBg : K.surface,
@@ -734,9 +762,9 @@ class _LateButton extends StatelessWidget {
                 border: Border.all(color: on ? K.badBg : K.border),
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.schedule_rounded, size: 15, color: on ? K.bad : K.muted),
+                Icon(Icons.schedule_rounded, size: 14, color: on ? K.bad : K.muted),
                 const SizedBox(width: 4),
-                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 13, color: on ? K.bad : K.muted)),
+                Text(S.of(context).lateButton, style: T.label.copyWith(fontSize: 12, color: on ? K.bad : K.muted)),
               ]),
             ),
           ),
