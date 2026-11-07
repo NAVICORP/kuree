@@ -99,10 +99,13 @@ Release history: 1.0.0 (version code 21, the first design) sent for review on 24
 | Name (the admin's display name) | Yes | No | App functionality | No |
 | Email address (admin sign-in with Google or email) | Yes | No | Account management | No |
 | Other user-generated content (the chit: member names, payments, and member phone numbers the admin adds for reminders) | Yes | No | App functionality | No |
+| Device or other IDs (the push notification token, when the admin turns on reminders; only in builds with FIREBASE_ANDROID_JSON set) | Yes | No | App functionality | Yes |
 
 - Data is encrypted in transit: Yes.
 - Users can ask for their data to be deleted: Yes (in the app under Profile, and https://kureeapp.com/delete-account).
-- No location, contacts, photos, files, audio, device IDs, analytics or crash data are collected. Saving the draw video writes to the phone's gallery only.
+- No location, contacts, photos, files, audio, analytics or crash data are collected. Saving the draw video writes to the phone's gallery only.
+
+**Permissions**: POST_NOTIFICATIONS (asked in the app once there is a chit, or from Profile > Reminders) and RECEIVE_BOOT_COMPLETED (to set reminders again after a restart). No exact alarm permission: reminders use inexact alarms, so nothing to declare under Alarms & reminders.
 
 **App access** (for review): sign in with Email > Use a password, with the review account in `docs/RELEASE.md` section 5. It opens a sample chit. To delete the account: Profile in the footer > Delete account.
 

@@ -166,8 +166,9 @@ Start: "Do you or your third-party partners collect data from this app?" **Yes.*
 | Contact Info > Email Address | Yes | Yes | No | App Functionality |
 | User Content > Other User Content | Yes | Yes | No | App Functionality |
 | Identifiers > User ID | Yes | Yes | No | App Functionality |
+| Identifiers > Device ID | Yes | Yes | No | App Functionality |
 
-Everything else (location, contacts, photos or videos, health, financial info, browsing or search history, purchases, usage data, diagnostics, device ID): **Not collected**.
+Everything else (location, contacts, photos or videos, health, financial info, browsing or search history, purchases, usage data, diagnostics): **Not collected**.
 
 What each line covers:
 
@@ -175,6 +176,7 @@ What each line covers:
 - **Email Address**: the admin's sign-in (Sign in with Apple, Google, or email with a code). With Apple it may be a private relay address.
 - **Other User Content**: the chit itself: its name and amounts, members' names, members' WhatsApp numbers if the admin adds them for reminders, payments, fines and draws.
 - **User ID**: the SkiFi account ID the sign-in gives each admin.
+- **Device ID**: the push notification address (Firebase Cloud Messaging token) of an admin who turns on reminders, so the server can tell them when another admin marks payments, makes the draw or adds them. Only in builds with push set up (the FIREBASE_IOS_PLIST secret); without it, leave this line out. Collection day reminders are set on the phone and send nothing anywhere.
 - No ads, analytics, crash reporting or trackers, so "Data Used to Track You" is empty.
 - "Financial Info" is not collected: Kuree records amounts the group agreed, not anyone's bank, card or credit details.
 
