@@ -29,9 +29,11 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
-  // Reminders and pushes: asks nothing here. Never holds up the start.
-  await Notifications.instance.init().timeout(const Duration(seconds: 4), onTimeout: () {});
   runApp(const KureeApp());
+  // Reminders and pushes start alongside the first screen, so they never hold
+  // the launch screen. Asks nothing here; a tapped notification is picked up
+  // through Notifications.openChit whenever it arrives.
+  unawaited(Notifications.instance.init());
 }
 
 class KureeApp extends StatelessWidget {
