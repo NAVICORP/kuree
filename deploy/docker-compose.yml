@@ -7,6 +7,10 @@
 # Passwords: the first start makes random ones inside the `secrets` volume.
 # Sign-in (WhatsApp codes, email codes) is SkAuth at account.skifi.co, where
 # Kuree has to be listed as an app (id "kuree"). Nothing to paste here.
+#
+# Push notifications (optional): set FIREBASE_SERVICE_ACCOUNT_JSON in
+# Dokploy's environment for this compose to the Firebase service account key
+# (the JSON file, or its base64). Without it the `push` service sends nothing.
 
 services:
   secrets:
@@ -106,6 +110,27 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  # Push notifications to the admins' phones through Firebase (server/push.mjs):
+  # sends what saves leave in push_outbox. Sends nothing without the key.
+  push:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: kuree-push:latest
+    pull_policy: build
+    restart: unless-stopped
+    command: ["node", "/srv/site/server/push.mjs"]
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+      DB_NAME: kuree
+      FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
+    volumes:
+      - secrets:/secrets:ro
 
   # A database copy every night at 03:00 server time, the last 30 kept.
   backup:
