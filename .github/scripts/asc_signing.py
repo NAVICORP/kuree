@@ -2,11 +2,13 @@
 """Signing for the TestFlight build, made fresh on each run with the App Store
 Connect API key, so no certificate or profile has to be kept anywhere.
 
-  setup   <dir>  turns on Sign in with Apple for the App ID co.skifi.kuree (once;
-                 later runs find it on), makes an Apple Distribution
+  setup   <dir>  turns on Sign in with Apple and Push Notifications for the App
+                 ID co.skifi.kuree (once; later runs find them on), makes an Apple Distribution
                  certificate and an App Store profile for co.skifi.kuree, writes cert.p12, the profile,
-                 ExportOptions.plist and state.json into <dir>, and points the
+                 ExportOptions.plist and state.json into <dir>, points the
                  Runner target at them (manual signing, Release and Profile)
+                 and sets the push entitlement to production, as an App
+                 Store profile has it
   cleanup <dir>  revokes that certificate and deletes the profile
 
 Needs: APPLE_TEAM_ID, APP_STORE_CONNECT_KEY_ID, APP_STORE_CONNECT_ISSUER_ID,
@@ -35,6 +37,7 @@ from cryptography.x509.oid import NameOID
 API = 'https://api.appstoreconnect.apple.com/v1'
 BUNDLE_ID = 'co.skifi.kuree'
 PROJECT = 'app/ios/Runner.xcodeproj/project.pbxproj'
+ENTITLEMENTS = 'app/ios/Runner/Runner.entitlements'
 
 
 def env(name):
@@ -91,6 +94,8 @@ def bundle_id():
 # carries a capability the App ID had when the profile was made.
 CAPABILITIES = {
     'SIGN_IN_WITH_APPLE': [{'key': 'APPLE_ID_AUTH_APP_CONSENT', 'options': [{'key': 'PRIMARY_APP_CONSENT'}]}],
+    # Pushes from the Kuree server through Firebase (aps-environment).
+    'PUSH_NOTIFICATIONS': None,
 }
 
 
@@ -102,10 +107,13 @@ def capabilities(bid):
         if kind in have:
             print(f'{kind} is already on for {BUNDLE_ID}.')
             continue
+        attributes = {'capabilityType': kind}
+        if settings:
+            attributes['settings'] = settings
         try:
             call('POST', '/bundleIdCapabilities', {'data': {
                 'type': 'bundleIdCapabilities',
-                'attributes': {'capabilityType': kind, 'settings': settings},
+                'attributes': attributes,
                 'relationships': {'bundleId': {'data': {'type': 'bundleIds', 'id': bid}}}}})
             print(f'Turned on {kind} for {BUNDLE_ID}.')
         except RuntimeError as e:
@@ -153,6 +161,16 @@ def set_signing(team, profile_name):
     if count < 2:
         sys.exit(f'::error::Expected the Runner Release and Profile configurations, found {count}.')
     open(PROJECT, 'w').write(s)
+
+
+def production_push():
+    """The entitlements file says development (for builds from Xcode); an App
+    Store profile only allows production."""
+    s = open(ENTITLEMENTS).read()
+    s2 = re.sub(r'(<key>aps-environment</key>\s*<string>)development(</string>)', r'\1production\2', s)
+    if s2 != s:
+        open(ENTITLEMENTS, 'w').write(s2)
+        print('Push entitlement set to production for this build.')
 
 
 def setup(out):
@@ -225,6 +243,7 @@ def setup(out):
 </plist>
 ''')
     set_signing(team, name)
+    production_push()
     print(f"Certificate and profile ready ({name}); App Store Connect app {app}.")
 
 

@@ -20,6 +20,13 @@
 #   KUREE_GOOGLE_SERVER_CLIENT_ID  the SkiFi login's Google web client id
 #   KUREE_GOOGLE_IOS_CLIENT_ID     the iOS client id for co.skifi.kuree
 # Without them the builds still pass; the app just hides the Google button.
+#
+# Push notifications read two repository *secrets*, the Firebase config files
+# for co.skifi.kuree (base64, or the plain file):
+#   FIREBASE_ANDROID_JSON  google-services.json
+#   FIREBASE_IOS_PLIST     GoogleService-Info.plist
+# The builds turn them into --dart-define flags (.github/scripts/firebase_defines.py).
+# Without them the builds still pass; the app has reminders but no push.
 
 name: App
 
@@ -163,8 +170,17 @@ jobs:
           echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$RUNNER_TEMP/upload.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > app/android/key.properties
+      - name: Firebase settings (when the secret is set)
+        env:
+          FIREBASE_ANDROID_JSON: ${{ secrets.FIREBASE_ANDROID_JSON }}
+        run: |
+          if [ -z "$FIREBASE_ANDROID_JSON" ]; then echo "No FIREBASE_ANDROID_JSON: no push in this build; reminders still work."; exit 0; fi
+          printf '%s' "$FIREBASE_ANDROID_JSON" > "$RUNNER_TEMP/google-services.json"
+          defines=$(python3 .github/scripts/firebase_defines.py android "$RUNNER_TEMP/google-services.json")
+          rm -f "$RUNNER_TEMP/google-services.json"
+          echo "FIREBASE_DEFINES=$defines" >> "$GITHUB_ENV"
       - working-directory: app
-        run: set -o pipefail; flutter build apk --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build apk --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES $FIREBASE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
       - if: failure()
         run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Android"
       - uses: actions/upload-artifact@v4
@@ -175,7 +191,7 @@ jobs:
       - name: Play Store bundle
         if: ${{ hashFiles('app/android/key.properties') != '' }}
         working-directory: app
-        run: flutter build appbundle --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES
+        run: flutter build appbundle --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES $FIREBASE_DEFINES
       - uses: actions/upload-artifact@v4
         if: ${{ hashFiles('app/android/key.properties') != '' }}
         with:
@@ -223,10 +239,20 @@ jobs:
           printf 'GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.%s\n' "$id" > app/ios/Flutter/Google.xcconfig
           cat app/ios/Flutter/Google.xcconfig
 
+      - name: Firebase settings (when the secret is set)
+        env:
+          FIREBASE_IOS_PLIST: ${{ secrets.FIREBASE_IOS_PLIST }}
+        run: |
+          if [ -z "$FIREBASE_IOS_PLIST" ]; then echo "No FIREBASE_IOS_PLIST: no push in this build; reminders still work."; exit 0; fi
+          printf '%s' "$FIREBASE_IOS_PLIST" > "$RUNNER_TEMP/GoogleService-Info.plist"
+          defines=$(python3 .github/scripts/firebase_defines.py ios "$RUNNER_TEMP/GoogleService-Info.plist")
+          rm -f "$RUNNER_TEMP/GoogleService-Info.plist"
+          echo "FIREBASE_DEFINES=$defines" >> "$GITHUB_ENV"
+
       - name: Unsigned build (a check)
         if: env.TESTFLIGHT != 'true'
         working-directory: app
-        run: set -o pipefail; flutter build ios --release --no-codesign --build-number=${{ github.run_number }} $GOOGLE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build ios --release --no-codesign --build-number=${{ github.run_number }} $GOOGLE_DEFINES $FIREBASE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
 
       - name: TestFlight secrets
         if: env.TESTFLIGHT == 'true'
@@ -278,7 +304,7 @@ jobs:
       - name: Signed build
         if: env.TESTFLIGHT == 'true'
         working-directory: app
-        run: set -o pipefail; flutter build ipa --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES --export-options-plist="$SIGNING_DIR/ExportOptions.plist" 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build ipa --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES $FIREBASE_DEFINES --export-options-plist="$SIGNING_DIR/ExportOptions.plist" 2>&1 | tee -a "$RUNNER_TEMP/out.log"
 
       - name: Upload to TestFlight
         if: env.TESTFLIGHT == 'true'

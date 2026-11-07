@@ -931,5 +931,27 @@
   "nothingToCollect": "Everyone has paid this month, in every chit.",
   "secPreferences": "Preferences",
   "secHelp": "Help",
-  "secLegal": "Legal"
+  "secLegal": "Legal",
+  "notifCollection": "Collection day for {chit}: {n} still to pay",
+  "@notifCollection": {
+    "placeholders": {
+      "chit": {},
+      "n": {}
+    }
+  },
+  "notifLastDay": "Last day to pay for {chit} is tomorrow: {n} still to pay",
+  "@notifLastDay": {
+    "placeholders": {
+      "chit": {},
+      "n": {}
+    }
+  },
+  "notifSub": "Collection days, the last day to pay, and changes other admins make",
+  "notifAskTitle": "Turn on reminders?",
+  "notifAskText": "Kuree can remind you on collection day and the evening before the last day to pay, and tell you when another admin marks payments or runs the draw.",
+  "notifTurnOn": "Turn on",
+  "notifNotNow": "Not now",
+  "notifBlocked": "Notifications are off for Kuree. Turn them on in your phone's settings.",
+  "notifChannelReminders": "Chit reminders",
+  "notifChannelUpdates": "Chit updates"
 }

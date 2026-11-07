@@ -10,8 +10,13 @@ Writes, under app/android/app/src/main/res:
   cut out, for themed icons (Android 13 and later),
   and mipmap-anydpi-v26/ic_launcher.xml, which puts the three together, so the
   launcher can shape the icon (circle, squircle) without cropping the card.
+- drawable-*dpi/ic_stat_kuree.png: the small notification icon, the same
+  white card with the K cut out, filling a 24dp square (Android tints it).
+
+    python3 tools/brand/android_icons.py --notification   # that icon only
 """
 import math
+import sys
 from pathlib import Path
 
 from PIL import Image
@@ -55,7 +60,27 @@ def monochrome(fg):
     return out
 
 
+def notification_icon(fg):
+    """The status bar icon: white on clear, the card filling a 24dp square
+    with Android's 1dp of room on each side."""
+    mono = monochrome(fg)
+    card = mono.crop(mono.getbbox())
+    w, h = card.size
+    side = round(max(w, h) * 24 / 22)
+    square = Image.new('RGBA', (side, side), (255, 255, 255, 0))
+    square.alpha_composite(card, ((side - w) // 2, (side - h) // 2))
+    for name, k in DENSITIES.items():
+        px = round(24 * k)
+        d = RES / f'drawable-{name}'
+        d.mkdir(parents=True, exist_ok=True)
+        square.resize((px, px), Image.LANCZOS).save(d / 'ic_stat_kuree.png', optimize=True)
+
+
 def main():
+    if '--notification' in sys.argv[1:]:
+        notification_icon(Image.open(BRAND / 'icon-foreground.png').convert('RGBA'))
+        print('notification icon written to', RES)
+        return
     icon = Image.open(BRAND / 'icon.png').convert('RGBA')
     fg = Image.open(BRAND / 'icon-foreground.png').convert('RGBA')
     mono = monochrome(fg)
@@ -71,6 +96,7 @@ def main():
         fg.resize((adaptive, adaptive), Image.LANCZOS).save(d / 'ic_launcher_foreground.png', optimize=True)
         bg.resize((adaptive, adaptive), Image.LANCZOS).save(d / 'ic_launcher_background.png', optimize=True)
         mono.resize((adaptive, adaptive), Image.LANCZOS).save(d / 'ic_launcher_monochrome.png', optimize=True)
+    notification_icon(fg)
     a = RES / 'mipmap-anydpi-v26'
     a.mkdir(parents=True, exist_ok=True)
     (a / 'ic_launcher.xml').write_text(

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/api.dart';
+import 'core/notifications.dart';
 import 'l10n/lang.dart';
 import 'l10n/strings.dart';
 import 'ui/home.dart';
@@ -28,6 +29,8 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
+  // Reminders and pushes: asks nothing here. Never holds up the start.
+  await Notifications.instance.init().timeout(const Duration(seconds: 4), onTimeout: () {});
   runApp(const KureeApp());
 }
 

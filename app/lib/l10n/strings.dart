@@ -1180,6 +1180,36 @@ class S {
 
   /// Legal
   String get secLegal => _get('secLegal');
+
+  /// Collection day for {chit}: {n} still to pay
+  String notifCollection(Object chit, Object n) => _fill('notifCollection', {'chit': chit, 'n': n});
+
+  /// Last day to pay for {chit} is tomorrow: {n} still to pay
+  String notifLastDay(Object chit, Object n) => _fill('notifLastDay', {'chit': chit, 'n': n});
+
+  /// Collection days, the last day to pay, and changes other admins make
+  String get notifSub => _get('notifSub');
+
+  /// Turn on reminders?
+  String get notifAskTitle => _get('notifAskTitle');
+
+  /// Kuree can remind you on collection day and the evening before the last day to pay, and tell you when another admin marks payments or runs the draw.
+  String get notifAskText => _get('notifAskText');
+
+  /// Turn on
+  String get notifTurnOn => _get('notifTurnOn');
+
+  /// Not now
+  String get notifNotNow => _get('notifNotNow');
+
+  /// Notifications are off for Kuree. Turn them on in your phone's settings.
+  String get notifBlocked => _get('notifBlocked');
+
+  /// Chit reminders
+  String get notifChannelReminders => _get('notifChannelReminders');
+
+  /// Chit updates
+  String get notifChannelUpdates => _get('notifChannelUpdates');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1629,6 +1659,16 @@ const Map<String, String> _en = {
   'secPreferences': 'Preferences',
   'secHelp': 'Help',
   'secLegal': 'Legal',
+  'notifCollection': 'Collection day for {chit}: {n} still to pay',
+  'notifLastDay': 'Last day to pay for {chit} is tomorrow: {n} still to pay',
+  'notifSub': 'Collection days, the last day to pay, and changes other admins make',
+  'notifAskTitle': 'Turn on reminders?',
+  'notifAskText': 'Kuree can remind you on collection day and the evening before the last day to pay, and tell you when another admin marks payments or runs the draw.',
+  'notifTurnOn': 'Turn on',
+  'notifNotNow': 'Not now',
+  'notifBlocked': 'Notifications are off for Kuree. Turn them on in your phone\'s settings.',
+  'notifChannelReminders': 'Chit reminders',
+  'notifChannelUpdates': 'Chit updates',
 };
 
 const Map<String, String> _ar = {
@@ -2061,6 +2101,16 @@ const Map<String, String> _ar = {
   'secPreferences': 'التفضيلات',
   'secHelp': 'المساعدة',
   'secLegal': 'قانوني',
+  'notifCollection': 'يوم التحصيل في {chit}: {n} لم يدفعوا بعد',
+  'notifLastDay': 'آخر يوم للدفع في {chit} غدًا: {n} لم يدفعوا بعد',
+  'notifSub': 'أيام التحصيل وآخر يوم للدفع وما يغيّره المشرفون الآخرون',
+  'notifAskTitle': 'تشغيل التذكيرات؟',
+  'notifAskText': 'يمكن لـ Kuree أن يذكّرك في يوم التحصيل وفي مساء اليوم السابق لآخر يوم للدفع، وأن يخبرك حين يسجّل مشرف آخر الدفعات أو يجري السحب.',
+  'notifTurnOn': 'تشغيل',
+  'notifNotNow': 'ليس الآن',
+  'notifBlocked': 'الإشعارات متوقفة لـ Kuree. شغّلها من إعدادات هاتفك.',
+  'notifChannelReminders': 'تذكيرات الجمعية',
+  'notifChannelUpdates': 'تحديثات الجمعية',
 };
 
 const Map<String, String> _ml = {
@@ -2493,6 +2543,16 @@ const Map<String, String> _ml = {
   'secPreferences': 'മുൻഗണനകൾ',
   'secHelp': 'സഹായം',
   'secLegal': 'നിയമപരം',
+  'notifCollection': '{chit} പിരിവ് ദിവസം: {n} പേർ ഇനിയും അടയ്ക്കാനുണ്ട്',
+  'notifLastDay': '{chit} അടയ്ക്കാനുള്ള അവസാന ദിവസം നാളെ: {n} പേർ ഇനിയും അടയ്ക്കാനുണ്ട്',
+  'notifSub': 'പിരിവ് ദിവസം, അടയ്ക്കാനുള്ള അവസാന ദിവസം, മറ്റ് അഡ്മിൻമാർ വരുത്തുന്ന മാറ്റങ്ങൾ',
+  'notifAskTitle': 'ഓർമ്മപ്പെടുത്തലുകൾ ഓണാക്കണോ?',
+  'notifAskText': 'പിരിവ് ദിവസവും അടയ്ക്കാനുള്ള അവസാന ദിവസത്തിന്റെ തലേന്ന് വൈകുന്നേരവും Kuree നിങ്ങളെ ഓർമ്മിപ്പിക്കും. മറ്റൊരു അഡ്മിൻ അടവുകൾ രേഖപ്പെടുത്തുമ്പോഴും നറുക്കെടുക്കുമ്പോഴും അറിയിക്കും.',
+  'notifTurnOn': 'ഓണാക്കുക',
+  'notifNotNow': 'ഇപ്പോൾ വേണ്ട',
+  'notifBlocked': 'Kuree-യുടെ അറിയിപ്പുകൾ ഓഫാണ്. ഫോണിന്റെ സെറ്റിംഗ്സിൽ ഓണാക്കൂ.',
+  'notifChannelReminders': 'ചിട്ടി ഓർമ്മപ്പെടുത്തലുകൾ',
+  'notifChannelUpdates': 'ചിട്ടി അപ്‌ഡേറ്റുകൾ',
 };
 
 const Map<String, String> _ta = {
@@ -2925,6 +2985,16 @@ const Map<String, String> _ta = {
   'secPreferences': 'விருப்பங்கள்',
   'secHelp': 'உதவி',
   'secLegal': 'சட்டம்',
+  'notifCollection': '{chit} வசூல் நாள்: இன்னும் {n} பேர் செலுத்த வேண்டும்',
+  'notifLastDay': '{chit} செலுத்த கடைசி நாள் நாளை: இன்னும் {n} பேர் செலுத்த வேண்டும்',
+  'notifSub': 'வசூல் நாட்கள், செலுத்த கடைசி நாள், மற்ற நிர்வாகிகள் செய்யும் மாற்றங்கள்',
+  'notifAskTitle': 'நினைவூட்டல்களை இயக்கவா?',
+  'notifAskText': 'வசூல் நாளிலும், செலுத்த கடைசி நாளுக்கு முந்தைய மாலையிலும் Kuree உங்களுக்கு நினைவூட்டும். மற்றொரு நிர்வாகி கட்டணங்களைக் குறிக்கும்போதும் குலுக்கல் நடத்தும்போதும் தெரிவிக்கும்.',
+  'notifTurnOn': 'இயக்கு',
+  'notifNotNow': 'இப்போது வேண்டாம்',
+  'notifBlocked': 'Kuree அறிவிப்புகள் அணைக்கப்பட்டுள்ளன. உங்கள் போன் அமைப்புகளில் இயக்கவும்.',
+  'notifChannelReminders': 'சீட்டு நினைவூட்டல்கள்',
+  'notifChannelUpdates': 'சீட்டு புதுப்பிப்புகள்',
 };
 
 const Map<String, String> _kn = {
@@ -3357,6 +3427,16 @@ const Map<String, String> _kn = {
   'secPreferences': 'ಆದ್ಯತೆಗಳು',
   'secHelp': 'ಸಹಾಯ',
   'secLegal': 'ಕಾನೂನು',
+  'notifCollection': '{chit} ಸಂಗ್ರಹದ ದಿನ: ಇನ್ನೂ {n} ಜನ ಪಾವತಿಸಬೇಕು',
+  'notifLastDay': '{chit} ಪಾವತಿಸಲು ಕೊನೆಯ ದಿನ ನಾಳೆ: ಇನ್ನೂ {n} ಜನ ಪಾವತಿಸಬೇಕು',
+  'notifSub': 'ಸಂಗ್ರಹದ ದಿನಗಳು, ಪಾವತಿಸಲು ಕೊನೆಯ ದಿನ, ಇತರ ನಿರ್ವಾಹಕರು ಮಾಡುವ ಬದಲಾವಣೆಗಳು',
+  'notifAskTitle': 'ಜ್ಞಾಪನೆಗಳನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?',
+  'notifAskText': 'ಸಂಗ್ರಹದ ದಿನ ಮತ್ತು ಪಾವತಿಸಲು ಕೊನೆಯ ದಿನದ ಹಿಂದಿನ ಸಂಜೆ Kuree ನಿಮಗೆ ನೆನಪಿಸುತ್ತದೆ. ಇನ್ನೊಬ್ಬ ನಿರ್ವಾಹಕರು ಪಾವತಿ ಗುರುತಿಸಿದಾಗ ಅಥವಾ ಡ್ರಾ ನಡೆಸಿದಾಗಲೂ ತಿಳಿಸುತ್ತದೆ.',
+  'notifTurnOn': 'ಆನ್ ಮಾಡಿ',
+  'notifNotNow': 'ಈಗ ಬೇಡ',
+  'notifBlocked': 'Kuree ಅಧಿಸೂಚನೆಗಳು ಆಫ್ ಆಗಿವೆ. ನಿಮ್ಮ ಫೋನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆನ್ ಮಾಡಿ.',
+  'notifChannelReminders': 'ಚೀಟಿ ಜ್ಞಾಪನೆಗಳು',
+  'notifChannelUpdates': 'ಚೀಟಿ ಅಪ್‌ಡೇಟ್‌ಗಳು',
 };
 
 const Map<String, String> _hi = {
@@ -3789,6 +3869,16 @@ const Map<String, String> _hi = {
   'secPreferences': 'पसंद',
   'secHelp': 'मदद',
   'secLegal': 'कानूनी',
+  'notifCollection': '{chit} की वसूली का दिन: {n} का भुगतान बाकी',
+  'notifLastDay': '{chit} के भुगतान का आख़िरी दिन कल है: {n} का भुगतान बाकी',
+  'notifSub': 'वसूली के दिन, भुगतान का आख़िरी दिन, और दूसरे एडमिन के बदलाव',
+  'notifAskTitle': 'रिमाइंडर चालू करें?',
+  'notifAskText': 'Kuree आपको वसूली के दिन और भुगतान के आख़िरी दिन से पहले की शाम याद दिलाएगा, और बताएगा जब कोई दूसरा एडमिन भुगतान दर्ज करे या ड्रॉ करे।',
+  'notifTurnOn': 'चालू करें',
+  'notifNotNow': 'अभी नहीं',
+  'notifBlocked': 'Kuree की सूचनाएँ बंद हैं। इन्हें अपने फ़ोन की सेटिंग में चालू करें।',
+  'notifChannelReminders': 'चिट रिमाइंडर',
+  'notifChannelUpdates': 'चिट अपडेट',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

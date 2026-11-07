@@ -428,5 +428,15 @@
   "nothingToCollect": "دفع الجميع هذا الشهر في كل الجمعيات.",
   "secPreferences": "التفضيلات",
   "secHelp": "المساعدة",
-  "secLegal": "قانوني"
+  "secLegal": "قانوني",
+  "notifCollection": "يوم التحصيل في {chit}: {n} لم يدفعوا بعد",
+  "notifLastDay": "آخر يوم للدفع في {chit} غدًا: {n} لم يدفعوا بعد",
+  "notifSub": "أيام التحصيل وآخر يوم للدفع وما يغيّره المشرفون الآخرون",
+  "notifAskTitle": "تشغيل التذكيرات؟",
+  "notifAskText": "يمكن لـ Kuree أن يذكّرك في يوم التحصيل وفي مساء اليوم السابق لآخر يوم للدفع، وأن يخبرك حين يسجّل مشرف آخر الدفعات أو يجري السحب.",
+  "notifTurnOn": "تشغيل",
+  "notifNotNow": "ليس الآن",
+  "notifBlocked": "الإشعارات متوقفة لـ Kuree. شغّلها من إعدادات هاتفك.",
+  "notifChannelReminders": "تذكيرات الجمعية",
+  "notifChannelUpdates": "تحديثات الجمعية"
 }
