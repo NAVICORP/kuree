@@ -7,7 +7,9 @@ import '../l10n/strings.dart';
 import 'glass.dart';
 import 'theme.dart';
 
-enum KButtonKind { primary, secondary, ghost, danger, sun }
+/// [apple] and [google] follow those companies' sign-in button rules: black
+/// with a white Apple logo, and white with a grey edge and the Google G.
+enum KButtonKind { primary, secondary, ghost, danger, sun, apple, google }
 
 /// A rounded button sized to its label (or full width when asked).
 class KButton extends StatelessWidget {
@@ -20,11 +22,15 @@ class KButton extends StatelessWidget {
     this.busy = false,
     this.expand = false,
     this.small = false,
+    this.leading,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
+
+  /// A picture before the label in place of [icon] (a brand logo).
+  final Widget? leading;
   final KButtonKind kind;
   final bool busy;
   final bool expand;
@@ -38,6 +44,8 @@ class KButton extends StatelessWidget {
       KButtonKind.ghost => (Colors.transparent, K.green, BorderSide.none),
       KButtonKind.danger => (K.badBg, K.bad, BorderSide.none),
       KButtonKind.sun => (K.sun, K.deep, BorderSide.none),
+      KButtonKind.apple => (Colors.black, Colors.white, BorderSide.none),
+      KButtonKind.google => (Colors.white, const Color(0xFF1F1F1F), const BorderSide(color: Color(0xFF747775))),
     };
     final enabled = onPressed != null && !busy;
     final h = small ? 40.0 : 46.0;
@@ -47,9 +55,11 @@ class KButton extends StatelessWidget {
       children: [
         if (busy)
           SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2.4, color: fg))
+        else if (leading != null)
+          leading!
         else if (icon != null)
           Icon(icon, size: small ? 16 : 18, color: fg),
-        if (busy || icon != null) SizedBox(width: small ? 6 : 8),
+        if (busy || leading != null || icon != null) SizedBox(width: leading != null && !busy ? 10 : (small ? 6 : 8)),
         // A long label (Malayalam runs long) shrinks a little to fit
         // rather than losing its end.
         Flexible(

@@ -27,7 +27,7 @@
 6. App content:
    - Privacy policy: https://kureeapp.com/privacy
    - App access: give the review account (section 5).
-   - Ads: none. Data safety: collects phone number or email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kureeapp.com/delete-account.
+   - Ads: none. Data safety: collects email (sign-in), name, and what admins enter; nothing shared, nothing sold, encrypted in transit, deletion at https://kureeapp.com/delete-account.
    - Financial features: Kuree only keeps records; it does not move money.
 7. **Updates.** Raise `version:` in `app/pubspec.yaml` (1.0.1, 1.0.2, ...) in the PR. The version code is the App run number, so every build on main is higher than the last. After the merge, the App run on main builds the bundle. Then Actions > Google Play drafts > Run workflow saves the bundle, the release notes, the pictures and the listing text as drafts (setup in [STORE.md](STORE.md), "Publishing from GitHub"). Check them in Play Console and press Send changes for review on the Publishing overview. Don't send while an earlier release is still in review: Google may put the app at the back of the review queue.
 
@@ -37,7 +37,7 @@ No Mac needed: GitHub Actions builds the app and uploads it to TestFlight. The s
 
 ## 5. The review account
 
-Both stores need a way in without a WhatsApp code. Make an email account with a password once (an address you can open, for example review@skifi.co):
+Both stores need a way in without a Google or Apple account or an email code. Make an email account with a password once (an address you can open, for example review@skifi.co):
 
 ```
 curl -X POST https://kureeapp.com/auth/v1/signup -H 'apikey: public' -H 'content-type: application/json' \
@@ -51,3 +51,14 @@ Confirm the email it sends, sign in once in the app with Email > Use a password,
 - Name: Kuree. Icon: `app/assets/brand/icon.png` (1024 x 1024).
 - Screenshots: the `screens` branch has a picture of every screen after each build (phone size).
 - Support email: contact@skifi.co. Website: https://kureeapp.com
+
+## 7. Google and Apple sign-in
+
+The app sends the Google or Apple ID token to `POST /auth/v1/token?grant_type=id_token` on kureeapp.com; the SkiFi login checks it.
+
+- **Google** uses the SkiFi login's existing Google project and its web OAuth client (the server's `GOOGLE_CLIENT_ID`). In that project add:
+  - an **Android** OAuth client: package `co.skifi.kuree`, one per SHA-1: the Play **app signing key** and the **upload key** (Play Console > Test and release > App integrity > App signing). Add the debug key's SHA-1 too to test the APK artifact from an unsigned run.
+  - an **iOS** OAuth client: bundle ID `co.skifi.kuree`.
+- Repository **variables** (Settings > Secrets and variables > Actions > Variables, not secrets): `KUREE_GOOGLE_SERVER_CLIENT_ID` = the web client id, `KUREE_GOOGLE_IOS_CLIENT_ID` = the iOS client id. The App workflow passes them as `--dart-define` and writes the iOS URL scheme (the reversed iOS client id) into `app/ios/Flutter/Google.xcconfig`. Without them the builds pass and the Google button is hidden. For a local iOS build with Google, write that file yourself: `GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.<id>`.
+- **Apple** (iPhone only): the app has the Sign in with Apple entitlement, and the TestFlight run turns the capability on for the App ID `co.skifi.kuree` before it makes the profile. The server must accept the bundle id `co.skifi.kuree` as an Apple audience.
+- Co-admins are added by email. Someone who signs in with Apple's "Hide My Email" gets a relay address, so add them by that address or ask them to share their email.

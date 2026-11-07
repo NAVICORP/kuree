@@ -22,7 +22,7 @@ Everything to paste into Google Play Console and App Store Connect. The pictures
 Track chit payments and fines, draw who takes the pot, remind on WhatsApp.
 ```
 
-**Full description** (1,802 of 4000, the same text as the App Store description)
+**Full description** (1,768 of 4000, the App Store description with Google and email only in the sign-in line, as Android has no Sign in with Apple)
 
 ```
 Kuree keeps your chit in one place: who paid, who is late, who takes the pot and what comes next.
@@ -52,7 +52,7 @@ A LINK FOR MEMBERS
 - Make a new link any time and the old one stops working.
 
 RUN IT TOGETHER
-- Add co-admins by WhatsApp number or email.
+- Add co-admins by email.
 - Every change is kept. Undo, or bring back any earlier version.
 - Download every month and every payment as an Excel sheet.
 
@@ -60,7 +60,7 @@ YOUR LANGUAGE, YOUR CURRENCY
 - Use Kuree in English, Arabic, Hindi, Malayalam, Tamil or Kannada.
 - Pick the currency for each chit: rupees, dirhams, riyals, dollars and more.
 
-Sign in with a code on WhatsApp or by email. Delete your account any time from your Profile.
+Sign in with Google or email. Delete your account any time from your Profile.
 
 Privacy: https://kureeapp.com/privacy
 Terms: https://kureeapp.com/terms
@@ -97,8 +97,7 @@ Release history: 1.0.0 (version code 21, the first design) sent for review on 24
 | Data | Collected | Shared | Why | Optional |
 |---|---|---|---|---|
 | Name (the admin's display name) | Yes | No | App functionality | No |
-| Phone number (admin sign-in with WhatsApp) | Yes | No | Account management | Yes, email works instead |
-| Email address (admin sign-in with email) | Yes | No | Account management | Yes, WhatsApp works instead |
+| Email address (admin sign-in with Google or email) | Yes | No | Account management | No |
 | Other user-generated content (the chit: member names, payments, and member phone numbers the admin adds for reminders) | Yes | No | App functionality | No |
 
 - Data is encrypted in transit: Yes.

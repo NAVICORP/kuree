@@ -73,11 +73,11 @@ A LINK FOR MEMBERS
 - Make a new link any time and the old one stops working.
 
 RUN IT TOGETHER
-- Add co-admins by WhatsApp number or email.
+- Add co-admins by email.
 - Every change is kept. Undo, or bring back any earlier version.
 - Download every month and every payment as an Excel sheet.
 
-Sign in with a code on WhatsApp or by email. Delete your account any time from your Profile.
+Sign in with Apple, Google or email. Delete your account any time from your Profile.
 
 Privacy: https://kureeapp.com/privacy
 Terms: https://kureeapp.com/terms
@@ -164,7 +164,6 @@ Start: "Do you or your third-party partners collect data from this app?" **Yes.*
 |---|---|---|---|---|
 | Contact Info > Name | Yes | Yes | No | App Functionality |
 | Contact Info > Email Address | Yes | Yes | No | App Functionality |
-| Contact Info > Phone Number | Yes | Yes | No | App Functionality |
 | User Content > Other User Content | Yes | Yes | No | App Functionality |
 | Identifiers > User ID | Yes | Yes | No | App Functionality |
 
@@ -173,7 +172,7 @@ Everything else (location, contacts, photos or videos, health, financial info, b
 What each line covers:
 
 - **Name**: the admin's display name, shown to their co-admins.
-- **Email Address, Phone Number**: the admin's sign-in (email, or WhatsApp number). Either one, not both.
+- **Email Address**: the admin's sign-in (Sign in with Apple, Google, or email with a code). With Apple it may be a private relay address.
 - **Other User Content**: the chit itself: its name and amounts, members' names, members' WhatsApp numbers if the admin adds them for reminders, payments, fines and draws.
 - **User ID**: the SkiFi account ID the sign-in gives each admin.
 - No ads, analytics, crash reporting or trackers, so "Data Used to Track You" is empty.
@@ -191,7 +190,7 @@ Already answered in the build: `ITSAppUsesNonExemptEncryption` is false in Info.
 |---|---|
 | 2.1 Demo account | contact@skifi.co with a password, sample chit ready |
 | 3.2.1(viii) Financial services need a licensed institution | Not a financial service: records only, said in the description and the review notes |
-| 4.8 Sign in with Apple | Not needed: Kuree only uses SkiFi's own sign-in (WhatsApp code or email), no Google or Facebook login |
+| 4.8 Sign in with Apple | Offered: Sign in with Apple is the first button on the sign-in screen, next to Google and email |
 | 5.1.1(v) Account deletion in the app | Account > Delete account, plus https://kureeapp.com/delete-account |
 | 5.1.1(i) Privacy policy | https://kureeapp.com/privacy, linked in the app and the listing |
 | 5.3 Gambling and lotteries | No stake, no prize beyond members' own savings, no purchases |

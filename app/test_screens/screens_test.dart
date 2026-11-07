@@ -158,10 +158,19 @@ void main() {
 
   testWidgets('sign in', (tester) async {
     sized(tester);
-    await tester.pumpWidget(phone(const SignInScreen()));
+    // On iPhone: Apple, Google and email.
+    await tester.pumpWidget(phone(const SignInScreen(apple: true, google: true)));
     await shot(tester, '01-sign-in');
-    await tester.tap(find.text('Continue with WhatsApp'));
-    await shot(tester, '02-sign-in-whatsapp');
+    await tester.tap(find.text('Continue with email'));
+    await shot(tester, '02-sign-in-email');
+    await tester.tap(find.text('Use a password'));
+    await shot(tester, '02-sign-in-password');
+  });
+
+  testWidgets('sign in on Android', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const SignInScreen(google: true)));
+    await shot(tester, '01-sign-in-android');
   });
 
   testWidgets('home', (tester) async {
@@ -318,8 +327,10 @@ void main() {
 
     testWidgets('$code: sign in', (tester) async {
       sized(tester);
-      await tester.pumpWidget(phone(const SignInScreen(), code));
+      await tester.pumpWidget(phone(const SignInScreen(apple: true, google: true), code));
       await shot(tester, '$code-01-sign-in');
+      await tester.tap(find.text(s.continueEmail));
+      await shot(tester, '$code-02-sign-in-email');
     });
 
     testWidgets('$code: home', (tester) async {

@@ -76,12 +76,18 @@ void main() {
     group('$code at 360 dp', () {
       testWidgets('sign in', (tester) async {
         small(tester);
-        await tester.pumpWidget(app(const SignInScreen(), code));
+        // As on an iPhone with Google set up: all three buttons.
+        await tester.pumpWidget(app(const SignInScreen(apple: true, google: true), code));
         await settle(tester);
         expect(tester.takeException(), isNull);
         if (code == 'ar') expect(Directionality.of(tester.element(find.byType(SignInScreen))), TextDirection.rtl);
-        await tapText(tester, s.continueWa);
+        expect(find.text(s.continueApple), findsOneWidget);
+        expect(find.text(s.continueGoogle), findsOneWidget);
+        await tapText(tester, s.continueEmail);
         expect(tester.takeException(), isNull);
+        await tapText(tester, s.usePassword);
+        expect(tester.takeException(), isNull);
+        expect(find.text(s.password), findsOneWidget);
       });
 
       testWidgets('home', (tester) async {

@@ -226,7 +226,6 @@ class Api {
   static String nice(String m) {
     final s = m.toLowerCase();
     final t = S.current;
-    if (s.contains('not on whatsapp')) return t.errNotOnWhatsApp;
     if (s.contains('could not send')) return t.errCouldNotSend;
     if (s.contains('rate limit') || s.contains('too many')) return t.errTooMany;
     if ((s.contains('invalid') || s.contains('expired') || s.contains('not right')) &&
@@ -234,23 +233,12 @@ class Api {
       return t.errWrongCode;
     }
     if (s.contains('invalid login credentials')) return t.errPasswordMismatch;
-    if (s.contains('phone') && s.contains('invalid')) return t.errPhoneCountry;
     if (s.contains('email address is invalid')) return t.errEmailLooksWrong;
     if (s.contains('jwt') || s.contains('not signed in')) return t.errSessionEnded;
     return m;
   }
 
   // ---------------------------------------------------------------- sign in
-
-  Future<void> sendWhatsAppCode(String phone) async {
-    await _send('POST', '/auth/v1/otp',
-        body: {'phone': phone, 'create_user': true, 'channel': 'whatsapp', 'data': <String, dynamic>{}}, withUser: false);
-  }
-
-  Future<void> verifyWhatsAppCode(String phone, String code) async {
-    final j = await _send('POST', '/auth/v1/verify', body: {'phone': phone, 'token': code.trim(), 'type': 'sms'}, withUser: false);
-    await _take(j);
-  }
 
   Future<void> sendEmailCode(String email) async {
     await _send('POST', '/auth/v1/otp',
@@ -268,6 +256,30 @@ class Api {
     final j = await _send('POST', '/auth/v1/token',
         query: {'grant_type': 'password'}, body: {'email': email.trim().toLowerCase(), 'password': password}, withUser: false);
     await _take(j);
+  }
+
+  /// Signs in with a token from Google or Apple. [provider] is 'google' or
+  /// 'apple'; for Apple, [nonce] is the raw nonce whose SHA-256 went to Apple.
+  /// [name] is the name Apple shares on the first sign-in only: it is saved
+  /// before the app moves on, so nobody is asked for it again.
+  Future<void> signInWithIdToken(String provider, String idToken, {String? nonce, String? name}) async {
+    final j = await _send('POST', '/auth/v1/token', query: {'grant_type': 'id_token'}, body: {
+      'provider': provider,
+      'id_token': idToken,
+      if (nonce != null) 'nonce': nonce,
+    }, withUser: false);
+    final s = Session.fromJson(j);
+    if (s == null) throw ApiError(S.current.errSignInNotFinished);
+    final n = name?.trim() ?? '';
+    if (n.isNotEmpty) {
+      _session = s;
+      try {
+        await rpc('set_my_name', {'name': n});
+      } catch (_) {
+        // They can still type it in when the app asks.
+      }
+    }
+    await _setSession(s);
   }
 
   Future<void> _take(dynamic j) async {
@@ -289,7 +301,7 @@ class Api {
 
   /// Hands over or deletes this person's kuris and deletes their Kuree
   /// account, then signs out. With [skifiLogin], the SkiFi login itself (the
-  /// number or email they sign in with, shared with other SkiFi apps) is
+  /// account they sign in with, shared with other SkiFi apps) is
   /// deleted too; otherwise it stays.
   Future<void> deleteAccount({bool skifiLogin = false}) async {
     await rpc('delete_my_data');

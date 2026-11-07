@@ -8,7 +8,7 @@ import '../core/format.dart';
 import '../core/kuri.dart';
 import '../core/messages.dart';
 import '../l10n/strings.dart';
-import 'sign_in.dart';
+import 'phone_field.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
