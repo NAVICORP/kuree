@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../core/api.dart';
 import '../core/format.dart';
 import '../core/kuri.dart';
 import '../l10n/strings.dart';
 import 'glass.dart';
-import 'sign_in.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
-/// Who runs the chit. The owner adds co-admins by WhatsApp number or email;
-/// they see the chit the next time they sign in with it.
+/// Who runs the chit. The owner adds co-admins by email; they see the chit
+/// the next time they sign in with it (with Apple, Google or a code, as long
+/// as the account has that email).
 class AdminsScreen extends StatefulWidget {
   const AdminsScreen({super.key, required this.record});
   final KuriRecord record;
@@ -171,10 +170,7 @@ class _AddAdmin extends StatefulWidget {
 }
 
 class _AddAdminState extends State<_AddAdmin> {
-  bool byEmail = false;
-  String cc = '91';
   final _name = TextEditingController();
-  final _phone = TextEditingController();
   final _email = TextEditingController();
   String? error;
   bool busy = false;
@@ -182,7 +178,6 @@ class _AddAdminState extends State<_AddAdmin> {
   @override
   void dispose() {
     _name.dispose();
-    _phone.dispose();
     _email.dispose();
     super.dispose();
   }
@@ -193,11 +188,9 @@ class _AddAdminState extends State<_AddAdmin> {
       error = null;
     });
     try {
-      final phone = byEmail ? null : fullPhone(cc, _phone.text);
-      if (!byEmail && (phone == null || phone.isEmpty)) throw ApiError(S.current.enterTheirWa);
-      final email = byEmail ? _email.text.trim().toLowerCase() : null;
-      if (byEmail && (email == null || !email.contains('@'))) throw ApiError(S.current.enterTheirEmail);
-      final j = await Api.instance.rpc('add_kuri_admin', {'id': widget.kuriId, 'phone': phone, 'email': email, 'name': _name.text.trim()});
+      final email = _email.text.trim().toLowerCase();
+      if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) throw ApiError(S.current.enterTheirEmail);
+      final j = await Api.instance.rpc('add_kuri_admin', {'id': widget.kuriId, 'phone': null, 'email': email, 'name': _name.text.trim()});
       if (mounted) Navigator.of(context).pop(j);
     } on ApiError catch (e) {
       if (mounted) setState(() => error = e.message);
@@ -215,44 +208,20 @@ class _AddAdminState extends State<_AddAdmin> {
       const SizedBox(height: Sp.sm),
       TextField(controller: _name, textCapitalization: TextCapitalization.words, style: T.bodyStrong, decoration: InputDecoration(hintText: s.theirName)),
       const SizedBox(height: Sp.md + 2),
-      Row(children: [
-        Expanded(child: Text(byEmail ? s.email : s.waNumberHint, style: T.label)),
-        KButton(
-          label: byEmail ? s.useWa : s.useEmail,
-          kind: KButtonKind.ghost,
-          small: true,
-          onPressed: () => setState(() => byEmail = !byEmail),
-        ),
-      ]),
-      const SizedBox(height: Sp.xs),
-      if (byEmail)
-        TextField(
-          controller: _email,
-          keyboardType: TextInputType.emailAddress,
-          autocorrect: false,
-          textDirection: TextDirection.ltr,
-          style: T.bodyStrong,
-          decoration: const InputDecoration(hintText: 'name@example.com'),
-        )
-      else
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: Row(children: [
-            CountryButton(code: cc, onChanged: (v) => setState(() => cc = v)),
-            const SizedBox(width: Sp.sm),
-            Expanded(
-              child: TextField(
-                controller: _phone,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ]'))],
-                style: T.bodyStrong,
-                decoration: InputDecoration(hintText: s.phoneHint),
-              ),
-            ),
-          ]),
-        ),
+      Text(s.email, style: T.label),
       const SizedBox(height: Sp.sm),
-      Text(byEmail ? s.adminSignInEmail : s.adminSignInNumber, style: T.small),
+      TextField(
+        controller: _email,
+        keyboardType: TextInputType.emailAddress,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        textDirection: TextDirection.ltr,
+        style: T.bodyStrong,
+        decoration: const InputDecoration(hintText: 'name@example.com'),
+        onSubmitted: (_) => _go(),
+      ),
+      const SizedBox(height: Sp.sm),
+      Text(s.adminSignInEmail, style: T.small),
       const SizedBox(height: Sp.lg),
       KButton(label: s.addAdmin, icon: Icons.person_add_alt_1_rounded, expand: true, busy: busy, onPressed: _go),
     ]);

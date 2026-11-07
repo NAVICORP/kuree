@@ -14,6 +14,12 @@
 #    APP_STORE_CONNECT_KEY_P8 (the .p8 file, base64). Each run makes its own
 #    certificate and profile and revokes them at the end
 #    (.github/scripts/asc_signing.py).
+#
+# Google sign-in reads two repository *variables* (Settings > Secrets and
+# variables > Actions > Variables), passed to the builds as --dart-define:
+#   KUREE_GOOGLE_SERVER_CLIENT_ID  the SkiFi login's Google web client id
+#   KUREE_GOOGLE_IOS_CLIENT_ID     the iOS client id for co.skifi.kuree
+# Without them the builds still pass; the app just hides the Google button.
 
 name: App
 
@@ -130,6 +136,8 @@ jobs:
   android:
     needs: [platforms, check]
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -156,7 +164,7 @@ jobs:
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$RUNNER_TEMP/upload.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > app/android/key.properties
       - working-directory: app
-        run: set -o pipefail; flutter build apk --release --build-number=${{ github.run_number }} 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build apk --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
       - if: failure()
         run: python3 .github/scripts/annotate.py "$RUNNER_TEMP/out.log" "Android"
       - uses: actions/upload-artifact@v4
@@ -167,7 +175,7 @@ jobs:
       - name: Play Store bundle
         if: ${{ hashFiles('app/android/key.properties') != '' }}
         working-directory: app
-        run: flutter build appbundle --release --build-number=${{ github.run_number }}
+        run: flutter build appbundle --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES
       - uses: actions/upload-artifact@v4
         if: ${{ hashFiles('app/android/key.properties') != '' }}
         with:
@@ -182,6 +190,7 @@ jobs:
     env:
       TESTFLIGHT: ${{ github.event_name == 'workflow_dispatch' && inputs.testflight }}
       SIGNING_DIR: ${{ github.workspace }}/../signing
+      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -203,10 +212,21 @@ jobs:
       - working-directory: app
         run: flutter pub get
 
+      - name: Google sign-in URL scheme
+        env:
+          IOS_CLIENT_ID: ${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
+        run: |
+          # 123-abc.apps.googleusercontent.com -> com.googleusercontent.apps.123-abc,
+          # the scheme Google's sign-in page returns to. Must match the define.
+          if [ -z "$IOS_CLIENT_ID" ]; then echo "No KUREE_GOOGLE_IOS_CLIENT_ID: the Google button stays hidden on iPhone."; exit 0; fi
+          id="${IOS_CLIENT_ID%.apps.googleusercontent.com}"
+          printf 'GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.%s\n' "$id" > app/ios/Flutter/Google.xcconfig
+          cat app/ios/Flutter/Google.xcconfig
+
       - name: Unsigned build (a check)
         if: env.TESTFLIGHT != 'true'
         working-directory: app
-        run: set -o pipefail; flutter build ios --release --no-codesign --build-number=${{ github.run_number }} 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build ios --release --no-codesign --build-number=${{ github.run_number }} $GOOGLE_DEFINES 2>&1 | tee -a "$RUNNER_TEMP/out.log"
 
       - name: TestFlight secrets
         if: env.TESTFLIGHT == 'true'
@@ -258,7 +278,7 @@ jobs:
       - name: Signed build
         if: env.TESTFLIGHT == 'true'
         working-directory: app
-        run: set -o pipefail; flutter build ipa --release --build-number=${{ github.run_number }} --export-options-plist="$SIGNING_DIR/ExportOptions.plist" 2>&1 | tee -a "$RUNNER_TEMP/out.log"
+        run: set -o pipefail; flutter build ipa --release --build-number=${{ github.run_number }} $GOOGLE_DEFINES --export-options-plist="$SIGNING_DIR/ExportOptions.plist" 2>&1 | tee -a "$RUNNER_TEMP/out.log"
 
       - name: Upload to TestFlight
         if: env.TESTFLIGHT == 'true'

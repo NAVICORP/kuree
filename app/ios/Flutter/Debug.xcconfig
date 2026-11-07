@@ -1,1 +1,8 @@
 #include "Generated.xcconfig"
+
+// Google sign-in on iPhone opens a page that returns to the app through the
+// reversed iOS client id. The App workflow writes Google.xcconfig from the
+// KUREE_GOOGLE_IOS_CLIENT_ID repository variable; without it this harmless
+// placeholder keeps the build working and the app hides the Google button.
+GOOGLE_REVERSED_CLIENT_ID = co.skifi.kuree.google
+#include? "Google.xcconfig"

@@ -203,9 +203,6 @@ class S {
   /// Something went wrong ({status}).
   String errStatus(Object status) => _fill('errStatus', {'status': status});
 
-  /// This number is not on WhatsApp.
-  String get errNotOnWhatsApp => _get('errNotOnWhatsApp');
-
   /// We could not send the code. Try again in a minute.
   String get errCouldNotSend => _get('errCouldNotSend');
 
@@ -217,9 +214,6 @@ class S {
 
   /// That email and password do not match.
   String get errPasswordMismatch => _get('errPasswordMismatch');
-
-  /// Enter your WhatsApp number with the country code.
-  String get errPhoneCountry => _get('errPhoneCountry');
 
   /// That email does not look right.
   String get errEmailLooksWrong => _get('errEmailLooksWrong');
@@ -860,23 +854,14 @@ class S {
   /// Something went wrong. Try again.
   String get somethingWrong => _get('somethingWrong');
 
-  /// Enter your WhatsApp number.
-  String get enterYourWa => _get('enterYourWa');
-
   /// Enter the 6 digit code.
   String get enterCode => _get('enterCode');
 
   /// Enter the email and the password.
   String get enterEmailPassword => _get('enterEmailPassword');
 
-  /// Check WhatsApp for the code.
-  String get subPhoneCode => _get('subPhoneCode');
-
   /// Check your email for the code.
   String get subEmailCode => _get('subEmailCode');
-
-  /// Sign in with your WhatsApp number.
-  String get subPhone => _get('subPhone');
 
   /// Sign in with your email.
   String get subEmail => _get('subEmail');
@@ -890,20 +875,17 @@ class S {
   /// Terms
   String get terms => _get('terms');
 
-  /// Continue with WhatsApp
-  String get continueWa => _get('continueWa');
+  /// Continue with Apple
+  String get continueApple => _get('continueApple');
 
-  /// Use email instead
-  String get useEmailInstead => _get('useEmailInstead');
+  /// Continue with Google
+  String get continueGoogle => _get('continueGoogle');
 
-  /// Phone number
-  String get phoneHint => _get('phoneHint');
+  /// Continue with email
+  String get continueEmail => _get('continueEmail');
 
-  /// Send code on WhatsApp
-  String get sendCodeWa => _get('sendCodeWa');
-
-  /// We sent a 6 digit code on WhatsApp to {to}. It works for 10 minutes.
-  String codeSentWa(Object to) => _fill('codeSentWa', {'to': to});
+  /// Other ways to sign in
+  String get otherWays => _get('otherWays');
 
   /// We sent a 6 digit code to {to}. It works for 10 minutes.
   String codeSentEmail(Object to) => _fill('codeSentEmail', {'to': to});
@@ -917,9 +899,6 @@ class S {
   /// Send again
   String get sendAgain => _get('sendAgain');
 
-  /// Another number
-  String get anotherNumber => _get('anotherNumber');
-
   /// Another email
   String get anotherEmail => _get('anotherEmail');
 
@@ -928,9 +907,6 @@ class S {
 
   /// Email me a code
   String get emailMeCode => _get('emailMeCode');
-
-  /// Use WhatsApp
-  String get useWa => _get('useWa');
 
   /// Use a password
   String get usePassword => _get('usePassword');
@@ -962,7 +938,7 @@ class S {
   /// Also delete my SkiFi login
   String get deleteLoginToo => _get('deleteLoginToo');
 
-  /// The number or email you sign in with. Other SkiFi apps you use with it lose it too.
+  /// The login you use with Apple, Google or email. Other SkiFi apps you sign in to with it lose it too.
   String get deleteLoginTooSub => _get('deleteLoginTooSub');
 
   /// Delete account
@@ -1076,23 +1052,14 @@ class S {
   /// Remove admin
   String get removeAdmin => _get('removeAdmin');
 
-  /// Enter their WhatsApp number.
-  String get enterTheirWa => _get('enterTheirWa');
-
   /// Enter their email.
   String get enterTheirEmail => _get('enterTheirEmail');
 
   /// Their name
   String get theirName => _get('theirName');
 
-  /// Use email
-  String get useEmail => _get('useEmail');
-
   /// They sign in to Kuree with this email to see the chit.
   String get adminSignInEmail => _get('adminSignInEmail');
-
-  /// They sign in to Kuree with this number to see the chit.
-  String get adminSignInNumber => _get('adminSignInNumber');
 
   /// Request a feature
   String get frTitle => _get('frTitle');
@@ -1336,12 +1303,10 @@ const Map<String, String> _en = {
   'errNoConnection': 'No connection. Check your internet and try again.',
   'errServer': 'The Kuree server had a problem. Try again in a minute.',
   'errStatus': 'Something went wrong ({status}).',
-  'errNotOnWhatsApp': 'This number is not on WhatsApp.',
   'errCouldNotSend': 'We could not send the code. Try again in a minute.',
   'errTooMany': 'Too many tries. Wait a minute and try again.',
   'errWrongCode': 'That code is wrong or has expired. Ask for a new one.',
   'errPasswordMismatch': 'That email and password do not match.',
-  'errPhoneCountry': 'Enter your WhatsApp number with the country code.',
   'errEmailLooksWrong': 'That email does not look right.',
   'errSignInNotFinished': 'The sign-in did not finish. Try again.',
   'errFile': 'The file could not be made just now. Try again in a minute.',
@@ -1555,30 +1520,24 @@ const Map<String, String> _en = {
   'splitSlot': 'Split this slot',
   'addPerson': 'Add a person',
   'somethingWrong': 'Something went wrong. Try again.',
-  'enterYourWa': 'Enter your WhatsApp number.',
   'enterCode': 'Enter the 6 digit code.',
   'enterEmailPassword': 'Enter the email and the password.',
-  'subPhoneCode': 'Check WhatsApp for the code.',
   'subEmailCode': 'Check your email for the code.',
-  'subPhone': 'Sign in with your WhatsApp number.',
   'subEmail': 'Sign in with your email.',
   'subStart': 'Run your chit from your phone.',
   'privacy': 'Privacy',
   'terms': 'Terms',
-  'continueWa': 'Continue with WhatsApp',
-  'useEmailInstead': 'Use email instead',
-  'phoneHint': 'Phone number',
-  'sendCodeWa': 'Send code on WhatsApp',
-  'codeSentWa': 'We sent a 6 digit code on WhatsApp to {to}. It works for 10 minutes.',
+  'continueApple': 'Continue with Apple',
+  'continueGoogle': 'Continue with Google',
+  'continueEmail': 'Continue with email',
+  'otherWays': 'Other ways to sign in',
   'codeSentEmail': 'We sent a 6 digit code to {to}. It works for 10 minutes.',
   'signIn': 'Sign in',
   'sendAgainIn': 'Send again in {n}s',
   'sendAgain': 'Send again',
-  'anotherNumber': 'Another number',
   'anotherEmail': 'Another email',
   'email': 'Email',
   'emailMeCode': 'Email me a code',
-  'useWa': 'Use WhatsApp',
   'usePassword': 'Use a password',
   'password': 'Password',
   'emailCodeInstead': 'Email me a code instead',
@@ -1589,7 +1548,7 @@ const Map<String, String> _en = {
   'deleteAccountTitle': 'Delete your account?',
   'deleteAccountText': 'Your Kuree account and name are deleted. Chits you own pass to their next admin. Chits only you run are deleted for good, with their history and members\' links. This cannot be undone.',
   'deleteLoginToo': 'Also delete my SkiFi login',
-  'deleteLoginTooSub': 'The number or email you sign in with. Other SkiFi apps you use with it lose it too.',
+  'deleteLoginTooSub': 'The login you use with Apple, Google or email. Other SkiFi apps you sign in to with it lose it too.',
   'deleteAccount': 'Delete account',
   'deleting': 'Deleting…',
   'noNameYet': 'No name yet',
@@ -1627,12 +1586,9 @@ const Map<String, String> _en = {
   'you': 'You',
   'leaveChit': 'Leave this chit',
   'removeAdmin': 'Remove admin',
-  'enterTheirWa': 'Enter their WhatsApp number.',
   'enterTheirEmail': 'Enter their email.',
   'theirName': 'Their name',
-  'useEmail': 'Use email',
   'adminSignInEmail': 'They sign in to Kuree with this email to see the chit.',
-  'adminSignInNumber': 'They sign in to Kuree with this number to see the chit.',
   'frTitle': 'Request a feature',
   'frIntroTitle': 'Tell us what would help',
   'frIntroText': 'An idea, something that gets in the way, a feature you miss. We read every request.',
@@ -1779,12 +1735,10 @@ const Map<String, String> _ar = {
   'errNoConnection': 'لا يوجد اتصال. تحقق من الإنترنت وحاول مرة أخرى.',
   'errServer': 'حدثت مشكلة في خادم Kuree. حاول مرة أخرى بعد دقيقة.',
   'errStatus': 'حدث خطأ ما ({status}).',
-  'errNotOnWhatsApp': 'هذا الرقم غير موجود على WhatsApp.',
   'errCouldNotSend': 'لم نتمكن من إرسال الرمز. حاول مرة أخرى بعد دقيقة.',
   'errTooMany': 'محاولات كثيرة. انتظر دقيقة وحاول مرة أخرى.',
   'errWrongCode': 'هذا الرمز خاطئ أو انتهت صلاحيته. اطلب رمزًا جديدًا.',
   'errPasswordMismatch': 'البريد الإلكتروني وكلمة المرور غير متطابقين.',
-  'errPhoneCountry': 'أدخل رقم WhatsApp مع رمز الدولة.',
   'errEmailLooksWrong': 'يبدو أن هذا البريد الإلكتروني غير صحيح.',
   'errSignInNotFinished': 'لم يكتمل تسجيل الدخول. حاول مرة أخرى.',
   'errFile': 'تعذّر إنشاء الملف الآن. حاول مرة أخرى بعد دقيقة.',
@@ -1998,30 +1952,24 @@ const Map<String, String> _ar = {
   'splitSlot': 'قسّم هذا السهم',
   'addPerson': 'أضف شخصًا',
   'somethingWrong': 'حدث خطأ ما. حاول مرة أخرى.',
-  'enterYourWa': 'أدخل رقم WhatsApp الخاص بك.',
   'enterCode': 'أدخل الرمز المكوّن من 6 أرقام.',
   'enterEmailPassword': 'أدخل البريد الإلكتروني وكلمة المرور.',
-  'subPhoneCode': 'تحقق من WhatsApp للحصول على الرمز.',
   'subEmailCode': 'تحقق من بريدك الإلكتروني للحصول على الرمز.',
-  'subPhone': 'سجّل الدخول برقم WhatsApp الخاص بك.',
   'subEmail': 'سجّل الدخول ببريدك الإلكتروني.',
   'subStart': 'أدر جمعيتك من هاتفك.',
   'privacy': 'الخصوصية',
   'terms': 'الشروط',
-  'continueWa': 'المتابعة عبر WhatsApp',
-  'useEmailInstead': 'استخدم البريد الإلكتروني بدلًا من ذلك',
-  'phoneHint': 'رقم الهاتف',
-  'sendCodeWa': 'أرسل الرمز عبر WhatsApp',
-  'codeSentWa': 'أرسلنا رمزًا من 6 أرقام عبر WhatsApp إلى {to}. صالح لمدة 10 دقائق.',
+  'continueApple': 'متابعة باستخدام Apple',
+  'continueGoogle': 'متابعة باستخدام Google',
+  'continueEmail': 'متابعة باستخدام البريد الإلكتروني',
+  'otherWays': 'طرق أخرى لتسجيل الدخول',
   'codeSentEmail': 'أرسلنا رمزًا من 6 أرقام إلى {to}. صالح لمدة 10 دقائق.',
   'signIn': 'تسجيل الدخول',
   'sendAgainIn': 'إعادة الإرسال بعد {n} ث',
   'sendAgain': 'إعادة الإرسال',
-  'anotherNumber': 'رقم آخر',
   'anotherEmail': 'بريد آخر',
   'email': 'البريد الإلكتروني',
   'emailMeCode': 'أرسل لي رمزًا بالبريد',
-  'useWa': 'استخدم WhatsApp',
   'usePassword': 'استخدم كلمة مرور',
   'password': 'كلمة المرور',
   'emailCodeInstead': 'أرسل لي رمزًا بالبريد بدلًا من ذلك',
@@ -2032,7 +1980,7 @@ const Map<String, String> _ar = {
   'deleteAccountTitle': 'حذف حسابك؟',
   'deleteAccountText': 'سيُحذف حسابك واسمك في Kuree. الجمعيات التي تملكها تنتقل إلى المشرف التالي. الجمعيات التي تديرها وحدك تُحذف نهائيًا مع سجلها وروابط أعضائها. لا يمكن التراجع عن هذا.',
   'deleteLoginToo': 'احذف أيضًا تسجيل دخولي في SkiFi',
-  'deleteLoginTooSub': 'الرقم أو البريد الذي تسجّل الدخول به. تفقده أيضًا تطبيقات SkiFi الأخرى التي تستخدمها به.',
+  'deleteLoginTooSub': 'تسجيل الدخول الذي تستخدمه عبر Apple أو Google أو البريد الإلكتروني. تفقده أيضًا تطبيقات SkiFi الأخرى التي تسجّل الدخول إليها به.',
   'deleteAccount': 'حذف الحساب',
   'deleting': 'جارٍ الحذف…',
   'noNameYet': 'لا يوجد اسم بعد',
@@ -2070,12 +2018,9 @@ const Map<String, String> _ar = {
   'you': 'أنت',
   'leaveChit': 'مغادرة هذه الجمعية',
   'removeAdmin': 'إزالة المشرف',
-  'enterTheirWa': 'أدخل رقم WhatsApp الخاص به.',
   'enterTheirEmail': 'أدخل بريده الإلكتروني.',
   'theirName': 'اسمه',
-  'useEmail': 'استخدم البريد الإلكتروني',
   'adminSignInEmail': 'يسجّل الدخول إلى Kuree بهذا البريد ليرى الجمعية.',
-  'adminSignInNumber': 'يسجّل الدخول إلى Kuree بهذا الرقم ليرى الجمعية.',
   'frTitle': 'اطلب ميزة',
   'frIntroTitle': 'أخبرنا بما يساعدك',
   'frIntroText': 'فكرة، أو شيء يعيقك، أو ميزة تفتقدها. نقرأ كل طلب.',
@@ -2222,12 +2167,10 @@ const Map<String, String> _ml = {
   'errNoConnection': 'കണക്ഷൻ ഇല്ല. ഇന്റർനെറ്റ് നോക്കി വീണ്ടും ശ്രമിക്കുക.',
   'errServer': 'Kuree സെർവറിൽ ഒരു പ്രശ്നം. ഒരു മിനിറ്റ് കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.',
   'errStatus': 'എന്തോ പിഴവ് സംഭവിച്ചു ({status}).',
-  'errNotOnWhatsApp': 'ഈ നമ്പർ WhatsApp-ൽ ഇല്ല.',
   'errCouldNotSend': 'കോഡ് അയയ്ക്കാൻ കഴിഞ്ഞില്ല. ഒരു മിനിറ്റ് കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.',
   'errTooMany': 'ഒരുപാട് ശ്രമങ്ങൾ. ഒരു മിനിറ്റ് കാത്തിരുന്ന് വീണ്ടും ശ്രമിക്കുക.',
   'errWrongCode': 'ആ കോഡ് തെറ്റാണ്, അല്ലെങ്കിൽ കാലാവധി കഴിഞ്ഞു. പുതിയൊരെണ്ണം ചോദിക്കുക.',
   'errPasswordMismatch': 'ആ ഇമെയിലും പാസ്‌വേഡും ഒത്തുപോകുന്നില്ല.',
-  'errPhoneCountry': 'രാജ്യ കോഡ് ചേർത്ത് നിങ്ങളുടെ WhatsApp നമ്പർ നൽകുക.',
   'errEmailLooksWrong': 'ആ ഇമെയിൽ ശരിയാണെന്ന് തോന്നുന്നില്ല.',
   'errSignInNotFinished': 'സൈൻ ഇൻ പൂർത്തിയായില്ല. വീണ്ടും ശ്രമിക്കുക.',
   'errFile': 'ഇപ്പോൾ ഫയൽ ഉണ്ടാക്കാൻ കഴിഞ്ഞില്ല. ഒരു മിനിറ്റ് കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.',
@@ -2441,30 +2384,24 @@ const Map<String, String> _ml = {
   'splitSlot': 'ഈ സ്ലോട്ട് പങ്കിടുക',
   'addPerson': 'ഒരാളെ ചേർക്കുക',
   'somethingWrong': 'എന്തോ പിഴവ് സംഭവിച്ചു. വീണ്ടും ശ്രമിക്കുക.',
-  'enterYourWa': 'നിങ്ങളുടെ WhatsApp നമ്പർ നൽകുക.',
   'enterCode': '6 അക്ക കോഡ് നൽകുക.',
   'enterEmailPassword': 'ഇമെയിലും പാസ്‌വേഡും നൽകുക.',
-  'subPhoneCode': 'കോഡിനായി WhatsApp നോക്കുക.',
   'subEmailCode': 'കോഡിനായി ഇമെയിൽ നോക്കുക.',
-  'subPhone': 'നിങ്ങളുടെ WhatsApp നമ്പർ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക.',
   'subEmail': 'നിങ്ങളുടെ ഇമെയിൽ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക.',
   'subStart': 'നിങ്ങളുടെ ചിട്ടി ഫോണിൽ നിന്ന് നടത്തൂ.',
   'privacy': 'സ്വകാര്യത',
   'terms': 'നിബന്ധനകൾ',
-  'continueWa': 'WhatsApp വഴി തുടരുക',
-  'useEmailInstead': 'പകരം ഇമെയിൽ ഉപയോഗിക്കുക',
-  'phoneHint': 'ഫോൺ നമ്പർ',
-  'sendCodeWa': 'WhatsApp-ൽ കോഡ് അയയ്ക്കുക',
-  'codeSentWa': '{to} എന്ന നമ്പറിലേക്ക് WhatsApp-ൽ 6 അക്ക കോഡ് അയച്ചിട്ടുണ്ട്. 10 മിനിറ്റ് സാധുവാണ്.',
+  'continueApple': 'Apple ഉപയോഗിച്ച് തുടരുക',
+  'continueGoogle': 'Google ഉപയോഗിച്ച് തുടരുക',
+  'continueEmail': 'ഇമെയിൽ ഉപയോഗിച്ച് തുടരുക',
+  'otherWays': 'സൈൻ ഇൻ ചെയ്യാൻ മറ്റ് വഴികൾ',
   'codeSentEmail': '{to} എന്ന വിലാസത്തിലേക്ക് 6 അക്ക കോഡ് അയച്ചിട്ടുണ്ട്. 10 മിനിറ്റ് സാധുവാണ്.',
   'signIn': 'സൈൻ ഇൻ',
   'sendAgainIn': '{n} സെക്കൻഡിനു ശേഷം വീണ്ടും അയയ്ക്കാം',
   'sendAgain': 'വീണ്ടും അയയ്ക്കുക',
-  'anotherNumber': 'മറ്റൊരു നമ്പർ',
   'anotherEmail': 'മറ്റൊരു ഇമെയിൽ',
   'email': 'ഇമെയിൽ',
   'emailMeCode': 'ഇമെയിലിൽ കോഡ് അയയ്ക്കുക',
-  'useWa': 'WhatsApp ഉപയോഗിക്കുക',
   'usePassword': 'പാസ്‌വേഡ് ഉപയോഗിക്കുക',
   'password': 'പാസ്‌വേഡ്',
   'emailCodeInstead': 'പകരം ഇമെയിലിൽ കോഡ് അയയ്ക്കുക',
@@ -2475,7 +2412,7 @@ const Map<String, String> _ml = {
   'deleteAccountTitle': 'നിങ്ങളുടെ അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യണോ?',
   'deleteAccountText': 'നിങ്ങളുടെ Kuree അക്കൗണ്ടും പേരും ഡിലീറ്റ് ആകും. നിങ്ങൾ ഉടമയായ ചിട്ടികൾ അടുത്ത അഡ്മിന് കൈമാറും. നിങ്ങൾ മാത്രം നടത്തുന്ന ചിട്ടികൾ അവയുടെ ചരിത്രവും അംഗങ്ങളുടെ ലിങ്കുകളും സഹിതം എന്നേക്കുമായി ഡിലീറ്റ് ആകും. ഇത് തിരിച്ചെടുക്കാനാവില്ല.',
   'deleteLoginToo': 'എന്റെ SkiFi ലോഗിനും ഡിലീറ്റ് ചെയ്യുക',
-  'deleteLoginTooSub': 'നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുന്ന നമ്പർ അല്ലെങ്കിൽ ഇമെയിൽ. അത് ഉപയോഗിക്കുന്ന മറ്റ് SkiFi ആപ്പുകൾക്കും അത് നഷ്ടമാകും.',
+  'deleteLoginTooSub': 'Apple, Google അല്ലെങ്കിൽ ഇമെയിൽ വഴി നിങ്ങൾ ഉപയോഗിക്കുന്ന ലോഗിൻ. അതുകൊണ്ട് സൈൻ ഇൻ ചെയ്യുന്ന മറ്റ് SkiFi ആപ്പുകൾക്കും അത് നഷ്ടമാകും.',
   'deleteAccount': 'അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യുക',
   'deleting': 'ഡിലീറ്റ് ചെയ്യുന്നു…',
   'noNameYet': 'ഇതുവരെ പേരില്ല',
@@ -2513,12 +2450,9 @@ const Map<String, String> _ml = {
   'you': 'നിങ്ങൾ',
   'leaveChit': 'ഈ ചിട്ടി വിടുക',
   'removeAdmin': 'അഡ്മിനെ നീക്കുക',
-  'enterTheirWa': 'അവരുടെ WhatsApp നമ്പർ നൽകുക.',
   'enterTheirEmail': 'അവരുടെ ഇമെയിൽ നൽകുക.',
   'theirName': 'അവരുടെ പേര്',
-  'useEmail': 'ഇമെയിൽ ഉപയോഗിക്കുക',
   'adminSignInEmail': 'ചിട്ടി കാണാൻ അവർ ഈ ഇമെയിൽ ഉപയോഗിച്ച് Kuree-ൽ സൈൻ ഇൻ ചെയ്യണം.',
-  'adminSignInNumber': 'ചിട്ടി കാണാൻ അവർ ഈ നമ്പർ ഉപയോഗിച്ച് Kuree-ൽ സൈൻ ഇൻ ചെയ്യണം.',
   'frTitle': 'ഒരു ഫീച്ചർ ആവശ്യപ്പെടുക',
   'frIntroTitle': 'എന്താണ് സഹായകമാകുക എന്ന് പറയൂ',
   'frIntroText': 'ഒരു ആശയം, തടസ്സമാകുന്ന എന്തെങ്കിലും, ഇല്ലാത്ത ഒരു ഫീച്ചർ. ഓരോ അഭ്യർത്ഥനയും ഞങ്ങൾ വായിക്കും.',
@@ -2665,12 +2599,10 @@ const Map<String, String> _ta = {
   'errNoConnection': 'இணைப்பு இல்லை. இணையத்தைச் சரிபார்த்து மீண்டும் முயலவும்.',
   'errServer': 'Kuree சர்வரில் ஒரு சிக்கல். ஒரு நிமிடம் கழித்து மீண்டும் முயலவும்.',
   'errStatus': 'ஏதோ தவறு நடந்தது ({status}).',
-  'errNotOnWhatsApp': 'இந்த எண் WhatsApp இல் இல்லை.',
   'errCouldNotSend': 'குறியீட்டை அனுப்ப முடியவில்லை. ஒரு நிமிடம் கழித்து மீண்டும் முயலவும்.',
   'errTooMany': 'பல முயற்சிகள். ஒரு நிமிடம் காத்திருந்து மீண்டும் முயலவும்.',
   'errWrongCode': 'அந்தக் குறியீடு தவறு அல்லது காலாவதியானது. புதியதைக் கேளுங்கள்.',
   'errPasswordMismatch': 'அந்த மின்னஞ்சலும் கடவுச்சொல்லும் பொருந்தவில்லை.',
-  'errPhoneCountry': 'நாட்டுக் குறியீட்டுடன் உங்கள் WhatsApp எண்ணை உள்ளிடவும்.',
   'errEmailLooksWrong': 'அந்த மின்னஞ்சல் சரியாகத் தெரியவில்லை.',
   'errSignInNotFinished': 'உள்நுழைவு முடியவில்லை. மீண்டும் முயலவும்.',
   'errFile': 'இப்போது கோப்பை உருவாக்க முடியவில்லை. ஒரு நிமிடம் கழித்து மீண்டும் முயலவும்.',
@@ -2884,30 +2816,24 @@ const Map<String, String> _ta = {
   'splitSlot': 'இந்த ஸ்லாட்டைப் பிரி',
   'addPerson': 'ஒருவரைச் சேர்',
   'somethingWrong': 'ஏதோ தவறு நடந்தது. மீண்டும் முயலவும்.',
-  'enterYourWa': 'உங்கள் WhatsApp எண்ணை உள்ளிடவும்.',
   'enterCode': '6 இலக்கக் குறியீட்டை உள்ளிடவும்.',
   'enterEmailPassword': 'மின்னஞ்சலையும் கடவுச்சொல்லையும் உள்ளிடவும்.',
-  'subPhoneCode': 'குறியீட்டுக்கு WhatsApp ஐப் பாருங்கள்.',
   'subEmailCode': 'குறியீட்டுக்கு உங்கள் மின்னஞ்சலைப் பாருங்கள்.',
-  'subPhone': 'உங்கள் WhatsApp எண்ணுடன் உள்நுழையுங்கள்.',
   'subEmail': 'உங்கள் மின்னஞ்சலுடன் உள்நுழையுங்கள்.',
   'subStart': 'உங்கள் சீட்டை உங்கள் தொலைபேசியிலிருந்து நடத்துங்கள்.',
   'privacy': 'தனியுரிமை',
   'terms': 'விதிமுறைகள்',
-  'continueWa': 'WhatsApp உடன் தொடரவும்',
-  'useEmailInstead': 'பதிலாக மின்னஞ்சலைப் பயன்படுத்து',
-  'phoneHint': 'தொலைபேசி எண்',
-  'sendCodeWa': 'WhatsApp இல் குறியீட்டை அனுப்பு',
-  'codeSentWa': '{to} க்கு WhatsApp இல் 6 இலக்கக் குறியீட்டை அனுப்பியுள்ளோம். அது 10 நிமிடங்கள் செல்லும்.',
+  'continueApple': 'Apple மூலம் தொடரவும்',
+  'continueGoogle': 'Google மூலம் தொடரவும்',
+  'continueEmail': 'மின்னஞ்சல் மூலம் தொடரவும்',
+  'otherWays': 'உள்நுழைய வேறு வழிகள்',
   'codeSentEmail': '{to} க்கு 6 இலக்கக் குறியீட்டை அனுப்பியுள்ளோம். அது 10 நிமிடங்கள் செல்லும்.',
   'signIn': 'உள்நுழை',
   'sendAgainIn': '{n} வினாடிகளில் மீண்டும் அனுப்பலாம்',
   'sendAgain': 'மீண்டும் அனுப்பு',
-  'anotherNumber': 'வேறு எண்',
   'anotherEmail': 'வேறு மின்னஞ்சல்',
   'email': 'மின்னஞ்சல்',
   'emailMeCode': 'மின்னஞ்சலில் குறியீடு அனுப்பு',
-  'useWa': 'WhatsApp ஐப் பயன்படுத்து',
   'usePassword': 'கடவுச்சொல்லைப் பயன்படுத்து',
   'password': 'கடவுச்சொல்',
   'emailCodeInstead': 'பதிலாக மின்னஞ்சலில் குறியீடு அனுப்பு',
@@ -2918,7 +2844,7 @@ const Map<String, String> _ta = {
   'deleteAccountTitle': 'உங்கள் கணக்கை நீக்கவா?',
   'deleteAccountText': 'உங்கள் Kuree கணக்கும் பெயரும் நீக்கப்படும். நீங்கள் உரிமையாளராக உள்ள சீட்டுகள் அடுத்த நிர்வாகிக்குச் செல்லும். நீங்கள் மட்டும் நடத்தும் சீட்டுகள் அவற்றின் வரலாறு, உறுப்பினர் இணைப்புகளுடன் நிரந்தரமாக நீக்கப்படும். இதைத் திரும்பப் பெற முடியாது.',
   'deleteLoginToo': 'என் SkiFi உள்நுழைவையும் நீக்கு',
-  'deleteLoginTooSub': 'நீங்கள் உள்நுழையும் எண் அல்லது மின்னஞ்சல். அதைப் பயன்படுத்தும் மற்ற SkiFi செயலிகளும் அதை இழக்கும்.',
+  'deleteLoginTooSub': 'Apple, Google அல்லது மின்னஞ்சல் மூலம் நீங்கள் பயன்படுத்தும் உள்நுழைவு. அதைக் கொண்டு நீங்கள் உள்நுழையும் மற்ற SkiFi செயலிகளும் அதை இழக்கும்.',
   'deleteAccount': 'கணக்கை நீக்கு',
   'deleting': 'நீக்குகிறது…',
   'noNameYet': 'இன்னும் பெயர் இல்லை',
@@ -2956,12 +2882,9 @@ const Map<String, String> _ta = {
   'you': 'நீங்கள்',
   'leaveChit': 'இந்தச் சீட்டிலிருந்து விலகு',
   'removeAdmin': 'நிர்வாகியை நீக்கு',
-  'enterTheirWa': 'அவர்களின் WhatsApp எண்ணை உள்ளிடவும்.',
   'enterTheirEmail': 'அவர்களின் மின்னஞ்சலை உள்ளிடவும்.',
   'theirName': 'அவர்களின் பெயர்',
-  'useEmail': 'மின்னஞ்சலைப் பயன்படுத்து',
   'adminSignInEmail': 'சீட்டைப் பார்க்க அவர்கள் இந்த மின்னஞ்சலுடன் Kuree இல் உள்நுழைய வேண்டும்.',
-  'adminSignInNumber': 'சீட்டைப் பார்க்க அவர்கள் இந்த எண்ணுடன் Kuree இல் உள்நுழைய வேண்டும்.',
   'frTitle': 'ஒரு வசதியைக் கேளுங்கள்',
   'frIntroTitle': 'எது உதவும் என்று சொல்லுங்கள்',
   'frIntroText': 'ஒரு யோசனை, தடையாக இருக்கும் ஒன்று, இல்லாத ஒரு வசதி. ஒவ்வொரு கோரிக்கையையும் படிக்கிறோம்.',
@@ -3108,12 +3031,10 @@ const Map<String, String> _kn = {
   'errNoConnection': 'ಸಂಪರ್ಕವಿಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
   'errServer': 'Kuree ಸರ್ವರ್‌ನಲ್ಲಿ ಸಮಸ್ಯೆಯಾಗಿದೆ. ಒಂದು ನಿಮಿಷದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
   'errStatus': 'ಏನೋ ತಪ್ಪಾಗಿದೆ ({status}).',
-  'errNotOnWhatsApp': 'ಈ ಸಂಖ್ಯೆ WhatsApp ನಲ್ಲಿ ಇಲ್ಲ.',
   'errCouldNotSend': 'ಕೋಡ್ ಕಳುಹಿಸಲು ಆಗಲಿಲ್ಲ. ಒಂದು ನಿಮಿಷದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
   'errTooMany': 'ತುಂಬಾ ಪ್ರಯತ್ನಗಳು. ಒಂದು ನಿಮಿಷ ಕಾದು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
   'errWrongCode': 'ಆ ಕೋಡ್ ತಪ್ಪಾಗಿದೆ ಅಥವಾ ಅವಧಿ ಮುಗಿದಿದೆ. ಹೊಸದನ್ನು ಕೇಳಿ.',
   'errPasswordMismatch': 'ಆ ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದುತ್ತಿಲ್ಲ.',
-  'errPhoneCountry': 'ದೇಶದ ಕೋಡ್ ಸಹಿತ ನಿಮ್ಮ WhatsApp ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.',
   'errEmailLooksWrong': 'ಆ ಇಮೇಲ್ ಸರಿಯಾಗಿ ಕಾಣುತ್ತಿಲ್ಲ.',
   'errSignInNotFinished': 'ಸೈನ್ ಇನ್ ಪೂರ್ಣಗೊಳ್ಳಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
   'errFile': 'ಈಗ ಫೈಲ್ ತಯಾರಿಸಲು ಆಗಲಿಲ್ಲ. ಒಂದು ನಿಮಿಷದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
@@ -3327,30 +3248,24 @@ const Map<String, String> _kn = {
   'splitSlot': 'ಈ ಸ್ಲಾಟ್ ಹಂಚಿ',
   'addPerson': 'ಒಬ್ಬರನ್ನು ಸೇರಿಸಿ',
   'somethingWrong': 'ಏನೋ ತಪ್ಪಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
-  'enterYourWa': 'ನಿಮ್ಮ WhatsApp ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.',
   'enterCode': '6 ಅಂಕಿಯ ಕೋಡ್ ನಮೂದಿಸಿ.',
   'enterEmailPassword': 'ಇಮೇಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.',
-  'subPhoneCode': 'ಕೋಡ್‌ಗಾಗಿ WhatsApp ನೋಡಿ.',
   'subEmailCode': 'ಕೋಡ್‌ಗಾಗಿ ನಿಮ್ಮ ಇಮೇಲ್ ನೋಡಿ.',
-  'subPhone': 'ನಿಮ್ಮ WhatsApp ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.',
   'subEmail': 'ನಿಮ್ಮ ಇಮೇಲ್‌ನೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.',
   'subStart': 'ನಿಮ್ಮ ಚೀಟಿಯನ್ನು ಫೋನಿನಿಂದಲೇ ನಡೆಸಿ.',
   'privacy': 'ಗೌಪ್ಯತೆ',
   'terms': 'ನಿಯಮಗಳು',
-  'continueWa': 'WhatsApp ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ',
-  'useEmailInstead': 'ಬದಲಿಗೆ ಇಮೇಲ್ ಬಳಸಿ',
-  'phoneHint': 'ಫೋನ್ ಸಂಖ್ಯೆ',
-  'sendCodeWa': 'WhatsApp ನಲ್ಲಿ ಕೋಡ್ ಕಳುಹಿಸಿ',
-  'codeSentWa': '{to} ಗೆ WhatsApp ನಲ್ಲಿ 6 ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಿದ್ದೇವೆ. ಅದು 10 ನಿಮಿಷ ಮಾನ್ಯ.',
+  'continueApple': 'Apple ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ',
+  'continueGoogle': 'Google ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ',
+  'continueEmail': 'ಇಮೇಲ್ ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ',
+  'otherWays': 'ಸೈನ್ ಇನ್ ಮಾಡಲು ಬೇರೆ ವಿಧಾನಗಳು',
   'codeSentEmail': '{to} ಗೆ 6 ಅಂಕಿಯ ಕೋಡ್ ಕಳುಹಿಸಿದ್ದೇವೆ. ಅದು 10 ನಿಮಿಷ ಮಾನ್ಯ.',
   'signIn': 'ಸೈನ್ ಇನ್',
   'sendAgainIn': '{n} ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಮತ್ತೆ ಕಳುಹಿಸಬಹುದು',
   'sendAgain': 'ಮತ್ತೆ ಕಳುಹಿಸಿ',
-  'anotherNumber': 'ಬೇರೆ ಸಂಖ್ಯೆ',
   'anotherEmail': 'ಬೇರೆ ಇಮೇಲ್',
   'email': 'ಇಮೇಲ್',
   'emailMeCode': 'ಇಮೇಲ್‌ನಲ್ಲಿ ಕೋಡ್ ಕಳುಹಿಸಿ',
-  'useWa': 'WhatsApp ಬಳಸಿ',
   'usePassword': 'ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ',
   'password': 'ಪಾಸ್‌ವರ್ಡ್',
   'emailCodeInstead': 'ಬದಲಿಗೆ ಇಮೇಲ್‌ನಲ್ಲಿ ಕೋಡ್ ಕಳುಹಿಸಿ',
@@ -3361,7 +3276,7 @@ const Map<String, String> _kn = {
   'deleteAccountTitle': 'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸಬೇಕೆ?',
   'deleteAccountText': 'ನಿಮ್ಮ Kuree ಖಾತೆ ಮತ್ತು ಹೆಸರು ಅಳಿಸಲಾಗುತ್ತದೆ. ನೀವು ಮಾಲೀಕರಾಗಿರುವ ಚೀಟಿಗಳು ಮುಂದಿನ ನಿರ್ವಾಹಕರಿಗೆ ಹೋಗುತ್ತವೆ. ನೀವು ಮಾತ್ರ ನಡೆಸುವ ಚೀಟಿಗಳು ಅವುಗಳ ಇತಿಹಾಸ ಮತ್ತು ಸದಸ್ಯರ ಲಿಂಕ್‌ಗಳ ಸಹಿತ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತವೆ. ಇದನ್ನು ಹಿಂಪಡೆಯಲು ಆಗದು.',
   'deleteLoginToo': 'ನನ್ನ SkiFi ಲಾಗಿನ್ ಕೂಡ ಅಳಿಸಿ',
-  'deleteLoginTooSub': 'ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವ ಸಂಖ್ಯೆ ಅಥವಾ ಇಮೇಲ್. ಅದನ್ನು ಬಳಸುವ ಇತರ SkiFi ಆ್ಯಪ್‌ಗಳೂ ಅದನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತವೆ.',
+  'deleteLoginTooSub': 'Apple, Google ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ನೀವು ಬಳಸುವ ಲಾಗಿನ್. ಅದರಿಂದ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವ ಇತರ SkiFi ಆ್ಯಪ್‌ಗಳೂ ಅದನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತವೆ.',
   'deleteAccount': 'ಖಾತೆ ಅಳಿಸಿ',
   'deleting': 'ಅಳಿಸಲಾಗುತ್ತಿದೆ…',
   'noNameYet': 'ಇನ್ನೂ ಹೆಸರಿಲ್ಲ',
@@ -3399,12 +3314,9 @@ const Map<String, String> _kn = {
   'you': 'ನೀವು',
   'leaveChit': 'ಈ ಚೀಟಿಯಿಂದ ಹೊರಡಿ',
   'removeAdmin': 'ನಿರ್ವಾಹಕರನ್ನು ತೆಗೆಯಿರಿ',
-  'enterTheirWa': 'ಅವರ WhatsApp ಸಂಖ್ಯೆ ನಮೂದಿಸಿ.',
   'enterTheirEmail': 'ಅವರ ಇಮೇಲ್ ನಮೂದಿಸಿ.',
   'theirName': 'ಅವರ ಹೆಸರು',
-  'useEmail': 'ಇಮೇಲ್ ಬಳಸಿ',
   'adminSignInEmail': 'ಚೀಟಿ ನೋಡಲು ಅವರು ಈ ಇಮೇಲ್‌ನೊಂದಿಗೆ Kuree ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕು.',
-  'adminSignInNumber': 'ಚೀಟಿ ನೋಡಲು ಅವರು ಈ ಸಂಖ್ಯೆಯೊಂದಿಗೆ Kuree ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕು.',
   'frTitle': 'ಒಂದು ವೈಶಿಷ್ಟ್ಯ ಕೇಳಿ',
   'frIntroTitle': 'ಏನು ಸಹಾಯವಾಗುತ್ತದೆ ಎಂದು ಹೇಳಿ',
   'frIntroText': 'ಒಂದು ಆಲೋಚನೆ, ಅಡ್ಡಿಯಾಗುವ ಏನಾದರೂ, ನಿಮಗೆ ಬೇಕಾದ ವೈಶಿಷ್ಟ್ಯ. ನಾವು ಪ್ರತಿ ವಿನಂತಿಯನ್ನೂ ಓದುತ್ತೇವೆ.',
@@ -3551,12 +3463,10 @@ const Map<String, String> _hi = {
   'errNoConnection': 'कनेक्शन नहीं है। इंटरनेट जाँचें और फिर से कोशिश करें।',
   'errServer': 'Kuree सर्वर में दिक़्क़त आई। एक मिनट बाद फिर से कोशिश करें।',
   'errStatus': 'कुछ गड़बड़ हो गई ({status})।',
-  'errNotOnWhatsApp': 'यह नंबर WhatsApp पर नहीं है।',
   'errCouldNotSend': 'हम कोड नहीं भेज सके। एक मिनट बाद फिर से कोशिश करें।',
   'errTooMany': 'बहुत ज़्यादा कोशिशें। एक मिनट रुककर फिर से कोशिश करें।',
   'errWrongCode': 'वह कोड ग़लत है या उसकी मियाद ख़त्म हो गई है। नया कोड माँगें।',
   'errPasswordMismatch': 'वह ईमेल और पासवर्ड मेल नहीं खाते।',
-  'errPhoneCountry': 'देश कोड के साथ अपना WhatsApp नंबर डालें।',
   'errEmailLooksWrong': 'वह ईमेल सही नहीं लग रहा।',
   'errSignInNotFinished': 'साइन इन पूरा नहीं हुआ। फिर से कोशिश करें।',
   'errFile': 'अभी फ़ाइल नहीं बन सकी। एक मिनट बाद फिर से कोशिश करें।',
@@ -3770,30 +3680,24 @@ const Map<String, String> _hi = {
   'splitSlot': 'यह स्लॉट बाँटें',
   'addPerson': 'एक व्यक्ति जोड़ें',
   'somethingWrong': 'कुछ गड़बड़ हो गई। फिर से कोशिश करें।',
-  'enterYourWa': 'अपना WhatsApp नंबर डालें।',
   'enterCode': '6 अंकों का कोड डालें।',
   'enterEmailPassword': 'ईमेल और पासवर्ड डालें।',
-  'subPhoneCode': 'कोड के लिए WhatsApp देखें।',
   'subEmailCode': 'कोड के लिए अपना ईमेल देखें।',
-  'subPhone': 'अपने WhatsApp नंबर से साइन इन करें।',
   'subEmail': 'अपने ईमेल से साइन इन करें।',
   'subStart': 'अपनी चिट अपने फ़ोन से चलाएँ।',
   'privacy': 'प्राइवेसी',
   'terms': 'शर्तें',
-  'continueWa': 'WhatsApp से जारी रखें',
-  'useEmailInstead': 'इसकी जगह ईमेल इस्तेमाल करें',
-  'phoneHint': 'फ़ोन नंबर',
-  'sendCodeWa': 'WhatsApp पर कोड भेजें',
-  'codeSentWa': 'हमने {to} पर WhatsApp में 6 अंकों का कोड भेजा है। यह 10 मिनट तक चलेगा।',
+  'continueApple': 'Apple के साथ जारी रखें',
+  'continueGoogle': 'Google के साथ जारी रखें',
+  'continueEmail': 'ईमेल के साथ जारी रखें',
+  'otherWays': 'साइन इन करने के दूसरे तरीके',
   'codeSentEmail': 'हमने {to} पर 6 अंकों का कोड भेजा है। यह 10 मिनट तक चलेगा।',
   'signIn': 'साइन इन करें',
   'sendAgainIn': '{n} सेकंड में फिर से भेजें',
   'sendAgain': 'फिर से भेजें',
-  'anotherNumber': 'दूसरा नंबर',
   'anotherEmail': 'दूसरा ईमेल',
   'email': 'ईमेल',
   'emailMeCode': 'मुझे ईमेल पर कोड भेजें',
-  'useWa': 'WhatsApp इस्तेमाल करें',
   'usePassword': 'पासवर्ड इस्तेमाल करें',
   'password': 'पासवर्ड',
   'emailCodeInstead': 'इसकी जगह ईमेल पर कोड भेजें',
@@ -3804,7 +3708,7 @@ const Map<String, String> _hi = {
   'deleteAccountTitle': 'अपना खाता हटाएँ?',
   'deleteAccountText': 'आपका Kuree खाता और नाम हट जाएँगे। जिन चिट के आप मालिक हैं, वे अगले एडमिन को चली जाएँगी। जो चिट सिर्फ़ आप चलाते हैं, वे अपने इतिहास और सदस्यों के लिंक के साथ हमेशा के लिए हट जाएँगी। यह वापस नहीं हो सकता।',
   'deleteLoginToo': 'मेरा SkiFi लॉगिन भी हटाएँ',
-  'deleteLoginTooSub': 'जिस नंबर या ईमेल से आप साइन इन करते हैं। उसे इस्तेमाल करने वाले दूसरे SkiFi ऐप में भी वह नहीं रहेगा।',
+  'deleteLoginTooSub': 'Apple, Google या ईमेल से इस्तेमाल होने वाला आपका लॉगिन। जिन दूसरे SkiFi ऐप में आप इससे साइन इन करते हैं, उनमें भी यह नहीं रहेगा।',
   'deleteAccount': 'खाता हटाएँ',
   'deleting': 'हटाया जा रहा है…',
   'noNameYet': 'अभी कोई नाम नहीं',
@@ -3842,12 +3746,9 @@ const Map<String, String> _hi = {
   'you': 'आप',
   'leaveChit': 'यह चिट छोड़ें',
   'removeAdmin': 'एडमिन हटाएँ',
-  'enterTheirWa': 'उनका WhatsApp नंबर डालें।',
   'enterTheirEmail': 'उनका ईमेल डालें।',
   'theirName': 'उनका नाम',
-  'useEmail': 'ईमेल इस्तेमाल करें',
   'adminSignInEmail': 'चिट देखने के लिए वे इसी ईमेल से Kuree में साइन इन करेंगे।',
-  'adminSignInNumber': 'चिट देखने के लिए वे इसी नंबर से Kuree में साइन इन करेंगे।',
   'frTitle': 'कोई फ़ीचर माँगें',
   'frIntroTitle': 'बताइए क्या मदद करेगा',
   'frIntroText': 'कोई सुझाव, कोई अड़चन, कोई फ़ीचर जिसकी कमी लगती हो। हम हर अनुरोध पढ़ते हैं।',

@@ -2,8 +2,9 @@
 """Signing for the TestFlight build, made fresh on each run with the App Store
 Connect API key, so no certificate or profile has to be kept anywhere.
 
-  setup   <dir>  makes an Apple Distribution certificate and an App Store
-                 profile for co.skifi.kuree, writes cert.p12, the profile,
+  setup   <dir>  turns on Sign in with Apple for the App ID co.skifi.kuree (once;
+                 later runs find it on), makes an Apple Distribution
+                 certificate and an App Store profile for co.skifi.kuree, writes cert.p12, the profile,
                  ExportOptions.plist and state.json into <dir>, and points the
                  Runner target at them (manual signing, Release and Profile)
   cleanup <dir>  revokes that certificate and deletes the profile
@@ -86,6 +87,36 @@ def bundle_id():
     return made['data']['id']
 
 
+# Capabilities the app's entitlements need on the App ID. A profile only
+# carries a capability the App ID had when the profile was made.
+CAPABILITIES = {
+    'SIGN_IN_WITH_APPLE': [{'key': 'APPLE_ID_AUTH_APP_CONSENT', 'options': [{'key': 'PRIMARY_APP_CONSENT'}]}],
+}
+
+
+def capabilities(bid):
+    """Turns on each capability in CAPABILITIES that the App ID lacks. Safe to run every time."""
+    have = {c['attributes'].get('capabilityType')
+            for c in call('GET', f'/bundleIds/{bid}/bundleIdCapabilities?limit=200').get('data', [])}
+    for kind, settings in CAPABILITIES.items():
+        if kind in have:
+            print(f'{kind} is already on for {BUNDLE_ID}.')
+            continue
+        try:
+            call('POST', '/bundleIdCapabilities', {'data': {
+                'type': 'bundleIdCapabilities',
+                'attributes': {'capabilityType': kind, 'settings': settings},
+                'relationships': {'bundleId': {'data': {'type': 'bundleIds', 'id': bid}}}}})
+            print(f'Turned on {kind} for {BUNDLE_ID}.')
+        except RuntimeError as e:
+            if '(409)' in str(e):
+                print(f'{kind} was already on for {BUNDLE_ID}.')
+                continue
+            raise RuntimeError(f'Could not turn on {kind} for {BUNDLE_ID} ({e}). Turn it on by hand in '
+                               'developer.apple.com > Certificates, IDs & Profiles > Identifiers > '
+                               f'{BUNDLE_ID}, or use an App Store Connect key with the Admin role.') from None
+
+
 def app_id():
     found = call('GET', f'/apps?filter[bundleId]={BUNDLE_ID}&limit=10')
     for a in found.get('data', []):
@@ -136,6 +167,7 @@ def setup(out):
                  'Create it first: App Store Connect > Apps > + > New App.')
     state['app_id'] = app
     bid = bundle_id()
+    capabilities(bid)
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     csr = (x509.CertificateSigningRequestBuilder()
