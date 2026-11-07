@@ -7,7 +7,7 @@ document.documentElement.classList.add("js");
    store: its button then stays on the page without going anywhere. */
 var STORE = {
   play: "https://play.google.com/store/apps/details?id=co.skifi.kuree",
-  ios: ""
+  ios: "https://apps.apple.com/app/id6826765630"
 };
 
 (function () {
