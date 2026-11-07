@@ -74,6 +74,8 @@
   "close": "மூடு",
   "yes": "ஆம்",
   "tryAgain": "மீண்டும் முயலவும்",
+  "launchOpening": "Kuree திறக்கிறது",
+  "launchStillLoading": "இன்னும் ஏற்றுகிறது…",
   "language": "மொழி",
   "languagePhone": "தொலைபேசியின் மொழி",
   "agoJustNow": "இப்போது",

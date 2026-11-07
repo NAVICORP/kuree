@@ -74,6 +74,8 @@
   "close": "बंद करें",
   "yes": "हाँ",
   "tryAgain": "फिर से कोशिश करें",
+  "launchOpening": "Kuree खुल रहा है",
+  "launchStillLoading": "अभी भी लोड हो रहा है…",
   "language": "भाषा",
   "languagePhone": "फ़ोन की भाषा",
   "agoJustNow": "अभी",

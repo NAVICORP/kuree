@@ -100,7 +100,10 @@ class Api {
   bool get signedIn => _session != null;
   Stream<Session?> get changes => _changes.stream;
 
-  /// Picks up the session saved on this phone, if there is one.
+  /// Picks up the session saved on this phone, if there is one. Reads the
+  /// phone only: a session about to run out is renewed in the background,
+  /// and the first call to the server waits for that, so a slow network
+  /// never holds up the start.
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -108,11 +111,9 @@ class Api {
       if (raw == null) return;
       _session = Session.fromJson(jsonDecode(raw));
       if (_session != null && _session!.expiresAt.isBefore(DateTime.now().add(const Duration(seconds: 60)))) {
-        try {
-          await _refresh();
-        } on ApiError catch (e) {
-          if (e.status == 400 || e.status == 401 || e.status == 403 || e.status == 404) await _setSession(null);
-        }
+        unawaited(_refresh().catchError((Object e) async {
+          if (e is ApiError && (e.status == 400 || e.status == 401 || e.status == 403 || e.status == 404)) await _setSession(null);
+        }));
       }
     } catch (_) {
       _session = null;

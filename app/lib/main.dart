@@ -9,6 +9,7 @@ import 'core/api.dart';
 import 'l10n/lang.dart';
 import 'l10n/strings.dart';
 import 'ui/home.dart';
+import 'ui/launch.dart';
 import 'ui/sign_in.dart';
 import 'ui/theme.dart';
 
@@ -27,6 +28,8 @@ Future<void> main() async {
     systemNavigationBarColor: K.paper,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
+  // The card for the loading screen's first frame, where the launch screen had it.
+  await LaunchScreen.prepare();
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
   runApp(const KureeApp());
 }
@@ -59,7 +62,8 @@ class KureeApp extends StatelessWidget {
           final scale = mq.textScaler.clamp(minScaleFactor: 0.85, maxScaleFactor: 1.3);
           return MediaQuery(data: mq.copyWith(textScaler: scale), child: child!);
         },
-        home: const AuthGate(),
+        // The loading screen restores the session and loads the chits first.
+        home: const LaunchScreen(child: AuthGate()),
       ),
     );
   }
