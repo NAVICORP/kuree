@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../core/api.dart';
 import '../core/kuri.dart';
-import '../core/startup.dart';
 import '../l10n/strings.dart';
+import '../core/startup.dart';
 import 'account.dart';
 import 'collect_screen.dart';
 import 'glass.dart';
