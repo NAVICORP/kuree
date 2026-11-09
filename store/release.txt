@@ -1,0 +1,5 @@
+1.0.5 90
+Sign in with Google or Apple.
+Reminders the day before and on collection day.
+Clearer Malayalam and Arabic text.
+A new loading screen.

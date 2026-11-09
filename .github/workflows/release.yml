@@ -1,0 +1,28 @@
+# Gets an App Store version ready for review (version, build, What's New),
+# without submitting it. Runs on a push to the `store-release` branch; the
+# version, build number and notes come from store/release.txt.
+name: App Store release prep
+
+on:
+  push:
+    branches: [store-release]
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - run: pip install --quiet pyjwt cryptography
+      - name: Version, build and notes
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          read -r version build < store/release.txt
+          tail -n +2 store/release.txt > "$RUNNER_TEMP/notes.txt"
+          python3 .github/scripts/asc_release.py "$version" "$build" "$RUNNER_TEMP/notes.txt"
