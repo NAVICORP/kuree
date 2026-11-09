@@ -28,6 +28,12 @@ test('one person by name, more as a count, a draw without names by slot', () => 
   assert.equal(words('late', { ...a, n: 2, who: 'Mufaz' }, 'en').body, 'Ishaque marked 2 payments late');
   assert.equal(words('draw', { ...a, m: 5, slot: 2, who: 'Farhan / Yasir' }, 'en').body, 'Month 5: Farhan / Yasir takes the pot');
   assert.equal(words('draw', { ...a, m: 5, slot: 2 }, 'en').body, 'Month 5: slot 2 takes the pot');
+  // several takers in one month
+  assert.equal(words('draw', { ...a, m: 5, slot: 3, who: 'Farhan', slots: [3, 7], whos: ['Farhan', 'Yasir'] }, 'en').body,
+    'Month 5: Farhan and Yasir take the pot');
+  assert.equal(words('draw', { ...a, m: 2, slot: 1, who: 'A', whos: ['A', 'B', 'C'] }, 'en').body, 'Month 2: A, B and C take the pot');
+  assert.equal(words('draw', { ...a, m: 2, slot: 1, who: 'A', whos: ['A', 'B'] }, 'hi').body, 'महीना 2: रकम लेने वाले A और B');
+  assert.equal(words('draw', { ...a, m: 2, slot: 1, who: 'A', whos: ['A'] }, 'en').body, 'Month 2: A takes the pot');
   assert.equal(words('admin_added', a, 'ml').body, 'Ishaque നിങ്ങളെ അഡ്മിനായി ചേർത്തു');
   assert.equal(words('paid', { chit: 'C', n: 1, who: 'X' }, 'zz').body, 'Kuree marked X paid');
 });

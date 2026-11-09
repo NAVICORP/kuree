@@ -61,6 +61,43 @@ def ordinal(n):
     return "%d%s" % (n, {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th"))
 
 
+def wins(m):
+    """The slots taking the pot in a month. "winners" when there are several;
+    "winner" is the first, which older apps read and may change alone."""
+    def num(v):
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return 0
+    w = num(m.get("winner")) or None
+    ws = m.get("winners")
+    if not isinstance(ws, list):
+        return [w] if w else []
+    out = []
+    for x in ws:
+        x = num(x)
+        if x > 0 and x not in out:
+            out.append(x)
+    if (out[0] if out else None) != w:
+        out = [w] + [x for x in out[1:] if x != w] if w else []
+    return out
+
+
+def takers(slots, length, n):
+    """How many take the pot in month n; the earlier months one more when the
+    slots do not divide evenly over the months."""
+    if length <= 0:
+        return 1
+    return slots // length + (1 if n <= slots % length else 0)
+
+
+def split(total, k):
+    """total in k whole parts, the bigger ones first."""
+    k = max(1, k)
+    base = total // k
+    return [base + (1 if i < total - base * k else 0) for i in range(k)]
+
+
 def style(ws, widths, freeze="A2"):
     head = Font(bold=True, color="FFFFFF")
     fill = PatternFill("solid", fgColor="116326")
@@ -81,6 +118,17 @@ def main(out, d):
     fmt = number_format(cur)
     slots = int(d.get("slots") or 0)
     months = sorted(d.get("months") or [], key=lambda m: m.get("n", 0))
+    # A chit shorter than its slots runs that many months (an older app may
+    # have added a month for every slot; those past the end go).
+    try:
+        length = int(d.get("length") or 0)
+    except (TypeError, ValueError):
+        length = 0
+    if not 0 < length < slots:
+        length = slots
+    if length and len(months) > length:
+        months = months[:length]
+    multi = length < slots
     people = {p.get("id"): p.get("name", "") for p in d.get("people") or []}
     payers = sorted(d.get("payers") or [], key=lambda p: (p.get("slot", 0), str(p.get("id"))))
     slot_names = {}
@@ -94,7 +142,7 @@ def main(out, d):
     wb = Workbook()
     ws = wb.active
     ws.title = "Months"
-    ws.append(["Month", "Collected", "Late fines", "Pot", "Took the pot"])
+    ws.append(["Month", "Collected", "Late fines", "Pot", "Took the pot"] + (["Each took"] if multi else []))
     for i, m in enumerate(months, 1):
         paid = m.get("paid") or {}
         fines = m.get("fines") or {}
@@ -102,13 +150,17 @@ def main(out, d):
         nf = sum(1 for p in payers if fines.get(p.get("id")))
         # A month keeps the fine it was marked at when the chit's fine changed later.
         mf = int(m["fineAmt"]) if m.get("fineAmt") is not None else fine
-        won = m.get("winner")
-        ws.append([label(i), got, mf * nf, share * slots,
-                   (" / ".join(slot_names.get(won, [])) + " (slot %d)" % won) if won else ""])
+        won = wins(m)
+        took = "; ".join(" / ".join(slot_names.get(w, [])) + " (slot %d)" % w for w in won)
+        row = [label(i), got, mf * nf, share * slots, took]
+        if multi:
+            pays = split(share * slots + mf * nf, max(takers(slots, length, i), len(won)))
+            row.append(" / ".join(money(x, cur) for x in sorted(set(pays), reverse=True)) if won else "")
+        ws.append(row)
     for row in ws.iter_rows(min_row=2, min_col=2, max_col=4):
         for c in row:
             c.number_format = fmt
-    style(ws, [12, 13, 12, 12, 30])
+    style(ws, [12, 13, 12, 12, 30] + ([16] if multi else []))
 
     ws = wb.create_sheet("Ledger")
     ws.append(["Slot", "Member", "Share"] + [label(i) for i in range(1, len(months) + 1)])
@@ -122,7 +174,7 @@ def main(out, d):
                 cell = "Late"
             else:
                 cell = "Paid"
-            if m.get("winner") == p.get("slot"):
+            if p.get("slot") in wins(m):
                 cell += ", took the pot"
             row.append(cell)
         ws.append(row)
@@ -138,13 +190,23 @@ def main(out, d):
     ws["A1"].font = Font(bold=True, size=13)
     cd, ld = int(d.get("collectDay") or 20), int(d.get("lastDay") or 25)
     lines = [
-        "%d slots at %s a month." % (slots, money(share, cur)),
+        "%d slots at %s a month%s." % (slots, money(share, cur), ", over %d months" % length if multi else ""),
         "Collection on the %s. Last date is midnight on the %s%s." % (ordinal(cd), ordinal(ld), " of the next month" if ld < cd else ""),
     ]
     if fine:
         lines.append("A late payment costs %s, which goes into that month's pot." % money(fine, cur))
+    if multi:
+        base, extra = slots // length, slots % length
+        if not extra:
+            plan = "%d slots take the pot each month" % base
+        elif extra == 1:
+            plan = "%d slots take the pot in month 1, then %d" % (base + 1, base)
+        else:
+            plan = "%d slots take the pot in months 1 to %d, then %d" % (base + 1, extra, base)
+        lines.append("%s, sharing the month's %s pot equally." % (plan, money(share * slots, cur)))
+    else:
+        lines.append("One slot takes the whole %s pot each month." % money(share * slots, cur))
     lines += [
-        "One slot takes the whole %s pot each month." % money(share * slots, cur),
         "A slot that has taken the pot keeps paying but is out of the draw.",
         "",
         "Figures as of %s." % (d.get("updated") or date.today().isoformat()),

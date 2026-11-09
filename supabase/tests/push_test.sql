@@ -117,6 +117,38 @@ select pg_temp.as_server();
 select pg_temp.ok((select string_agg(kind, ',') from public.push_outbox) = 'paid', 'only the new payment');
 delete from public.push_outbox;
 
+-- Several takers a month: both new ones in one line; a month that already
+-- had its first taker gets news only of the one added; a taker swapped for
+-- another is not news; an older app that only knows "winner" still counts
+select pg_temp.as_user('11111111-1111-1111-1111-111111111111', '919000000001', 'owner@example.com');
+select pg_temp.save('k1', pg_temp.doc('{"p2":true,"p3":true,"p1":true}', '{"p1":true}', 2)
+  || jsonb_build_object('slots', 4, 'length', 2, 'payers', pg_temp.doc('{}', '{}', null) -> 'payers'
+       || '[{"id":"p4","slot":3,"person":"d"},{"id":"p5","slot":4,"person":"e"}]'::jsonb,
+     'people', pg_temp.doc('{}', '{}', null) -> 'people' || '[{"id":"d","name":"Anwar"},{"id":"e","name":"Mufaz"}]'::jsonb,
+     'months', jsonb_build_array(
+       jsonb_build_object('n', 1, 'paid', '{}'::jsonb, 'fines', '{}'::jsonb, 'winner', 2),
+       jsonb_build_object('n', 2, 'paid', '{}'::jsonb, 'fines', '{}'::jsonb, 'winner', 1, 'winners', '[1,3]'::jsonb))));
+select pg_temp.as_server();
+select pg_temp.ok((select count(*) from public.push_outbox where kind = 'draw') = 1, 'two new takers in one month, one line');
+select pg_temp.ok((select (args ->> 'm')::int = 2 and args -> 'slots' = '[1,3]'::jsonb and args -> 'whos' = '["Nazil","Anwar"]'::jsonb
+  and (args ->> 'slot')::int = 1 and args ->> 'who' = 'Nazil' from public.push_outbox where kind = 'draw'), 'month 2: Nazil and Anwar');
+delete from public.push_outbox;
+select pg_temp.as_user('11111111-1111-1111-1111-111111111111', '919000000001', 'owner@example.com');
+select pg_temp.save('k1', jsonb_set((select v -> 'data' from t where k = 'k1'), '{months,0,winners}', '[2,4]'::jsonb));
+select pg_temp.as_server();
+select pg_temp.ok((select (args ->> 'm')::int = 1 and (args ->> 'slot')::int = 4 and args ->> 'who' = 'Mufaz' and not args ? 'slots'
+  from public.push_outbox where kind = 'draw'), 'month 1 had Farhan / Yasir; the news is Mufaz alone');
+delete from public.push_outbox;
+select pg_temp.as_user('11111111-1111-1111-1111-111111111111', '919000000001', 'owner@example.com');
+select pg_temp.save('k1', jsonb_set((select v -> 'data' from t where k = 'k1'), '{months,0,winners}', '[2,3]'::jsonb));
+select pg_temp.as_server();
+select pg_temp.ok((select count(*) from public.push_outbox where kind = 'draw') = 0, 'a taker swapped is not news');
+select pg_temp.ok(public.push_winners('{"winner": 5, "winners": [2, 3]}') = array[5, 3], 'an older app''s winner is believed');
+select pg_temp.ok(public.push_winners('{"winner": null, "winners": [2, 3]}') = '{}'::int[], 'and so is its clearing');
+select pg_temp.ok(public.push_winners('{"winner": 2}') = array[2], 'a month with one taker reads as before');
+select pg_temp.ok(public.push_winners('{"winners": "x", "winner": "7"}') = array[7], 'odd shapes are read safely');
+delete from public.push_outbox;
+
 -- A change made on the server itself (no one signed in) tells nobody
 update public.kuris set data = pg_temp.doc('{}', '{}', null);
 select pg_temp.ok((select count(*) from public.push_outbox) = 0, 'server-side changes are quiet');
