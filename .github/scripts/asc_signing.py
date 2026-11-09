@@ -93,7 +93,8 @@ def bundle_id():
 # Capabilities the app's entitlements need on the App ID. A profile only
 # carries a capability the App ID had when the profile was made.
 CAPABILITIES = {
-    'SIGN_IN_WITH_APPLE': [{'key': 'APPLE_ID_AUTH_APP_CONSENT', 'options': [{'key': 'PRIMARY_APP_CONSENT'}]}],
+    # Sign in with Apple is called APPLE_ID_AUTH in the App Store Connect API.
+    'APPLE_ID_AUTH': [{'key': 'APPLE_ID_AUTH_APP_CONSENT', 'options': [{'key': 'PRIMARY_APP_CONSENT'}]}],
     # Pushes from the Kuree server through Firebase (aps-environment).
     'PUSH_NOTIFICATIONS': None,
 }
@@ -102,9 +103,9 @@ CAPABILITIES = {
 def capabilities(bid):
     """Turns on each capability in CAPABILITIES that the App ID lacks. Safe to run every time."""
     have = {c['attributes'].get('capabilityType')
-            for c in call('GET', f'/bundleIds/{bid}/bundleIdCapabilities?limit=200').get('data', [])}
+            for c in call('GET', f'/bundleIds/{bid}/bundleIdCapabilities').get('data', [])}
     for kind, settings in CAPABILITIES.items():
-        if kind in have:
+        if kind in have or (kind == 'APPLE_ID_AUTH' and 'SIGN_IN_WITH_APPLE' in have):
             print(f'{kind} is already on for {BUNDLE_ID}.')
             continue
         attributes = {'capabilityType': kind}
@@ -117,7 +118,7 @@ def capabilities(bid):
                 'relationships': {'bundleId': {'data': {'type': 'bundleIds', 'id': bid}}}}})
             print(f'Turned on {kind} for {BUNDLE_ID}.')
         except RuntimeError as e:
-            if '(409)' in str(e):
+            if '(409)' in str(e) and 'already' in str(e).lower():
                 print(f'{kind} was already on for {BUNDLE_ID}.')
                 continue
             raise RuntimeError(f'Could not turn on {kind} for {BUNDLE_ID} ({e}). Turn it on by hand in '

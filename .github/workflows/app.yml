@@ -19,6 +19,8 @@
 # variables > Actions > Variables), passed to the builds as --dart-define:
 #   KUREE_GOOGLE_SERVER_CLIENT_ID  the SkiFi login's Google web client id
 #   KUREE_GOOGLE_IOS_CLIENT_ID     the iOS client id for co.skifi.kuree
+# Both are public ids (they ship inside the app), so the SkiFi login's ids are
+# written below as the default; a repository variable overrides them.
 # Without them the builds still pass; the app just hides the Google button.
 #
 # Push notifications read two repository *secrets*, the Firebase config files
@@ -144,7 +146,7 @@ jobs:
     needs: [platforms, check]
     runs-on: ubuntu-latest
     env:
-      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
+      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID || '893475150375-fej165j70v0s3no1tcu5ri08ptd69o1a.apps.googleusercontent.com' }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID || '893475150375-48mn4299a5ggr00ibmjal840rq6finpf.apps.googleusercontent.com' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -206,7 +208,7 @@ jobs:
     env:
       TESTFLIGHT: ${{ github.event_name == 'workflow_dispatch' && inputs.testflight }}
       SIGNING_DIR: ${{ github.workspace }}/../signing
-      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
+      GOOGLE_DEFINES: --dart-define=KUREE_GOOGLE_SERVER_CLIENT_ID=${{ vars.KUREE_GOOGLE_SERVER_CLIENT_ID || '893475150375-fej165j70v0s3no1tcu5ri08ptd69o1a.apps.googleusercontent.com' }} --dart-define=KUREE_GOOGLE_IOS_CLIENT_ID=${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID || '893475150375-48mn4299a5ggr00ibmjal840rq6finpf.apps.googleusercontent.com' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -230,7 +232,7 @@ jobs:
 
       - name: Google sign-in URL scheme
         env:
-          IOS_CLIENT_ID: ${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID }}
+          IOS_CLIENT_ID: ${{ vars.KUREE_GOOGLE_IOS_CLIENT_ID || '893475150375-48mn4299a5ggr00ibmjal840rq6finpf.apps.googleusercontent.com' }}
         run: |
           # 123-abc.apps.googleusercontent.com -> com.googleusercontent.apps.123-abc,
           # the scheme Google's sign-in page returns to. Must match the define.
