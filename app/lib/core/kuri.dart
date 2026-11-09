@@ -46,62 +46,33 @@ class Payer {
   Map<String, dynamic> toJson() => {...extra, 'id': id, 'slot': slot, 'person': person, 'amt': amt};
 }
 
-/// How a month's takers were chosen with the bottle draw.
+/// How a month's taker was chosen with the bottle draw.
 class DrawInfo {
-  DrawInfo({required this.at, required this.by, required this.picked, required this.names, List<int>? picks, this.how = 'bottle', Map<String, dynamic>? extra})
-      : picks = picks ?? [picked],
-        extra = extra ?? {};
+  DrawInfo({required this.at, required this.by, required this.picked, required this.names, this.how = 'bottle'});
   String how;
   String at;
   String by;
-
-  /// The first slip out of the bottle.
   int picked;
-
-  /// Every slip out of the bottle, in order (one for a month with one taker).
-  List<int> picks;
   List<int> names;
-  final Map<String, dynamic> extra;
 
-  factory DrawInfo.fromJson(Map<String, dynamic> j) {
-    final extra = Map<String, dynamic>.from(j)..remove('how')..remove('at')..remove('by')..remove('picked')..remove('names')..remove('picks');
-    final picked = _int(j['picked'], 0);
-    final picks = _slotList(j['picks']);
-    return DrawInfo(
-      how: '${j['how'] ?? 'bottle'}',
-      at: '${j['at'] ?? ''}',
-      by: '${j['by'] ?? ''}',
-      picked: picked,
-      // An older app keeps "picked" alone; "picks" must start with it.
-      picks: picks.isNotEmpty && picks.first == picked ? picks : [picked],
-      names: _slotList(j['names'], unique: false),
-      extra: extra,
-    );
-  }
+  factory DrawInfo.fromJson(Map<String, dynamic> j) => DrawInfo(
+        how: '${j['how'] ?? 'bottle'}',
+        at: '${j['at'] ?? ''}',
+        by: '${j['by'] ?? ''}',
+        picked: _int(j['picked'], 0),
+        names: (j['names'] is List ? j['names'] as List : const []).map((e) => _int(e, 0)).where((e) => e > 0).toList(),
+      );
 
-  Map<String, dynamic> toJson() => {
-        ...extra,
-        'how': how,
-        'at': at,
-        'by': by,
-        'picked': picked,
-        if (picks.length > 1) 'picks': picks,
-        'names': names,
-      };
+  Map<String, dynamic> toJson() => {'how': how, 'at': at, 'by': by, 'picked': picked, 'names': names};
 }
 
 class Month {
-  Month({required this.n, List<int>? winners, Map<String, bool>? paid, Map<String, bool>? fines, this.fineAmt, this.note = '', this.draw, Map<String, dynamic>? extra})
-      : winners = winners ?? [],
-        paid = paid ?? {},
+  Month({required this.n, this.winner, Map<String, bool>? paid, Map<String, bool>? fines, this.fineAmt, this.note = '', this.draw, Map<String, dynamic>? extra})
+      : paid = paid ?? {},
         fines = fines ?? {},
         extra = extra ?? {};
   int n;
-
-  /// The slots taking the pot this month, in the order they were chosen.
-  /// One for a chit with as many months as slots. Saved as "winner" (the
-  /// first, which older apps read) and, when there are more, "winners".
-  final List<int> winners;
+  int? winner;
   final Map<String, bool> paid;
   final Map<String, bool> fines;
 
@@ -114,32 +85,14 @@ class Month {
 
   bool isPaid(String id) => paid[id] == true;
   bool isFined(String id) => fines[id] == true;
-  bool takes(int slot) => winners.contains(slot);
-  bool get hasWinner => winners.isNotEmpty;
-
-  /// The month's takers from the bottle, when the bottle chose all of them.
-  bool get fromBottle {
-    final d = draw;
-    if (d == null || winners.isEmpty || d.picks.length != winners.length) return false;
-    return d.picks.toSet().containsAll(winners);
-  }
 
   factory Month.fromJson(Map<String, dynamic> j) {
     final extra = Map<String, dynamic>.from(j)
-      ..remove('n')..remove('winner')..remove('winners')..remove('paid')..remove('fines')..remove('fineAmt')..remove('note')..remove('draw');
-    final w = _int(j['winner'], 0);
-    final first = w > 0 ? w : null;
-    var winners = _slotList(j['winners']);
-    if (j['winners'] is! List) {
-      winners = [if (first != null) first];
-    } else if (winners.isEmpty ? first != null : winners.first != first) {
-      // An older app changed "winner" alone: it chose another taker for the
-      // month, or cleared it.
-      winners = first == null ? [] : [first, ...winners.skip(1).where((x) => x != first)];
-    }
+      ..remove('n')..remove('winner')..remove('paid')..remove('fines')..remove('fineAmt')..remove('note')..remove('draw');
+    final w = j['winner'];
     return Month(
       n: _int(j['n'], 1),
-      winners: winners,
+      winner: w == null ? null : (_int(w, 0) > 0 ? _int(w, 0) : null),
       paid: _flags(j['paid']),
       fines: _flags(j['fines']),
       fineAmt: j['fineAmt'] == null ? null : _int(j['fineAmt'], 0),
@@ -152,8 +105,7 @@ class Month {
   Map<String, dynamic> toJson() => {
         ...extra,
         'n': n,
-        'winner': winners.isEmpty ? null : winners.first,
-        if (winners.length > 1) 'winners': winners,
+        'winner': winner,
         'paid': {for (final e in paid.entries) if (e.value) e.key: true},
         'fines': {for (final e in fines.entries) if (e.value) e.key: true},
         if (fineAmt != null) 'fineAmt': fineAmt,
@@ -179,7 +131,6 @@ class KuriDoc {
     this.group = '',
     required this.share,
     required this.slots,
-    int? length,
     required this.startYear,
     required this.startMonth,
     this.collectDay = 20,
@@ -191,8 +142,7 @@ class KuriDoc {
     List<Month>? months,
     this.updated = '',
     Map<String, dynamic>? extra,
-  })  : length = length ?? slots,
-        people = people ?? [],
+  })  : people = people ?? [],
         payers = payers ?? [],
         months = months ?? [],
         extra = extra ?? {};
@@ -203,10 +153,6 @@ class KuriDoc {
   /// Each slot pays this every month.
   int share;
   int slots;
-
-  /// How many months the chit runs. The same as the slots unless the chit
-  /// ends sooner, with more than one slot taking the pot each month.
-  int length;
   int startYear;
   int startMonth;
 
@@ -227,7 +173,7 @@ class KuriDoc {
   // 'groupLang' was a setting for the group message's language; messages now
   // follow the app's language, so an old value is read and dropped.
   static const _known = {
-    'v', 'name', 'group', 'share', 'slots', 'length', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
+    'v', 'name', 'group', 'share', 'slots', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
     'currency', 'groupLang', 'people', 'payers', 'months', 'updated',
   };
 
@@ -253,9 +199,6 @@ class KuriDoc {
       extra: extra,
     );
     if (doc.slots <= 0) doc.slots = doc.payers.fold<int>(0, (m, p) => max(m, p.slot));
-    // Chits saved before the length existed run a month per slot.
-    doc.length = j['length'] == null ? doc.slots : _int(j['length'], doc.slots);
-    if (doc.length > doc.slots || doc.length < 1) doc.length = doc.slots;
     doc.months.sort((a, b) => a.n.compareTo(b.n));
     doc.fitMonths();
     return doc;
@@ -268,7 +211,6 @@ class KuriDoc {
         'group': group,
         'share': share,
         'slots': slots,
-        if (length != slots) 'length': length,
         'startYear': startYear,
         'startMonth': startMonth,
         'collectDay': collectDay,
@@ -283,61 +225,15 @@ class KuriDoc {
 
   KuriDoc copy() => KuriDoc.fromJson(Map<String, dynamic>.from(_deep(toJson()) as Map));
 
-  /// One month for every month of the chit, numbered from 1. (An older app
-  /// adds a month for every slot; the ones past the end go again here.)
+  /// One month for every slot, numbered from 1.
   void fitMonths() {
     for (var i = 0; i < months.length; i++) {
       months[i].n = i + 1;
     }
-    while (months.length < length) {
+    while (months.length < slots) {
       months.add(Month(n: months.length + 1));
     }
-    if (months.length > length) months.removeRange(length, months.length);
-  }
-
-  // ---------------------------------------------------------------- takers each month
-
-  /// The most slots that can take the pot in one month.
-  static const maxWinners = 5;
-
-  /// The shortest a chit of this many slots can run.
-  static int minLength(int slots) => max(1, (slots + maxWinners - 1) ~/ maxWinners);
-
-  /// More than one slot takes the pot in some month.
-  bool get multi => length < slots;
-
-  /// How many slots take the pot in month n: the slots over the months, and
-  /// when that does not divide evenly the earlier months take one more
-  /// (25 slots over 10 months: 3 in months 1 to 5, then 2).
-  int winnersIn(int n) => takersIn(slots, length, n);
-
-  static int takersIn(int slots, int length, int n) {
-    if (length <= 0 || n < 1 || n > length) return 0;
-    return slots ~/ length + (n <= slots % length ? 1 : 0);
-  }
-
-  /// Places still open in month m.
-  int openIn(Month m) => max(0, winnersIn(m.n) - m.winners.length);
-
-  /// What a month collects: every slot's share, and the late fines.
-  int monthTotal(Month m) => pot + fineSum(m);
-
-  /// What each taker of month m gets: the month's total in equal parts,
-  /// whole numbers that add up to it (any remainder goes a unit at a time to
-  /// the first ones chosen).
-  List<int> payouts(Month m) => split(monthTotal(m), max(1, max(winnersIn(m.n), m.winners.length)));
-
-  /// What one taker of month m gets, the i-th chosen.
-  int payoutOf(Month m, int i) {
-    final p = payouts(m);
-    return p[i.clamp(0, p.length - 1)];
-  }
-
-  /// total in k whole parts as equal as can be, the bigger ones first.
-  static List<int> split(int total, int k) {
-    if (k <= 1) return [total];
-    final base = total ~/ k, rest = total - base * k;
-    return [for (var i = 0; i < k; i++) base + (i < rest ? 1 : 0)];
+    if (months.length > slots) months.removeRange(slots, months.length);
   }
 
   // ---------------------------------------------------------------- money
@@ -406,7 +302,7 @@ class KuriDoc {
   }
 
   MonthState state(Month m, [DateTime? now]) {
-    if (allPaid(m) && m.hasWinner && m.winners.length >= winnersIn(m.n)) return MonthState.done;
+    if (allPaid(m) && m.winner != null) return MonthState.done;
     return !(now ?? DateTime.now()).isBefore(collectDate(m.n)) ? MonthState.open : MonthState.soon;
   }
 
@@ -462,18 +358,6 @@ class KuriDoc {
     return S.current.andJoin(names.sublist(0, names.length - 1).join(', '), names.last);
   }
 
-  /// Several slots' names: "Nazil", "Nazil and Farhan / Yasir",
-  /// "Nazil, Anwar and Mufaz".
-  String slotsName(List<int> slots) {
-    final names = slots.map(slotName).toList();
-    if (names.isEmpty) return '';
-    if (names.length == 1) return names.first;
-    return S.current.andJoin(names.sublist(0, names.length - 1).join(', '), names.last);
-  }
-
-  /// The takers of month m by name, or null when there are none yet.
-  String? winnersName(Month m) => m.winners.isEmpty ? null : slotsName(m.winners);
-
   /// "½ share" for half of a slot, or the amount for any other part.
   String? partLabel(Payer p) {
     if (p.amt >= share || share <= 0) return null;
@@ -485,7 +369,7 @@ class KuriDoc {
   }
 
   /// slot -> the month it took the pot
-  Map<int, int> drawn() => {for (final m in months) for (final w in m.winners) w: m.n};
+  Map<int, int> drawn() => {for (final m in months) if (m.winner != null) m.winner!: m.n};
 
   /// Slots that have not taken the pot yet.
   List<int> waitingSlots() {
@@ -535,17 +419,6 @@ int _int(dynamic v, int fallback) {
   if (v is num) return v.round();
   if (v is String) return int.tryParse(v.trim()) ?? fallback;
   return fallback;
-}
-
-/// Slot numbers from a saved list, each once, in order.
-List<int> _slotList(dynamic v, {bool unique = true}) {
-  if (v is! List) return [];
-  final out = <int>[];
-  for (final e in v) {
-    final x = _int(e, 0);
-    if (x > 0 && (!unique || !out.contains(x))) out.add(x);
-  }
-  return out;
 }
 
 Map<String, bool> _flags(dynamic v) {
