@@ -287,7 +287,7 @@ class S {
   /// Number added. Press Save to keep it.
   String get numberAddedPressSave => _get('numberAddedPressSave');
 
-  /// Add names below. Each name is one slot, and the chit runs one month per slot.
+  /// Add names below. Each name is one slot.
   String get slotsFromNames => _get('slotsFromNames');
 
   /// Late fine {fine}
@@ -1448,7 +1448,7 @@ const Map<String, String> _en = {
   'savedMonthGoesTo': 'Saved. Month {n} goes to {name}.',
   'drawDonePressSave': 'Draw done. Press Save to publish it.',
   'numberAddedPressSave': 'Number added. Press Save to keep it.',
-  'slotsFromNames': 'Add names below. Each name is one slot, and the chit runs one month per slot.',
+  'slotsFromNames': 'Add names below. Each name is one slot.',
   'fineChip': 'Late fine {fine}',
   'fineEach': '{fine} for each late payment',
   'addLateFine': 'Add a late fine',
@@ -1919,7 +1919,7 @@ const Map<String, String> _ar = {
   'savedMonthGoesTo': 'تم الحفظ. الشهر {n} من نصيب {name}.',
   'drawDonePressSave': 'تم السحب. اضغط حفظ لنشره.',
   'numberAddedPressSave': 'تمت إضافة الرقم. اضغط حفظ للاحتفاظ به.',
-  'slotsFromNames': 'أضف الأسماء في الأسفل. كل اسم سهم واحد، والجمعية شهر واحد لكل سهم.',
+  'slotsFromNames': 'أضف الأسماء في الأسفل. كل اسم سهم واحد.',
   'fineChip': 'غرامة التأخير {fine}',
   'fineEach': '{fine} لكل دفعة متأخرة',
   'addLateFine': 'أضف غرامة تأخير',
@@ -2390,7 +2390,7 @@ const Map<String, String> _ml = {
   'savedMonthGoesTo': 'സേവ് ചെയ്തു. മാസം {n} {name}-ന്.',
   'drawDonePressSave': 'നറുക്കെടുപ്പ് കഴിഞ്ഞു. പ്രസിദ്ധീകരിക്കാൻ സേവ് അമർത്തുക.',
   'numberAddedPressSave': 'നമ്പർ ചേർത്തു. സൂക്ഷിക്കാൻ സേവ് അമർത്തുക.',
-  'slotsFromNames': 'താഴെ പേരുകൾ ചേർക്കുക. ഓരോ പേരും ഒരു സ്ലോട്ടാണ്, ഓരോ സ്ലോട്ടിനും ഒരു മാസം.',
+  'slotsFromNames': 'താഴെ പേരുകൾ ചേർക്കുക. ഓരോ പേരും ഒരു സ്ലോട്ടാണ്.',
   'fineChip': 'വൈകിയതിനുള്ള പിഴ {fine}',
   'fineEach': 'വൈകിയ ഓരോ അടവിനും {fine}',
   'addLateFine': 'വൈകിയതിനുള്ള പിഴ ചേർക്കുക',
@@ -2861,7 +2861,7 @@ const Map<String, String> _ta = {
   'savedMonthGoesTo': 'சேமிக்கப்பட்டது. மாதம் {n} {name} க்கு.',
   'drawDonePressSave': 'குலுக்கல் முடிந்தது. வெளியிட சேமி என்பதை அழுத்தவும்.',
   'numberAddedPressSave': 'எண் சேர்க்கப்பட்டது. வைத்திருக்க சேமி என்பதை அழுத்தவும்.',
-  'slotsFromNames': 'கீழே பெயர்களைச் சேர்க்கவும். ஒவ்வொரு பெயரும் ஒரு ஸ்லாட், ஒவ்வொரு ஸ்லாட்டுக்கும் ஒரு மாதம்.',
+  'slotsFromNames': 'கீழே பெயர்களைச் சேர்க்கவும். ஒவ்வொரு பெயரும் ஒரு ஸ்லாட்.',
   'fineChip': 'தாமதக் கட்டணம் {fine}',
   'fineEach': 'ஒவ்வொரு தாமதமான செலுத்துதலுக்கும் {fine}',
   'addLateFine': 'தாமதக் கட்டணம் சேர்க்கவும்',
@@ -3332,7 +3332,7 @@ const Map<String, String> _kn = {
   'savedMonthGoesTo': 'ಉಳಿಸಲಾಗಿದೆ. ತಿಂಗಳು {n} {name} ಅವರಿಗೆ.',
   'drawDonePressSave': 'ಡ್ರಾ ಮುಗಿಯಿತು. ಪ್ರಕಟಿಸಲು ಉಳಿಸಿ ಒತ್ತಿ.',
   'numberAddedPressSave': 'ಸಂಖ್ಯೆ ಸೇರಿಸಲಾಗಿದೆ. ಇಟ್ಟುಕೊಳ್ಳಲು ಉಳಿಸಿ ಒತ್ತಿ.',
-  'slotsFromNames': 'ಕೆಳಗೆ ಹೆಸರುಗಳನ್ನು ಸೇರಿಸಿ. ಪ್ರತಿ ಹೆಸರು ಒಂದು ಸ್ಲಾಟ್, ಪ್ರತಿ ಸ್ಲಾಟ್‌ಗೆ ಒಂದು ತಿಂಗಳು.',
+  'slotsFromNames': 'ಕೆಳಗೆ ಹೆಸರುಗಳನ್ನು ಸೇರಿಸಿ. ಪ್ರತಿ ಹೆಸರು ಒಂದು ಸ್ಲಾಟ್.',
   'fineChip': 'ತಡ ದಂಡ {fine}',
   'fineEach': 'ಪ್ರತಿ ತಡ ಪಾವತಿಗೆ {fine}',
   'addLateFine': 'ತಡ ದಂಡ ಸೇರಿಸಿ',
@@ -3803,7 +3803,7 @@ const Map<String, String> _hi = {
   'savedMonthGoesTo': 'सेव हो गया। महीना {n} की रकम {name} को।',
   'drawDonePressSave': 'ड्रॉ हो गया। प्रकाशित करने के लिए सेव दबाएँ।',
   'numberAddedPressSave': 'नंबर जुड़ गया। रखने के लिए सेव दबाएँ।',
-  'slotsFromNames': 'नीचे नाम जोड़ें। हर नाम एक स्लॉट है, और हर स्लॉट के लिए एक महीना।',
+  'slotsFromNames': 'नीचे नाम जोड़ें। हर नाम एक स्लॉट है।',
   'fineChip': 'देरी का जुर्माना {fine}',
   'fineEach': 'हर देर से भुगतान पर {fine}',
   'addLateFine': 'देरी का जुर्माना जोड़ें',
