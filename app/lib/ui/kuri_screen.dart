@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -115,27 +116,49 @@ class _KuriScreenState extends State<KuriScreen> {
   Future<void> _choose() async {
     final t = S.of(context);
     final w = doc.drawn();
+    final k = doc.winnersIn(m.n);
+    if (k > 1) {
+      final picked = await showWinnersPicker(context, doc, m);
+      if (picked == null) return;
+      _change(() {
+        m.winners
+          ..clear()
+          ..addAll(picked);
+        if (m.draw != null && !m.fromBottle) m.draw = null;
+      });
+      return;
+    }
     final options = <PickOption<int>>[
       for (var s = 1; s <= doc.slots; s++)
         if (!w.containsKey(s) || w[s] == m.n) PickOption(s, doc.slotName(s), sub: t.slotN(s), badge: '$s'),
-      if (m.winner != null) PickOption(0, t.nobodyYet, sub: t.clearChoice, icon: Icons.close_rounded),
+      if (m.hasWinner) PickOption(0, t.nobodyYet, sub: t.clearChoice, icon: Icons.close_rounded),
     ];
-    final picked = await showPicker<int>(context, title: t.takesPotInMonth(m.n), options: options, selected: m.winner);
+    final picked = await showPicker<int>(context, title: t.takesPotInMonth(m.n), options: options, selected: m.hasWinner ? m.winners.first : null);
     if (picked == null) return;
     _change(() {
-      m.winner = picked.value == 0 ? null : picked.value;
-      if (m.draw != null && m.draw!.picked != m.winner) m.draw = null;
+      m.winners
+        ..clear()
+        ..addAll([if (picked.value != 0) picked.value]);
+      if (m.draw != null && !m.fromBottle) m.draw = null;
     });
   }
 
   Future<void> _bottle() async {
     final waiting = doc.waitingSlots();
-    if (waiting.length < 2) {
+    final month = m;
+    final count = doc.openIn(month);
+    if (count < 1) return;
+    if (waiting.length <= count) {
       final s = S.of(context);
-      toast(context, waiting.isEmpty ? s.allSlotsTaken : s.onlyOneLeft(doc.slotName(waiting.first)), bad: true);
+      toast(
+        context,
+        waiting.isEmpty ? s.allSlotsTaken : (waiting.length == 1 ? s.onlyOneLeft(doc.slotName(waiting.first)) : s.onlyFewLeft(doc.slotsName(waiting))),
+        bad: true,
+      );
       return;
     }
-    final month = m;
+    final kept = List<int>.of(month.winners);
+    final each = doc.payoutOf(month, kept.length);
     // The draw fills the whole screen, over the footer.
     await Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
       fullscreenDialog: true,
@@ -144,20 +167,26 @@ class _KuriScreenState extends State<KuriScreen> {
         month: month.n,
         label: doc.monthLabel(month.n),
         pot: doc.pot,
+        each: doc.winnersIn(month.n) > 1 ? each : null,
+        count: count,
         currency: doc.currency,
         entries: [for (final s in waiting) DrawEntry(s, doc.slotName(s))],
-        resultText: (slot, names, when) => drawResult(doc, month.n, slot, names, when),
-        onSave: (slot, info) async {
-          final before = (month.winner, month.draw);
+        resultText: (slots, names, when) => drawResult(doc, month.n, slots, names, when),
+        onSave: (slots, info) async {
+          final before = (List<int>.of(month.winners), month.draw);
           setState(() {
-            month.winner = slot;
+            month.winners
+              ..clear()
+              ..addAll([...kept, ...slots]);
             month.draw = info;
             dirty = true;
           });
-          final ok = await _save(done: S.current.savedMonthGoesTo(month.n, doc.slotName(slot)));
+          final ok = await _save(done: S.current.savedMonthGoesTo(month.n, doc.slotsName(slots)));
           if (!ok) {
             setState(() {
-              month.winner = before.$1;
+              month.winners
+                ..clear()
+                ..addAll(before.$1);
               month.draw = before.$2;
             });
           }
@@ -173,7 +202,7 @@ class _KuriScreenState extends State<KuriScreen> {
     final order = await showDrawRestSheet(context, doc, now);
     if (order == null || !mounted) return;
     _change(() {
-      order.forEach((n, slot) => doc.months[n - 1].winner = slot);
+      order.forEach((n, slots) => doc.months[n - 1].winners.addAll(slots));
     });
     toast(context, S.of(context).drawDonePressSave);
   }
@@ -479,16 +508,23 @@ class _KuriScreenState extends State<KuriScreen> {
             badge: '${x.n}',
             sub: switch (doc.state(x)) {
               MonthState.done => s.settled,
-              MonthState.open => x.winner == null ? s.inProgress : s.inProgressTakes(doc.slotName(x.winner!)),
-              MonthState.soon => x.winner == null ? s.upcoming : s.upcomingTakes(doc.slotName(x.winner!)),
+              MonthState.open => !x.hasWinner ? s.inProgress : _takes(s.inProgressTakes, s.inProgressTake, x),
+              MonthState.soon => !x.hasWinner ? s.upcoming : _takes(s.upcomingTakes, s.upcomingTake, x),
             }),
     ]);
     if (picked != null) setState(() => sel = picked.value - 1);
   }
 
+  /// "In progress, Nazil takes the pot", or with several takers "In
+  /// progress, Nazil and Anwar take the pot".
+  String _takes(String Function(Object) one, String Function(Object) many, Month x) =>
+      x.winners.length > 1 ? many(doc.winnersName(x)!) : one(doc.winnersName(x)!);
+
   Widget _winner(S s) {
+    if (doc.winnersIn(m.n) > 1) return _winners(s);
     final fines = doc.fineSum(m);
-    final fromBottle = m.draw != null && m.draw!.picked == m.winner;
+    final fromBottle = m.fromBottle;
+    final winner = m.hasWinner ? m.winners.first : null;
     var amount = fines > 0 ? s.winnerAmountFine(doc.money(doc.pot + fines), doc.money(fines)) : doc.money(doc.pot + fines);
     if (fromBottle) amount = s.pickedFromBottle(amount);
     return KCard(
@@ -498,16 +534,16 @@ class _KuriScreenState extends State<KuriScreen> {
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(color: m.winner == null ? K.surface2 : K.sun, shape: BoxShape.circle),
-            child: Icon(Icons.emoji_events_rounded, color: m.winner == null ? K.muted : K.deep, size: 22),
+            decoration: BoxDecoration(color: winner == null ? K.surface2 : K.sun, shape: BoxShape.circle),
+            child: Icon(Icons.emoji_events_rounded, color: winner == null ? K.muted : K.deep, size: 22),
           ),
           const SizedBox(width: Sp.md + 2),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(s.takesPotThisMonth, style: T.small),
               const SizedBox(height: 2),
-              Text(m.winner == null ? s.notDecided : '${m.winner}. ${doc.slotName(m.winner!)}', style: T.h3),
-              if (m.winner != null) ...[
+              Text(winner == null ? s.notDecided : '$winner. ${doc.slotName(winner)}', style: T.h3),
+              if (winner != null) ...[
                 const SizedBox(height: 2),
                 Text(amount, style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
               ],
@@ -516,10 +552,82 @@ class _KuriScreenState extends State<KuriScreen> {
         ]),
         const SizedBox(height: Sp.md + 2),
         Wrap(spacing: Sp.sm, runSpacing: Sp.sm, children: [
-          if (m.winner == null) KButton(label: s.bottleDraw, icon: Icons.casino_outlined, kind: KButtonKind.sun, small: true, onPressed: _bottle),
+          if (winner == null) KButton(label: s.bottleDraw, icon: Icons.casino_outlined, kind: KButtonKind.sun, small: true, onPressed: _bottle),
           KButton(
-            label: m.winner == null ? s.choose : s.change,
-            icon: m.winner == null ? Icons.touch_app_outlined : Icons.swap_horiz_rounded,
+            label: winner == null ? s.choose : s.change,
+            icon: winner == null ? Icons.touch_app_outlined : Icons.swap_horiz_rounded,
+            kind: KButtonKind.secondary,
+            small: true,
+            onPressed: _choose,
+          ),
+        ]),
+      ]),
+    );
+  }
+
+  /// A month with several takers: each one with what they get, the places
+  /// still open, and the draw for those.
+  Widget _winners(S s) {
+    final k = doc.winnersIn(m.n), fines = doc.fineSum(m), open = doc.openIn(m);
+    final pays = doc.payouts(m);
+    final even = pays.every((x) => x == pays.first);
+    var note = even
+        ? (fines > 0 ? s.eachTakesFine(doc.money(pays.first), doc.money(fines)) : s.eachTakes(doc.money(pays.first)))
+        : (fines > 0 ? s.splitTotalFine(doc.money(doc.monthTotal(m)), k, doc.money(fines)) : s.splitTotal(doc.money(doc.monthTotal(m)), k));
+    if (m.fromBottle) note = s.pickedFromBottle(note);
+    Widget row(Widget badge, String title, String? amount) => Padding(
+          padding: const EdgeInsets.only(top: Sp.sm),
+          child: Row(children: [
+            badge,
+            const SizedBox(width: Sp.md),
+            Expanded(child: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+            if (amount != null) ...[
+              const SizedBox(width: Sp.sm),
+              Text(amount, style: T.label.merge(T.tabular).copyWith(color: K.brand600)),
+            ],
+          ]),
+        );
+    return KCard(
+      padding: const EdgeInsets.all(Sp.lg),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Row(children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(color: m.hasWinner ? K.sun : K.surface2, shape: BoxShape.circle),
+            child: Icon(Icons.emoji_events_rounded, color: m.hasWinner ? K.deep : K.muted, size: 22),
+          ),
+          const SizedBox(width: Sp.md + 2),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(s.takePotThisMonthN(k), style: T.h3),
+              const SizedBox(height: 2),
+              Text(note, style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
+            ]),
+          ),
+        ]),
+        const SizedBox(height: Sp.xs),
+        for (var i = 0; i < m.winners.length; i++)
+          row(SlotBadge('${m.winners[i]}', size: 32, style: SlotBadgeStyle.sun), doc.slotName(m.winners[i]), even ? null : doc.money(pays[i])),
+        for (var i = 0; i < open; i++)
+          row(
+            const SlotBadge('?', size: 32),
+            s.notDecided,
+            even ? null : doc.money(pays[min(m.winners.length + i, pays.length - 1)]),
+          ),
+        const SizedBox(height: Sp.md + 2),
+        Wrap(spacing: Sp.sm, runSpacing: Sp.sm, children: [
+          if (open > 0)
+            KButton(
+              label: open == k ? s.bottleDraw : s.drawTheRestN(open),
+              icon: Icons.casino_outlined,
+              kind: KButtonKind.sun,
+              small: true,
+              onPressed: _bottle,
+            ),
+          KButton(
+            label: m.hasWinner ? s.change : s.choose,
+            icon: m.hasWinner ? Icons.swap_horiz_rounded : Icons.touch_app_outlined,
             kind: KButtonKind.secondary,
             small: true,
             onPressed: _choose,
@@ -654,7 +762,7 @@ class _MemberRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final paid = month.isPaid(payer.id), late = month.isFined(payer.id), won = month.winner == payer.slot;
+    final paid = month.isPaid(payer.id), late = month.isFined(payer.id), won = month.takes(payer.slot);
     final part = doc.partLabel(payer);
     var status = paid ? s.statusPaid(doc.money(payer.amt)) : s.statusPending(doc.money(payer.amt));
     if (late) status = s.statusLateFine(status, doc.money(doc.fineFor(month)));

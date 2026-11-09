@@ -102,7 +102,7 @@ CAPABILITIES = {
 def capabilities(bid):
     """Turns on each capability in CAPABILITIES that the App ID lacks. Safe to run every time."""
     have = {c['attributes'].get('capabilityType')
-            for c in call('GET', f'/bundleIds/{bid}/bundleIdCapabilities?limit=200').get('data', [])}
+            for c in call('GET', f'/bundleIds/{bid}/bundleIdCapabilities').get('data', [])}
     for kind, settings in CAPABILITIES.items():
         if kind in have:
             print(f'{kind} is already on for {BUNDLE_ID}.')
