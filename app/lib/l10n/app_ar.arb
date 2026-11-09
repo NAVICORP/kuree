@@ -131,7 +131,7 @@
   "savedMonthGoesTo": "تم الحفظ. الشهر {n} من نصيب {name}.",
   "drawDonePressSave": "تم السحب. اضغط حفظ لنشره.",
   "numberAddedPressSave": "تمت إضافة الرقم. اضغط حفظ للاحتفاظ به.",
-  "slotsFromNames": "أضف الأسماء في الأسفل. كل اسم سهم واحد، والجمعية شهر واحد لكل سهم.",
+  "slotsFromNames": "أضف الأسماء في الأسفل. كل اسم سهم واحد.",
   "fineChip": "غرامة التأخير {fine}",
   "fineEach": "{fine} لكل دفعة متأخرة",
   "addLateFine": "أضف غرامة تأخير",

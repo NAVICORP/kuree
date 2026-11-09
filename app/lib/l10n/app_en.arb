@@ -271,7 +271,7 @@
   },
   "drawDonePressSave": "Draw done. Press Save to publish it.",
   "numberAddedPressSave": "Number added. Press Save to keep it.",
-  "slotsFromNames": "Add names below. Each name is one slot, and the chit runs one month per slot.",
+  "slotsFromNames": "Add names below. Each name is one slot.",
   "fineChip": "Late fine {fine}",
   "@fineChip": {
     "placeholders": {
