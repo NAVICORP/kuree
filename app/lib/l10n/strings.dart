@@ -1216,6 +1216,87 @@ class S {
 
   /// Chit updates
   String get notifChannelUpdates => _get('notifChannelUpdates');
+
+  /// Only {names} are left, so there is nothing to draw. Use Choose.
+  String onlyFewLeft(Object names) => _fill('onlyFewLeft', {'names': names});
+
+  /// In progress, {name} take the pot
+  String inProgressTake(Object name) => _fill('inProgressTake', {'name': name});
+
+  /// Upcoming, {name} take the pot
+  String upcomingTake(Object name) => _fill('upcomingTake', {'name': name});
+
+  /// {amount} each
+  String eachTakes(Object amount) => _fill('eachTakes', {'amount': amount});
+
+  /// {amount} each (pot plus {fine} fine)
+  String eachTakesFine(Object amount, Object fine) => _fill('eachTakesFine', {'amount': amount, 'fine': fine});
+
+  /// {total} shared by {n}
+  String splitTotal(Object total, Object n) => _fill('splitTotal', {'total': total, 'n': n});
+
+  /// {total} shared by {n} (pot plus {fine} fine)
+  String splitTotalFine(Object total, Object n, Object fine) => _fill('splitTotalFine', {'total': total, 'n': n, 'fine': fine});
+
+  /// {n} take the pot this month
+  String takePotThisMonthN(Object n) => _fill('takePotThisMonthN', {'n': n});
+
+  /// Draw {n} more
+  String bottleDrawMore(Object n) => _fill('bottleDrawMore', {'n': n});
+
+  /// Take the pot: {names}
+  String takePotNames(Object names) => _fill('takePotNames', {'names': names});
+
+  /// Take the pot in month {n}
+  String takePotInMonthN(Object n) => _fill('takePotInMonthN', {'n': n});
+
+  /// Choose up to {n}. {chosen} chosen.
+  String chooseUpTo(Object n, Object chosen) => _fill('chooseUpTo', {'n': n, 'chosen': chosen});
+
+  /// Done
+  String get doneChoosing => _get('doneChoosing');
+
+  /// {n} people take the pot each month
+  String planEven(Object n) => _fill('planEven', {'n': n});
+
+  /// {more} people take the pot in months 1 to {last}, then {fewer}
+  String planUneven(Object more, Object last, Object fewer) => _fill('planUneven', {'more': more, 'last': last, 'fewer': fewer});
+
+  /// {more} people take the pot in month 1, then {fewer}
+  String planUnevenOne(Object more, Object fewer) => _fill('planUnevenOne', {'more': more, 'fewer': fewer});
+
+  /// Length
+  String get chitLength => _get('chitLength');
+
+  /// Same as slots
+  String get lengthSame => _get('lengthSame');
+
+  /// {n} months, one person takes the pot each month
+  String lengthSameSub(Object n) => _fill('lengthSameSub', {'n': n});
+
+  /// {n} months
+  String monthsCount(Object n) => _fill('monthsCount', {'n': n});
+
+  /// Month {n} already has payments or a taker, so the chit cannot end before month {n}.
+  String errEndsBefore(Object n) => _fill('errEndsBefore', {'n': n});
+
+  /// Month {n} has {have} takers chosen, but now has room for {k}. Change its takers first.
+  String errTooManyTakers(Object n, Object have, Object k) => _fill('errTooManyTakers', {'n': n, 'have': have, 'k': k});
+
+  /// Pick {i} of {k}
+  String drawPickOf(Object i, Object k) => _fill('drawPickOf', {'i': i, 'k': k});
+
+  /// The bottle picks {n} of them, one after another.
+  String bottlePicksK(Object n) => _fill('bottlePicksK', {'n': n});
+
+  /// Take the pot for month {n}, {label}. {each} each.
+  String takePotForEach(Object n, Object label, Object each) => _fill('takePotForEach', {'n': n, 'label': label, 'each': each});
+
+  /// Save as month {n} winners
+  String saveAsWinners(Object n) => _fill('saveAsWinners', {'n': n});
+
+  /// {chit}, month {n} ({label}) The bottle picked: {list} {each} each. {count} names were in the bottle. Drawn {when}.
+  String msgDrawResultMany(Object chit, Object n, Object label, Object list, Object each, Object count, Object when) => _fill('msgDrawResultMany', {'chit': chit, 'n': n, 'label': label, 'list': list, 'each': each, 'count': count, 'when': when});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1677,6 +1758,33 @@ const Map<String, String> _en = {
   'notifBlocked': 'Notifications are off for Kuree. Turn them on in your phone\'s settings.',
   'notifChannelReminders': 'Chit reminders',
   'notifChannelUpdates': 'Chit updates',
+  'onlyFewLeft': 'Only {names} are left, so there is nothing to draw. Use Choose.',
+  'inProgressTake': 'In progress, {name} take the pot',
+  'upcomingTake': 'Upcoming, {name} take the pot',
+  'eachTakes': '{amount} each',
+  'eachTakesFine': '{amount} each (pot plus {fine} fine)',
+  'splitTotal': '{total} shared by {n}',
+  'splitTotalFine': '{total} shared by {n} (pot plus {fine} fine)',
+  'takePotThisMonthN': '{n} take the pot this month',
+  'bottleDrawMore': 'Draw {n} more',
+  'takePotNames': 'Take the pot: {names}',
+  'takePotInMonthN': 'Take the pot in month {n}',
+  'chooseUpTo': 'Choose up to {n}. {chosen} chosen.',
+  'doneChoosing': 'Done',
+  'planEven': '{n} people take the pot each month',
+  'planUneven': '{more} people take the pot in months 1 to {last}, then {fewer}',
+  'planUnevenOne': '{more} people take the pot in month 1, then {fewer}',
+  'chitLength': 'Length',
+  'lengthSame': 'Same as slots',
+  'lengthSameSub': '{n} months, one person takes the pot each month',
+  'monthsCount': '{n} months',
+  'errEndsBefore': 'Month {n} already has payments or a taker, so the chit cannot end before month {n}.',
+  'errTooManyTakers': 'Month {n} has {have} takers chosen, but now has room for {k}. Change its takers first.',
+  'drawPickOf': 'Pick {i} of {k}',
+  'bottlePicksK': 'The bottle picks {n} of them, one after another.',
+  'takePotForEach': 'Take the pot for month {n}, {label}. {each} each.',
+  'saveAsWinners': 'Save as month {n} winners',
+  'msgDrawResultMany': '{chit}, month {n} ({label})\nThe bottle picked:\n{list}\n{each} each.\n{count} names were in the bottle. Drawn {when}.',
 };
 
 const Map<String, String> _ar = {
@@ -2121,6 +2229,33 @@ const Map<String, String> _ar = {
   'notifBlocked': 'الإشعارات متوقفة لـ Kuree. شغّلها من إعدادات هاتفك.',
   'notifChannelReminders': 'تذكيرات الجمعية',
   'notifChannelUpdates': 'تحديثات الجمعية',
+  'onlyFewLeft': 'لم يبقَ إلا {names}، فلا حاجة للسحب. استخدم اختيار.',
+  'inProgressTake': 'جارٍ، يستلمها {name}',
+  'upcomingTake': 'قادم، يستلمها {name}',
+  'eachTakes': '{amount} لكل واحد',
+  'eachTakesFine': '{amount} لكل واحد (مبلغ الجمعية مع غرامة {fine})',
+  'splitTotal': '{total} مقسومة على {n}',
+  'splitTotalFine': '{total} مقسومة على {n} (مبلغ الجمعية مع غرامة {fine})',
+  'takePotThisMonthN': 'يستلم الجمعية {n} هذا الشهر',
+  'bottleDrawMore': 'اسحب {n} آخرين',
+  'takePotNames': 'يستلمون الجمعية: {names}',
+  'takePotInMonthN': 'يستلمون الجمعية في الشهر {n}',
+  'chooseUpTo': 'اختر حتى {n}. تم اختيار {chosen}.',
+  'doneChoosing': 'تم',
+  'planEven': 'يستلم الجمعية {n} أشخاص كل شهر',
+  'planUneven': 'يستلم الجمعية {more} أشخاص في الشهور 1 إلى {last}، ثم {fewer}',
+  'planUnevenOne': 'يستلم الجمعية {more} أشخاص في الشهر 1، ثم {fewer}',
+  'chitLength': 'المدة',
+  'lengthSame': 'بعدد الأسهم',
+  'lengthSameSub': '{n} شهور، يستلم الجمعية شخص واحد كل شهر',
+  'monthsCount': '{n} شهور',
+  'errEndsBefore': 'الشهر {n} فيه دفعات أو مستلم بالفعل، لذا لا يمكن أن تنتهي الجمعية قبل الشهر {n}.',
+  'errTooManyTakers': 'في الشهر {n} تم اختيار {have} مستلمين، لكن فيه الآن مكان لـ {k} فقط. غيّر المستلمين أولًا.',
+  'drawPickOf': 'السحبة {i} من {k}',
+  'bottlePicksK': 'تختار القارورة {n} منها، واحدة بعد الأخرى.',
+  'takePotForEach': 'يستلمون الجمعية عن الشهر {n}، {label}. {each} لكل واحد.',
+  'saveAsWinners': 'حفظهم مستلمين للشهر {n}',
+  'msgDrawResultMany': '{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}.',
 };
 
 const Map<String, String> _ml = {
@@ -2565,6 +2700,33 @@ const Map<String, String> _ml = {
   'notifBlocked': 'Kuree-യുടെ അറിയിപ്പുകൾ ഓഫാണ്. ഫോണിന്റെ സെറ്റിംഗ്സിൽ ഓണാക്കൂ.',
   'notifChannelReminders': 'ചിട്ടി ഓർമ്മപ്പെടുത്തലുകൾ',
   'notifChannelUpdates': 'ചിട്ടി അപ്‌ഡേറ്റുകൾ',
+  'onlyFewLeft': '{names} മാത്രമേ ബാക്കിയുള്ളൂ, അതിനാൽ നറുക്കെടുക്കാനില്ല. തിരഞ്ഞെടുക്കുക ഉപയോഗിക്കൂ.',
+  'inProgressTake': 'നടക്കുന്നു, ചിട്ടി {name} എന്നിവർക്ക്',
+  'upcomingTake': 'വരാനിരിക്കുന്നു, ചിട്ടി {name} എന്നിവർക്ക്',
+  'eachTakes': 'ഓരോരുത്തർക്കും {amount}',
+  'eachTakesFine': 'ഓരോരുത്തർക്കും {amount} (ചിട്ടിത്തുകയും {fine} പിഴയും)',
+  'splitTotal': '{total}, {n} പേർക്ക് വീതിച്ച്',
+  'splitTotalFine': '{total}, {n} പേർക്ക് വീതിച്ച് (ചിട്ടിത്തുകയും {fine} പിഴയും)',
+  'takePotThisMonthN': 'ഈ മാസം {n} പേർക്ക് ചിട്ടി',
+  'bottleDrawMore': '{n} പേരെ കൂടി നറുക്കെടുക്കുക',
+  'takePotNames': 'ചിട്ടി കിട്ടുന്നത്: {names}',
+  'takePotInMonthN': 'മാസം {n}-ൽ ചിട്ടി കിട്ടുന്നവർ',
+  'chooseUpTo': '{n} പേരെ വരെ തിരഞ്ഞെടുക്കാം. {chosen} പേരെ തിരഞ്ഞെടുത്തു.',
+  'doneChoosing': 'കഴിഞ്ഞു',
+  'planEven': 'ഓരോ മാസവും {n} പേർക്ക് ചിട്ടി',
+  'planUneven': 'മാസം 1 മുതൽ {last} വരെ {more} പേർക്ക് ചിട്ടി, പിന്നെ {fewer} പേർക്ക്',
+  'planUnevenOne': 'മാസം 1-ൽ {more} പേർക്ക് ചിട്ടി, പിന്നെ {fewer} പേർക്ക്',
+  'chitLength': 'കാലാവധി',
+  'lengthSame': 'സ്ലോട്ടുകളുടെ എണ്ണം പോലെ',
+  'lengthSameSub': '{n} മാസം, ഓരോ മാസവും ഒരാൾക്ക് ചിട്ടി',
+  'monthsCount': '{n} മാസം',
+  'errEndsBefore': 'മാസം {n}-ൽ ഇതിനകം അടവുകളോ ചിട്ടി കിട്ടിയ ആളോ ഉണ്ട്, അതിനാൽ മാസം {n}-ന് മുമ്പ് ചിട്ടി അവസാനിപ്പിക്കാൻ പറ്റില്ല.',
+  'errTooManyTakers': 'മാസം {n}-ൽ {have} പേരെ തിരഞ്ഞെടുത്തിട്ടുണ്ട്, പക്ഷേ ഇനി {k} പേർക്കേ ഇടമുള്ളൂ. ആദ്യം അവരെ മാറ്റുക.',
+  'drawPickOf': '{k}-ൽ {i}-ാമത്തെ നറുക്ക്',
+  'bottlePicksK': 'കുപ്പിയിൽ നിന്ന് {n} എണ്ണം എടുക്കും, ഒന്നിനു പിറകെ ഒന്നായി.',
+  'takePotForEach': 'മാസം {n}, {label}: ചിട്ടി ഇവർക്ക്. ഓരോരുത്തർക്കും {each}.',
+  'saveAsWinners': 'മാസം {n}-ലെ ചിട്ടിക്കാരായി സേവ് ചെയ്യുക',
+  'msgDrawResultMany': '{chit}, മാസം {n} ({label})\nകുപ്പിയിൽ നിന്ന് കിട്ടിയത്:\n{list}\nഓരോരുത്തർക്കും {each}.\nകുപ്പിയിൽ {count} പേരുകൾ ഉണ്ടായിരുന്നു. നറുക്കെടുത്തത് {when}.',
 };
 
 const Map<String, String> _ta = {
@@ -3009,6 +3171,33 @@ const Map<String, String> _ta = {
   'notifBlocked': 'Kuree அறிவிப்புகள் அணைக்கப்பட்டுள்ளன. உங்கள் போன் அமைப்புகளில் இயக்கவும்.',
   'notifChannelReminders': 'சீட்டு நினைவூட்டல்கள்',
   'notifChannelUpdates': 'சீட்டு புதுப்பிப்புகள்',
+  'onlyFewLeft': '{names} மட்டுமே மீதம், அதனால் குலுக்க எதுவும் இல்லை. தேர்ந்தெடு என்பதைப் பயன்படுத்தவும்.',
+  'inProgressTake': 'நடைபெறுகிறது, சீட்டு {name} ஆகியோருக்கு',
+  'upcomingTake': 'வரவிருக்கிறது, சீட்டு {name} ஆகியோருக்கு',
+  'eachTakes': 'ஒவ்வொருவருக்கும் {amount}',
+  'eachTakesFine': 'ஒவ்வொருவருக்கும் {amount} (சீட்டுத் தொகையும் {fine} அபராதமும்)',
+  'splitTotal': '{total}, {n} பேருக்குப் பகிர்ந்து',
+  'splitTotalFine': '{total}, {n} பேருக்குப் பகிர்ந்து (சீட்டுத் தொகையும் {fine} அபராதமும்)',
+  'takePotThisMonthN': 'இந்த மாதம் {n} பேர் சீட்டு எடுப்பார்கள்',
+  'bottleDrawMore': 'இன்னும் {n} பேரைக் குலுக்கு',
+  'takePotNames': 'சீட்டு எடுப்பவர்கள்: {names}',
+  'takePotInMonthN': 'மாதம் {n} இல் சீட்டு எடுப்பவர்கள்',
+  'chooseUpTo': '{n} பேர் வரை தேர்ந்தெடுக்கலாம். {chosen} பேர் தேர்ந்தெடுக்கப்பட்டனர்.',
+  'doneChoosing': 'முடிந்தது',
+  'planEven': 'ஒவ்வொரு மாதமும் {n} பேர் சீட்டு எடுப்பார்கள்',
+  'planUneven': 'மாதம் 1 முதல் {last} வரை {more} பேர் சீட்டு எடுப்பார்கள், பிறகு {fewer} பேர்',
+  'planUnevenOne': 'மாதம் 1 இல் {more} பேர் சீட்டு எடுப்பார்கள், பிறகு {fewer} பேர்',
+  'chitLength': 'காலம்',
+  'lengthSame': 'ஸ்லாட்டுகளின் எண்ணிக்கை போல',
+  'lengthSameSub': '{n} மாதங்கள், ஒவ்வொரு மாதமும் ஒருவர் சீட்டு எடுப்பார்',
+  'monthsCount': '{n} மாதங்கள்',
+  'errEndsBefore': 'மாதம் {n} இல் ஏற்கனவே கட்டணங்கள் அல்லது சீட்டு எடுத்தவர் உள்ளனர், எனவே மாதம் {n} க்கு முன் சீட்டு முடிய முடியாது.',
+  'errTooManyTakers': 'மாதம் {n} இல் {have} பேர் தேர்ந்தெடுக்கப்பட்டுள்ளனர், ஆனால் இப்போது {k} பேருக்கே இடம் உள்ளது. முதலில் அவர்களை மாற்றவும்.',
+  'drawPickOf': '{k} இல் {i}வது குலுக்கல்',
+  'bottlePicksK': 'பாட்டில் அவற்றில் {n} ஐ ஒன்றன் பின் ஒன்றாக எடுக்கும்.',
+  'takePotForEach': 'மாதம் {n}, {label}: சீட்டு இவர்களுக்கு. ஒவ்வொருவருக்கும் {each}.',
+  'saveAsWinners': 'மாதம் {n} சீட்டு எடுப்பவர்களாகச் சேமி',
+  'msgDrawResultMany': '{chit}, மாதம் {n} ({label})\nபாட்டில் தேர்ந்தெடுத்தது:\n{list}\nஒவ்வொருவருக்கும் {each}.\nபாட்டிலில் {count} பெயர்கள் இருந்தன. குலுக்கல் {when}.',
 };
 
 const Map<String, String> _kn = {
@@ -3453,6 +3642,33 @@ const Map<String, String> _kn = {
   'notifBlocked': 'Kuree ಅಧಿಸೂಚನೆಗಳು ಆಫ್ ಆಗಿವೆ. ನಿಮ್ಮ ಫೋನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆನ್ ಮಾಡಿ.',
   'notifChannelReminders': 'ಚೀಟಿ ಜ್ಞಾಪನೆಗಳು',
   'notifChannelUpdates': 'ಚೀಟಿ ಅಪ್‌ಡೇಟ್‌ಗಳು',
+  'onlyFewLeft': '{names} ಮಾತ್ರ ಉಳಿದಿದ್ದಾರೆ, ಆದ್ದರಿಂದ ಡ್ರಾ ಮಾಡಲು ಏನೂ ಇಲ್ಲ. ಆಯ್ಕೆಮಾಡಿ ಬಳಸಿ.',
+  'inProgressTake': 'ನಡೆಯುತ್ತಿದೆ, ಚೀಟಿ {name} ಅವರಿಗೆ',
+  'upcomingTake': 'ಮುಂಬರುವ, ಚೀಟಿ {name} ಅವರಿಗೆ',
+  'eachTakes': 'ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {amount}',
+  'eachTakesFine': 'ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {amount} (ಚೀಟಿ ಮೊತ್ತ ಮತ್ತು {fine} ದಂಡ)',
+  'splitTotal': '{total}, {n} ಜನರಿಗೆ ಹಂಚಿಕೆ',
+  'splitTotalFine': '{total}, {n} ಜನರಿಗೆ ಹಂಚಿಕೆ (ಚೀಟಿ ಮೊತ್ತ ಮತ್ತು {fine} ದಂಡ)',
+  'takePotThisMonthN': 'ಈ ತಿಂಗಳು {n} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ',
+  'bottleDrawMore': 'ಇನ್ನೂ {n} ಡ್ರಾ ಮಾಡಿ',
+  'takePotNames': 'ಚೀಟಿ ಪಡೆಯುವವರು: {names}',
+  'takePotInMonthN': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಚೀಟಿ ಪಡೆಯುವವರು',
+  'chooseUpTo': '{n} ಜನರವರೆಗೆ ಆಯ್ಕೆಮಾಡಿ. {chosen} ಆಯ್ಕೆಯಾಗಿದೆ.',
+  'doneChoosing': 'ಮುಗಿಯಿತು',
+  'planEven': 'ಪ್ರತಿ ತಿಂಗಳು {n} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ',
+  'planUneven': 'ತಿಂಗಳು 1 ರಿಂದ {last} ರವರೆಗೆ {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ನಂತರ {fewer} ಜನರು',
+  'planUnevenOne': 'ತಿಂಗಳು 1 ರಲ್ಲಿ {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ನಂತರ {fewer} ಜನರು',
+  'chitLength': 'ಅವಧಿ',
+  'lengthSame': 'ಸ್ಲಾಟ್‌ಗಳಷ್ಟೇ',
+  'lengthSameSub': '{n} ತಿಂಗಳುಗಳು, ಪ್ರತಿ ತಿಂಗಳು ಒಬ್ಬರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ',
+  'monthsCount': '{n} ತಿಂಗಳುಗಳು',
+  'errEndsBefore': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಈಗಾಗಲೇ ಪಾವತಿಗಳು ಅಥವಾ ಚೀಟಿ ಪಡೆದವರು ಇದ್ದಾರೆ, ಆದ್ದರಿಂದ ಚೀಟಿ ತಿಂಗಳು {n} ಕ್ಕಿಂತ ಮೊದಲು ಮುಗಿಯಲಾರದು.',
+  'errTooManyTakers': 'ತಿಂಗಳು {n} ರಲ್ಲಿ {have} ಜನರನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ, ಆದರೆ ಈಗ {k} ಜನರಿಗೆ ಮಾತ್ರ ಜಾಗವಿದೆ. ಮೊದಲು ಅವರನ್ನು ಬದಲಿಸಿ.',
+  'drawPickOf': '{k} ರಲ್ಲಿ {i}ನೇ ಡ್ರಾ',
+  'bottlePicksK': 'ಬಾಟಲಿ ಅವುಗಳಲ್ಲಿ {n} ಅನ್ನು ಒಂದರ ನಂತರ ಒಂದರಂತೆ ಆರಿಸುತ್ತದೆ.',
+  'takePotForEach': 'ತಿಂಗಳು {n}, {label}: ಚೀಟಿ ಇವರಿಗೆ. ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {each}.',
+  'saveAsWinners': 'ತಿಂಗಳು {n} ರ ಚೀಟಿ ಪಡೆದವರಾಗಿ ಉಳಿಸಿ',
+  'msgDrawResultMany': '{chit}, ತಿಂಗಳು {n} ({label})\nಬಾಟಲಿಯಿಂದ ಬಂದದ್ದು:\n{list}\nಪ್ರತಿಯೊಬ್ಬರಿಗೆ {each}.\nಬಾಟಲಿಯಲ್ಲಿ {count} ಹೆಸರುಗಳಿದ್ದವು. ಡ್ರಾ ಆದದ್ದು {when}.',
 };
 
 const Map<String, String> _hi = {
@@ -3897,6 +4113,33 @@ const Map<String, String> _hi = {
   'notifBlocked': 'Kuree की सूचनाएँ बंद हैं। इन्हें अपने फ़ोन की सेटिंग में चालू करें।',
   'notifChannelReminders': 'चिट रिमाइंडर',
   'notifChannelUpdates': 'चिट अपडेट',
+  'onlyFewLeft': 'सिर्फ़ {names} बचे हैं, इसलिए ड्रॉ की ज़रूरत नहीं। चुनें का इस्तेमाल करें।',
+  'inProgressTake': 'चल रहा है, रकम {name} को',
+  'upcomingTake': 'आने वाला, रकम {name} को',
+  'eachTakes': 'हर एक को {amount}',
+  'eachTakesFine': 'हर एक को {amount} (कुल रकम और {fine} जुर्माना)',
+  'splitTotal': '{total}, {n} लोगों में बँटेगी',
+  'splitTotalFine': '{total}, {n} लोगों में बँटेगी (कुल रकम और {fine} जुर्माना)',
+  'takePotThisMonthN': 'इस महीने {n} लोग रकम लेंगे',
+  'bottleDrawMore': '{n} और का ड्रॉ',
+  'takePotNames': 'रकम लेने वाले: {names}',
+  'takePotInMonthN': 'महीना {n} में रकम लेने वाले',
+  'chooseUpTo': '{n} तक चुनें। {chosen} चुने गए।',
+  'doneChoosing': 'हो गया',
+  'planEven': 'हर महीने {n} लोग रकम लेंगे',
+  'planUneven': 'महीना 1 से {last} तक {more} लोग रकम लेंगे, फिर {fewer}',
+  'planUnevenOne': 'महीना 1 में {more} लोग रकम लेंगे, फिर {fewer}',
+  'chitLength': 'अवधि',
+  'lengthSame': 'स्लॉट जितनी',
+  'lengthSameSub': '{n} महीने, हर महीने एक व्यक्ति रकम लेगा',
+  'monthsCount': '{n} महीने',
+  'errEndsBefore': 'महीना {n} में पहले से भुगतान या रकम लेने वाला है, इसलिए चिट महीना {n} से पहले खत्म नहीं हो सकती।',
+  'errTooManyTakers': 'महीना {n} में {have} लोग चुने गए हैं, पर अब सिर्फ़ {k} की जगह है। पहले उन्हें बदलें।',
+  'drawPickOf': '{k} में से {i}वाँ ड्रॉ',
+  'bottlePicksK': 'बोतल इनमें से {n} पर्चियाँ एक के बाद एक निकालेगी।',
+  'takePotForEach': 'महीना {n}, {label}: रकम इन्हें मिलेगी। हर एक को {each}।',
+  'saveAsWinners': 'महीना {n} के रकम लेने वाले सेव करें',
+  'msgDrawResultMany': '{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

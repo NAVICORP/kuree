@@ -193,7 +193,7 @@ void main() {
       final text = reminderFor(k, m, naif);
       expect(text, contains('AED 5,000'));
       expect(text, contains('late fine of AED 200'));
-      expect(drawResult(k, 5, 9, 9, DateTime(2026, 10, 20, 19, 31)), contains('Takes the pot of AED 65,000.'));
+      expect(drawResult(k, 5, [9], 9, DateTime(2026, 10, 20, 19, 31)), contains('Takes the pot of AED 65,000.'));
     });
   });
   group('the late fine', () {

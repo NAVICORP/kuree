@@ -955,5 +955,171 @@
   "notifNotNow": "Not now",
   "notifBlocked": "Notifications are off for Kuree. Turn them on in your phone's settings.",
   "notifChannelReminders": "Chit reminders",
-  "notifChannelUpdates": "Chit updates"
+  "notifChannelUpdates": "Chit updates",
+  "onlyFewLeft": "Only {names} are left, so there is nothing to draw. Use Choose.",
+  "@onlyFewLeft": {
+    "placeholders": {
+      "names": {}
+    }
+  },
+  "inProgressTake": "In progress, {name} take the pot",
+  "@inProgressTake": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "upcomingTake": "Upcoming, {name} take the pot",
+  "@upcomingTake": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "eachTakes": "{amount} each",
+  "@eachTakes": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "eachTakesFine": "{amount} each (pot plus {fine} fine)",
+  "@eachTakesFine": {
+    "placeholders": {
+      "amount": {},
+      "fine": {}
+    }
+  },
+  "splitTotal": "{total} shared by {n}",
+  "@splitTotal": {
+    "placeholders": {
+      "total": {},
+      "n": {}
+    }
+  },
+  "splitTotalFine": "{total} shared by {n} (pot plus {fine} fine)",
+  "@splitTotalFine": {
+    "placeholders": {
+      "total": {},
+      "n": {},
+      "fine": {}
+    }
+  },
+  "takePotThisMonthN": "{n} take the pot this month",
+  "@takePotThisMonthN": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "bottleDrawMore": "Draw {n} more",
+  "@bottleDrawMore": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "takePotNames": "Take the pot: {names}",
+  "@takePotNames": {
+    "placeholders": {
+      "names": {}
+    }
+  },
+  "takePotInMonthN": "Take the pot in month {n}",
+  "@takePotInMonthN": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "chooseUpTo": "Choose up to {n}. {chosen} chosen.",
+  "@chooseUpTo": {
+    "placeholders": {
+      "n": {},
+      "chosen": {}
+    }
+  },
+  "doneChoosing": "Done",
+  "planEven": "{n} people take the pot each month",
+  "@planEven": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "planUneven": "{more} people take the pot in months 1 to {last}, then {fewer}",
+  "@planUneven": {
+    "placeholders": {
+      "more": {},
+      "last": {},
+      "fewer": {}
+    }
+  },
+  "planUnevenOne": "{more} people take the pot in month 1, then {fewer}",
+  "@planUnevenOne": {
+    "placeholders": {
+      "more": {},
+      "fewer": {}
+    }
+  },
+  "chitLength": "Length",
+  "lengthSame": "Same as slots",
+  "lengthSameSub": "{n} months, one person takes the pot each month",
+  "@lengthSameSub": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "monthsCount": "{n} months",
+  "@monthsCount": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errEndsBefore": "Month {n} already has payments or a taker, so the chit cannot end before month {n}.",
+  "@errEndsBefore": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errTooManyTakers": "Month {n} has {have} takers chosen, but now has room for {k}. Change its takers first.",
+  "@errTooManyTakers": {
+    "placeholders": {
+      "n": {},
+      "have": {},
+      "k": {}
+    }
+  },
+  "drawPickOf": "Pick {i} of {k}",
+  "@drawPickOf": {
+    "placeholders": {
+      "i": {},
+      "k": {}
+    }
+  },
+  "bottlePicksK": "The bottle picks {n} of them, one after another.",
+  "@bottlePicksK": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "takePotForEach": "Take the pot for month {n}, {label}. {each} each.",
+  "@takePotForEach": {
+    "placeholders": {
+      "n": {},
+      "label": {},
+      "each": {}
+    }
+  },
+  "saveAsWinners": "Save as month {n} winners",
+  "@saveAsWinners": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "msgDrawResultMany": "{chit}, month {n} ({label})\nThe bottle picked:\n{list}\n{each} each.\n{count} names were in the bottle. Drawn {when}.",
+  "@msgDrawResultMany": {
+    "placeholders": {
+      "chit": {},
+      "n": {},
+      "label": {},
+      "list": {},
+      "each": {},
+      "count": {},
+      "when": {}
+    }
+  }
 }
