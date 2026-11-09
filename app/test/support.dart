@@ -55,3 +55,47 @@ KuriRecord demoChit({String currency = 'INR'}) {
     },
   });
 }
+
+/// A made-up chit with more slots than months: [slots] slots over [length]
+/// months (20 over 10 by default, two takers a month), three months in.
+/// Slot 6 is shared by two people.
+KuriRecord multiChit({int slots = 20, int length = 10, String currency = 'INR'}) => KuriRecord.fromJson(multiChitJson(slots: slots, length: length, currency: currency));
+
+Map<String, dynamic> multiChitJson({int slots = 20, int length = 10, String currency = 'INR'}) {
+  const names = [
+    'Nazil', 'Ramshad Ac', 'Anees Muhammed', 'Ishaque', 'Ashif', 'Muhajir', 'Sinan KP', 'Naif', 'Farhan', 'Yasir', 'Anwar',
+    'Mufaz', 'Shameer', 'Riyas', 'Faseela', 'Jasna', 'Nabeel', 'Salman', 'Meera', 'Anand', 'Riya', 'Jaseem', 'Aswathy', 'Faisal',
+    'Rahul', 'Fathima',
+  ];
+  final people = [for (var i = 0; i < names.length; i++) {'id': 'm${i + 1}', 'name': names[i]}];
+  final payers = <Map<String, dynamic>>[];
+  var who = 0;
+  for (var s = 1; s <= slots; s++) {
+    if (s == 6) {
+      payers.add({'id': 'p6a', 'slot': 6, 'person': 'm${++who}', 'amt': 2500});
+      payers.add({'id': 'p6b', 'slot': 6, 'person': 'm${++who}', 'amt': 2500});
+    } else {
+      payers.add({'id': 'p$s', 'slot': s, 'person': 'm${++who}', 'amt': 5000});
+    }
+  }
+  final all = {for (final p in payers) p['id'] as String: true};
+  final now = DateTime.now();
+  final start = DateTime(now.year, now.month - 2, 1);
+  return {
+    'id': '00000000-0000-0000-0000-000000000003',
+    'role': 'owner',
+    'share_token': 'mmmmmmmmmmmmmmmmmmmmmmmm',
+    'updated_at': now.subtract(const Duration(minutes: 3)).toUtc().toIso8601String(),
+    'updated_by': 'Ishaque',
+    'data': {
+      'name': '5K Chit', 'group': 'Hilltop', 'share': 5000, 'slots': slots, 'length': length, 'startYear': start.year,
+      'startMonth': start.month, 'collectDay': 20, 'lastDay': 25, 'fine': 200, 'currency': currency, 'people': people, 'payers': payers,
+      'months': [
+        {'n': 1, 'winner': 4, 'winners': [4, 11], 'paid': all},
+        {'n': 2, 'winner': 8, 'winners': [8, 15], 'paid': all, 'fines': {'p3': true},
+         'draw': {'how': 'bottle', 'at': '2026-10-20T14:01:43.581Z', 'by': 'Ishaque', 'picked': 8, 'picks': [8, 15], 'names': [for (var s = 1; s <= slots; s++) if (s != 4 && s != 11) s]}},
+        {'n': 3, 'winner': null, 'paid': {for (final p in payers.take(9)) p['id'] as String: true}},
+      ],
+    },
+  };
+}

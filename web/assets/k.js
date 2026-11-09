@@ -60,11 +60,42 @@
   function fineOf(m) { return m.fineAmt != null ? Number(m.fineAmt) || 0 : FINE(); }
   function fineSum(m) { var t = 0; PAYERS.forEach(function (p) { if (fined(m, p.id)) t += fineOf(m); }); return t; }
   function allFines() { var t = 0; data.months.forEach(function (m) { t += fineSum(m); }); return t; }
+  /* the slots taking the pot in a month: "winners" when there are several
+     ("winner" is the first, which older apps read and may change alone) */
+  function wins(m) {
+    var w = m.winner > 0 ? +m.winner : null;
+    if (!Array.isArray(m.winners)) return w ? [w] : [];
+    var l = [];
+    m.winners.forEach(function (x) { x = +x; if (x > 0 && l.indexOf(x) < 0) l.push(x); });
+    if (l.length ? l[0] !== w : w) l = w ? [w].concat(l.slice(1).filter(function (x) { return x !== w; })) : [];
+    return l;
+  }
+  /* how many take the pot in month n: the earlier months one more when the
+     slots do not divide evenly over the months */
+  function need(n) { var L = LEN(), S = SLOTS.length; return Math.floor(S / L) + (n <= S % L ? 1 : 0); }
+  function LEN() { return data.months.length || 1; }
+  function multi() { return LEN() < SLOTS.length; }
+  /* what each taker of month m gets: the month's total in whole parts */
+  function payouts(m) {
+    var k = Math.max(1, need(m.n), wins(m).length), t = POT + fineSum(m), b = Math.floor(t / k), r = t - b * k, o = [];
+    for (var i = 0; i < k; i++) o.push(b + (i < r ? 1 : 0));
+    return o;
+  }
+  function names(list) {
+    var n = list.map(slotName);
+    return n.length < 2 ? n.join("") : n.slice(0, -1).join(", ") + " and " + n[n.length - 1];
+  }
+  function plan() {
+    var S = SLOTS.length, L = LEN(), b = Math.floor(S / L), x = S % L;
+    if (L >= S) return "";
+    if (!x) return b + " people take the pot each month";
+    return (b + 1) + " people take the pot in month" + (x === 1 ? " 1" : "s 1 to " + x) + ", then " + b;
+  }
   function status(m) {
-    if (PAYERS.length && PAYERS.every(function (p) { return paid(m, p.id); }) && m.winner) return "done";
+    if (PAYERS.length && PAYERS.every(function (p) { return paid(m, p.id); }) && wins(m).length && wins(m).length >= need(m.n)) return "done";
     return new Date() >= cdate(m.n) ? "open" : "soon";
   }
-  function drawn() { var o = {}; data.months.forEach(function (m) { if (m.winner) o[m.winner] = m.n; }); return o; }
+  function drawn() { var o = {}; data.months.forEach(function (m) { wins(m).forEach(function (w) { o[w] = m.n; }); }); return o; }
   function daysUntil(d) {
     var a = new Date(); a.setHours(0, 0, 0, 0);
     return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - a) / 86400000);
@@ -171,6 +202,10 @@
   function prepare(d) {
     data = d;
     data.months = (data.months || []).slice().sort(function (a, b) { return a.n - b.n; });
+    /* a chit shorter than its slots: an older app may have added a month for
+       every slot, and those past the end go */
+    var len = Number(data.length) || 0, ns = Number(data.slots) || 0;
+    if (len > 0 && ns > 0 && len < ns && data.months.length > len) data.months = data.months.slice(0, len);
     data.months.forEach(function (m, i) { m.n = i + 1; m.paid = m.paid || {}; m.fines = m.fines || {}; });
     PAYERS = (data.payers || []).slice().sort(function (a, b) { return a.slot - b.slot || (a.id < b.id ? -1 : 1); })
       .map(function (p) { return { id: p.id, slot: p.slot, amt: Number(p.amt) || 0, name: nameOf(p), part: p.amt < data.share }; });
@@ -207,8 +242,20 @@
     });
     h.push("</div></div>");
 
-    var winCtl = '<span class="wtag' + (m.winner ? "" : " wtag--none") + '">' + (m.winner ? svgi("i-trophy") + esc(slotName(m.winner)) : "Not decided yet") + "</span>" +
-      (m.winner ? '<span class="win__amt">Takes ' + money(POT + fines) + (fines ? " (pot + " + money(fines) + " fine)" : "") + "</span>" : "");
+    var mw = wins(m), k = need(m.n), winCtl;
+    if (k > 1) {
+      /* several take the pot: each one, and what each gets */
+      var pays = payouts(m), even = pays.every(function (x) { return x === pays[0]; });
+      winCtl = mw.map(function (w, i) {
+        return '<span class="wtag">' + svgi("i-trophy") + esc(slotName(w)) + (even ? "" : " " + money(pays[i])) + "</span>";
+      }).join(" ") +
+        (mw.length < k ? ' <span class="wtag wtag--none">' + (mw.length ? (k - mw.length) + " more not decided yet" : "Not decided yet") + "</span>" : "") +
+        '<span class="win__amt">' + (even ? money(pays[0]) + " each" : money(POT + fines) + " shared by " + k) +
+        (fines ? " (pot + " + money(fines) + " fine)" : "") + "</span>";
+    } else {
+      winCtl = '<span class="wtag' + (mw.length ? "" : " wtag--none") + '">' + (mw.length ? svgi("i-trophy") + esc(slotName(mw[0])) : "Not decided yet") + "</span>" +
+        (mw.length ? '<span class="win__amt">Takes ' + money(POT + fines) + (fines ? " (pot + " + money(fines) + " fine)" : "") + "</span>" : "");
+    }
     var dl = dline(m.n);
     h.push('<div style="margin-top:20px" class="mcard"><div class="mcard__head"><div>' +
       '<div class="mnav">' +
@@ -221,14 +268,14 @@
       '<div class="mcard__meta"><span><b class="num">' + money(got) + '</b> of <span class="num">' + money(POT) + "</span> collected</span>" +
       (fines ? '<span class="num">+ ' + money(fines) + " in fines</span>" : "") + "</div>" +
       '<div class="bar" role="img" aria-label="' + pct + '% collected"><i style="width:' + pct + '%"></i></div></div>' +
-      '<div class="win"><span class="win__lbl">Takes the pot</span>' + winCtl + "</div></div>");
+      '<div class="win"><span class="win__lbl">' + (k > 1 ? k + " take the pot" : "Takes the pot") + "</span>" + winCtl + "</div></div>");
 
     h.push('<div class="plist"><div class="plist__head">' +
       '<span class="ph-slot" aria-hidden="true"></span><span>Member</span>' +
       '<span class="ph-facts"><span>Payment</span><span>Draw</span><span>Amount due</span></span>' +
       "</div>");
     PAYERS.forEach(function (p) {
-      var isw = m.winner === p.slot, pd = paid(m, p.id), fd = fined(m, p.id);
+      var isw = mw.indexOf(p.slot) >= 0, pd = paid(m, p.id), fd = fined(m, p.id);
       var due = p.amt + (fd ? fineOf(m) : 0);
       var dw = w[p.slot];
       var draw = isw ? '<span class="badge badge--win" title="Took the pot in month ' + m.n + '" aria-label="Took the pot in month ' + m.n + '">' + svgi("i-trophy") + m.n + "</span>"
@@ -293,7 +340,7 @@
       h.push('<tr><td class="who">' + p.slot + ". " + esc(p.name) + "</td>");
       lmonths.forEach(function (mm) {
         if (!mm.b) { h.push('<td><span class="mk n" role="img" title="Outside the chit" aria-label="Outside the chit">' + svgi("i-dot") + "</span></td>"); return; }
-        var x = mm.b, pd = paid(x, p.id), fd = fined(x, p.id), wn = x.winner === p.slot;
+        var x = mm.b, pd = paid(x, p.id), fd = fined(x, p.id), wn = wins(x).indexOf(p.slot) >= 0;
         var lb = fd ? "Paid late, fine" : (pd ? "Paid" : "Not paid");
         if (wn) {
           h.push('<td><span class="mk w" role="img" title="Took the pot in month ' + x.n + '" aria-label="Took the pot">' + svgi("i-trophy") + "</span></td>");
@@ -325,6 +372,7 @@
       '<div class="metric"><dt>Collection day</dt><dd>' + ord(cd) + "</dd><small>every month</small></div>" +
       '<div class="metric"><dt>Last date</dt><dd>' + ord(ld) + "</dd><small>Midnight" + (ld < cd ? ", the month after" : "") + "</small></div>" +
       (FINE() ? '<div class="metric"><dt>Late fine</dt><dd class="num">' + money(FINE()) + "</dd><small>goes to that month&rsquo;s pot</small></div>" : "") +
+      (multi() ? '<div class="metric"><dt>Takers each month</dt><dd class="num">' + n + " months</dd><small>" + esc(plan()) + ", sharing the month&rsquo;s pot</small></div>" : "") +
       "</dl></div></section>");
 
     app.innerHTML = h.join("");

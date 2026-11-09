@@ -65,14 +65,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
       final b = newer.months[i];
       final paidA = older.paidCount(a), paidB = newer.paidCount(b);
       if (paidA != paidB) bits.add(t.histPaid(b.n, paidA, paidB));
-      if (a.winner != b.winner) {
-        bits.add(a.winner == null ? t.histNoTaker(b.n) : t.histWentTo(b.n, older.slotName(a.winner!)));
+      if (a.winners.join(',') != b.winners.join(',')) {
+        bits.add(a.winners.isEmpty ? t.histNoTaker(b.n) : t.histWentTo(b.n, older.slotsName(a.winners)));
       }
       if (older.fineCount(a) != newer.fineCount(b)) bits.add(t.histFines(b.n, older.fineCount(a)));
     }
     if (older.name != newer.name ||
         older.share != newer.share ||
         older.slots != newer.slots ||
+        older.length != newer.length ||
         older.fine != newer.fine ||
         older.currency != newer.currency) {
       bits.add(t.histSettings);

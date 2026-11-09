@@ -30,9 +30,22 @@ export 'scene.dart' show DrawEntry;
 
 enum _Phase { ready, preparing, running, done }
 
-/// The bottle draw for one month, full screen. The winner is picked with the
-/// phone's secure random numbers the moment the draw starts; the animation
-/// only shows it. Nothing is saved until the admin presses Save.
+/// One pass of the bottle: the slips that go in, which one comes out and
+/// the seed its animation plays from.
+class _Round {
+  const _Round(this.entries, this.pickIndex, this.seed);
+  final List<DrawEntry> entries;
+  final int pickIndex;
+  final int seed;
+
+  DrawEntry get picked => entries[pickIndex];
+}
+
+/// The bottle draw for one month, full screen. The takers are picked with
+/// the phone's secure random numbers the moment the draw starts; the
+/// animation only shows it. When the month has more than one place, the
+/// bottle is played once for each, one after another, with the slips
+/// already out kept out. Nothing is saved until the admin presses Save.
 class BottleDrawScreen extends StatefulWidget {
   const BottleDrawScreen({
     super.key,
@@ -40,6 +53,8 @@ class BottleDrawScreen extends StatefulWidget {
     required this.month,
     required this.label,
     required this.pot,
+    this.each,
+    this.count = 1,
     this.currency = 'INR',
     required this.entries,
     required this.resultText,
@@ -55,11 +70,17 @@ class BottleDrawScreen extends StatefulWidget {
   final String label;
   final int pot;
 
+  /// What each taker gets, when the month has several; null for one.
+  final int? each;
+
+  /// How many slips come out of the bottle.
+  final int count;
+
   /// The chit's currency code, for the pot.
   final String currency;
   final List<DrawEntry> entries;
-  final String Function(int slot, int names, DateTime when) resultText;
-  final Future<bool> Function(int slot, DrawInfo info) onSave;
+  final String Function(List<int> slots, int names, DateTime when) resultText;
+  final Future<bool> Function(List<int> slots, DrawInfo info) onSave;
   final String by;
 
   @override
@@ -68,30 +89,49 @@ class BottleDrawScreen extends StatefulWidget {
 
 class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerProviderStateMixin {
   late final List<DrawEntry> order = shuffled(widget.entries);
-  late BottleScene scene = _scene(0, 0, null);
+  late final int count = widget.count.clamp(1, math.max(1, widget.entries.length - 1));
+  late List<_Round> rounds = [_Round(order, 0, 0)];
+  late List<BottleScene> scenes = [_scene(0, null)];
+  int round = 0;
+
+  /// When the round on screen started, in ms of the ticker.
+  double roundAt = 0;
+  BottleScene get scene => scenes[round];
   final ValueNotifier<double> clock = ValueNotifier(-DrawPlan.countdown);
   late final Ticker ticker = createTicker(_tick);
   _Phase phase = _Phase.ready;
   bool sound = true;
   bool saved = false;
   bool saving = false;
-  int seed = 0;
-  int pickIndex = 0;
   DateTime? when;
-  Int16List? samples;
+
+  /// Each round's soundtrack, from its countdown to the end of its video.
+  List<Int16List>? samples;
   AudioPlayer? player;
   String? videoPath;
   double? videoProgress;
 
-  BottleScene _scene(int pick, int seed, DateTime? when) => BottleScene(
-        order: order,
-        pickIndex: pick,
-        seed: seed,
+  List<DrawEntry> get picks => [for (final r in rounds) r.picked];
+
+  BottleScene _scene(int r, DateTime? when) => BottleScene(
+        order: rounds[r].entries,
+        pickIndex: rounds[r].pickIndex,
+        seed: rounds[r].seed,
         kicker: widget.title.toUpperCase(),
         title: S.current.drawTitle(widget.month),
         subtitle: S.current.drawSubtitle(widget.label, money(widget.pot, widget.currency)),
         when: when,
-      )..subtitlePot = money(widget.pot, widget.currency);
+      )
+        ..subtitlePot = money(widget.each ?? widget.pot, widget.currency)
+        ..round = count > 1 ? S.current.drawPickOf(r + 1, count) : '';
+
+  /// Where round r starts and ends on its own clock: the first with the
+  /// countdown, the last with the tail the video keeps after the result.
+  (double, double) _span(int r, DrawPlan plan) =>
+      (r == 0 ? -DrawPlan.countdown : 0.0, r == rounds.length - 1 ? plan.end + DrawPlan.tail : plan.end);
+
+  /// The sample at time t of a round's soundtrack (which starts at the countdown).
+  static int _sampleAt(double t) => ((t + DrawPlan.countdown) / 1000 * Soundtrack.rate).round();
 
   @override
   void dispose() {
@@ -105,21 +145,27 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
   Future<void> _start() async {
     setState(() => phase = _Phase.preparing);
     final rnd = math.Random.secure();
-    pickIndex = fair(order.length); // decided here, before a single frame of the draw
-    seed = rnd.nextInt(1 << 32);
+    // Every pick is decided here, before a single frame of the draw: a fair
+    // pick from the slips, then another from the slips left, and so on.
+    final chosen = pickSome(order, count);
+    final next = <_Round>[];
+    for (var r = 0; r < count; r++) {
+      final entries = [for (final e in order) if (!chosen.take(r).contains(e)) e];
+      next.add(_Round(entries, entries.indexOf(chosen[r]), rnd.nextInt(1 << 32)));
+    }
+    rounds = next;
     when = DateTime.now();
-    scene = _scene(pickIndex, seed, when);
+    scenes = [for (var r = 0; r < count; r++) _scene(r, when)];
+    round = 0;
+    roundAt = 0;
     WakelockPlus.enable();
     if (sound) {
       try {
-        final plan = scene.plan, s = seed;
-        samples = await Isolate.run(() => Soundtrack.render(plan, s));
-        final dir = await getTemporaryDirectory();
-        final f = File('${dir.path}/kuree-draw-$seed.wav');
-        await f.writeAsBytes(Soundtrack.wav(samples!), flush: true);
+        final plans = [for (final x in scenes) x.plan], seeds = [for (final r in rounds) r.seed];
+        samples = await Isolate.run(() => [for (var r = 0; r < plans.length; r++) Soundtrack.render(plans[r], seeds[r])]);
         player = AudioPlayer();
         await player!.setReleaseMode(ReleaseMode.stop);
-        await player!.play(DeviceFileSource(f.path));
+        await _play(0);
       } catch (_) {
         player = null; // The draw goes on without sound.
       }
@@ -129,25 +175,55 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
     ticker.start();
   }
 
+  /// Plays round r's part of its soundtrack.
+  Future<void> _play(int r) async {
+    final p = player, all = samples;
+    if (p == null || all == null) return;
+    try {
+      final (from, to) = _span(r, scenes[r].plan);
+      final pcm = all[r];
+      final part = Int16List.sublistView(pcm, _sampleAt(from).clamp(0, pcm.length), _sampleAt(to).clamp(0, pcm.length));
+      final dir = await getTemporaryDirectory();
+      final f = File('${dir.path}/kuree-draw-${rounds[r].seed}.wav');
+      await f.writeAsBytes(Soundtrack.wav(part), flush: true);
+      await p.play(DeviceFileSource(f.path));
+    } catch (_) {
+      // The draw goes on without sound.
+    }
+  }
+
   void _tick(Duration elapsed) {
-    final t = elapsed.inMicroseconds / 1000 - DrawPlan.countdown;
+    final ms = elapsed.inMicroseconds / 1000;
+    final t = ms - roundAt + (round == 0 ? -DrawPlan.countdown : 0);
     scene.advanceTo(t);
     clock.value = t;
     if (phase == _Phase.running && t >= scene.plan.end) {
-      HapticFeedback.heavyImpact();
-      setState(() => phase = _Phase.done);
+      if (round < rounds.length - 1) {
+        // The next slip: the bottle is filled again with the ones left.
+        HapticFeedback.mediumImpact();
+        setState(() {
+          round++;
+          roundAt = ms;
+        });
+        clock.value = 0;
+        _play(round);
+      } else {
+        HapticFeedback.heavyImpact();
+        setState(() => phase = _Phase.done);
+      }
     }
   }
 
   Future<void> _save() async {
     setState(() => saving = true);
-    final slot = scene.picked.slot;
+    final slots = [for (final e in picks) e.slot];
     final ok = await widget.onSave(
-      slot,
+      slots,
       DrawInfo(
         at: when!.toUtc().toIso8601String(),
         by: widget.by,
-        picked: slot,
+        picked: slots.first,
+        picks: slots,
         names: [for (final e in widget.entries) e.slot],
       ),
     );
@@ -189,12 +265,14 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
     await SharePlus.instance.share(ShareParams(files: [XFile(p, mimeType: 'video/mp4')], title: S.current.drawShareTitle(widget.title, widget.month)));
   }
 
-  /// Plays the same draw again, frame by frame, into an mp4 with its sound.
+  /// Plays the same draw again, frame by frame, into an mp4 with its sound:
+  /// every round, one after another.
   Future<String> _makeVideo(void Function(double) progress) async {
     const vw = 720, vh = 1280, fps = 30;
-    final s2 = _scene(pickIndex, seed, when);
-    final plan = s2.plan, sd = seed;
-    final Int16List pcm = samples ?? await Isolate.run<Int16List>(() => Soundtrack.render(plan, sd));
+    final again = [for (var r = 0; r < rounds.length; r++) _scene(r, when)];
+    final plans = [for (final x in again) x.plan], seeds = [for (final r in rounds) r.seed];
+    final List<Int16List> pcms = samples ??
+        await Isolate.run<List<Int16List>>(() => [for (var r = 0; r < plans.length; r++) Soundtrack.render(plans[r], seeds[r])]);
     final dir = await getTemporaryDirectory();
     final path = '${dir.path}/${widget.title.replaceAll(RegExp(r'[^A-Za-z0-9]+'), '-').toLowerCase()}-month-${widget.month}-draw.mp4';
     final old = File(path);
@@ -211,32 +289,37 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
       sampleRate: Soundtrack.rate,
       filepath: path,
     );
-    final frames = (s2.length / 1000 * fps).ceil();
     const perFrame = Soundtrack.rate ~/ fps;
-    for (var f = 0; f < frames; f++) {
-      final t = -DrawPlan.countdown + f * 1000 / fps;
-      s2.advanceTo(t);
-      final rec = ui.PictureRecorder();
-      final c = Canvas(rec);
-      c.scale(vw / BottleScene.W);
-      s2.paint(c, t);
-      final pic = rec.endRecording();
-      final img = await pic.toImage(vw, vh);
-      final bytes = await img.toByteData(format: ui.ImageByteFormat.rawRgba);
-      img.dispose();
-      pic.dispose();
-      await FlutterQuickVideoEncoder.appendVideoFrame(bytes!.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes));
-      final chunk = Int16List(perFrame);
-      final from = f * perFrame;
-      for (var i = 0; i < perFrame && from + i < pcm.length; i++) {
-        chunk[i] = pcm[from + i];
+    final spans = [for (var r = 0; r < again.length; r++) _span(r, again[r].plan)];
+    final counts = [for (final (a, b) in spans) ((b - a) / 1000 * fps).ceil()];
+    final total = counts.fold<int>(0, (x, y) => x + y);
+    var done = 0;
+    for (var r = 0; r < again.length; r++) {
+      final s2 = again[r], pcm = pcms[r];
+      final (from, _) = spans[r];
+      final start = _sampleAt(from);
+      for (var f = 0; f < counts[r]; f++) {
+        final t = from + f * 1000 / fps;
+        s2.advanceTo(t);
+        final rec = ui.PictureRecorder();
+        final c = Canvas(rec);
+        c.scale(vw / BottleScene.W);
+        s2.paint(c, t);
+        final pic = rec.endRecording();
+        final img = await pic.toImage(vw, vh);
+        final bytes = await img.toByteData(format: ui.ImageByteFormat.rawRgba);
+        img.dispose();
+        pic.dispose();
+        await FlutterQuickVideoEncoder.appendVideoFrame(bytes!.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes));
+        final le = ByteData(perFrame * 2);
+        final at = start + f * perFrame;
+        for (var i = 0; i < perFrame; i++) {
+          le.setInt16(i * 2, at + i >= 0 && at + i < pcm.length ? pcm[at + i] : 0, Endian.little);
+        }
+        await FlutterQuickVideoEncoder.appendAudioFrame(le.buffer.asUint8List());
+        done++;
+        if (done % 3 == 0) progress(done / total);
       }
-      final le = ByteData(perFrame * 2);
-      for (var i = 0; i < perFrame; i++) {
-        le.setInt16(i * 2, chunk[i], Endian.little);
-      }
-      await FlutterQuickVideoEncoder.appendAudioFrame(le.buffer.asUint8List());
-      if (f % 3 == 0) progress((f + 1) / frames);
     }
     await FlutterQuickVideoEncoder.finish();
     progress(1);
@@ -323,6 +406,10 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
       Text(s.drawTitle(widget.month), style: T.h2),
       const SizedBox(height: Sp.xs),
       Text(s.slipsGoIn(widget.entries.length), style: T.small),
+      if (count > 1) ...[
+        const SizedBox(height: Sp.xs),
+        Text(s.bottlePicksK(count), style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
+      ],
       const SizedBox(height: Sp.md),
       Wrap(spacing: 6, runSpacing: 6, children: [
         for (final e in widget.entries)
@@ -359,18 +446,32 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
   }
 
   Widget _doneCard(S s) {
-    final win = scene.picked;
+    final won = picks;
+    final win = won.first;
     return _sheet(Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Row(children: [
-        SlotBadge('${win.slot}', size: 48, style: SlotBadgeStyle.sun),
-        const SizedBox(width: Sp.md),
-        Expanded(child: Text(win.name, style: T.h2)),
-      ]),
-      const SizedBox(height: 6),
-      Text(s.takesPotFor(widget.month, widget.label), style: T.body.copyWith(color: K.ink2)),
+      if (won.length == 1) ...[
+        Row(children: [
+          SlotBadge('${win.slot}', size: 48, style: SlotBadgeStyle.sun),
+          const SizedBox(width: Sp.md),
+          Expanded(child: Text(win.name, style: T.h2)),
+        ]),
+        const SizedBox(height: 6),
+        Text(s.takesPotFor(widget.month, widget.label), style: T.body.copyWith(color: K.ink2)),
+      ] else ...[
+        for (final (i, e) in won.indexed) ...[
+          if (i > 0) const SizedBox(height: Sp.sm),
+          Row(children: [
+            SlotBadge('${e.slot}', size: 40, style: SlotBadgeStyle.sun),
+            const SizedBox(width: Sp.md),
+            Expanded(child: Text(e.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: T.h3)),
+          ]),
+        ],
+        const SizedBox(height: Sp.md - 2),
+        Text(s.takePotForEach(widget.month, widget.label, money(widget.each ?? widget.pot, widget.currency)), style: T.body.copyWith(color: K.ink2)),
+      ],
       const SizedBox(height: Sp.lg),
       KButton(
-        label: saved ? s.saved : s.saveAsWinner(widget.month),
+        label: saved ? s.saved : (won.length == 1 ? s.saveAsWinner(widget.month) : s.saveAsWinners(widget.month)),
         icon: saved ? Icons.check_circle_rounded : Icons.check_rounded,
         expand: true,
         busy: saving,
@@ -391,7 +492,7 @@ class _BottleDrawScreenState extends State<BottleDrawScreen> with SingleTickerPr
         icon: Icons.chat_outlined,
         kind: KButtonKind.secondary,
         expand: true,
-        onPressed: () => launchUrl(whatsApp(widget.resultText(win.slot, order.length, when!)), mode: LaunchMode.externalApplication),
+        onPressed: () => launchUrl(whatsApp(widget.resultText([for (final e in won) e.slot], order.length, when!)), mode: LaunchMode.externalApplication),
       ),
       const SizedBox(height: 6),
       KButton(label: s.close, kind: KButtonKind.ghost, onPressed: _close),

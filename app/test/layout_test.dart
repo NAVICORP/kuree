@@ -214,6 +214,43 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
+      testWidgets('several takers a month: months, choosing, draw the rest, length', (tester) async {
+        small(tester);
+        final multi = multiChit(slots: 25, currency: code == 'ar' ? 'AED' : 'INR');
+        await tester.pumpWidget(app(KuriScreen(record: multi), code));
+        await settle(tester);
+        expect(tester.takeException(), isNull);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(find.byTooltip(s.prevMonth), -300, scrollable: find.byType(Scrollable).first);
+        await tester.tap(find.byTooltip(s.prevMonth));
+        await settle(tester);
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.byTooltip(s.nextMonth));
+        await settle(tester);
+        await tapText(tester, s.choose);
+        expect(tester.takeException(), isNull);
+        expect(find.text(s.chooseUpTo(3, 0)), findsOneWidget);
+        await tester.tapAt(const Offset(10, 10));
+        await settle(tester);
+        await tester.tap(find.byTooltip(s.more));
+        await settle(tester);
+        await tapText(tester, s.drawRest);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('several takers a month: the length in the editor', (tester) async {
+        small(tester);
+        await tester.pumpWidget(app(KuriEditorScreen(record: multiChit(slots: 25)), code));
+        await settle(tester);
+        await scrollThrough(tester);
+        expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(find.text(s.chitLength), -300, scrollable: find.byType(Scrollable).first);
+        expect(find.text(s.planUneven(3, 5, 2)), findsWidgets);
+        await tapText(tester, s.chitLength);
+        expect(tester.takeException(), isNull);
+      });
+
       testWidgets('the bottle draw', (tester) async {
         small(tester);
         final k = chit.doc;

@@ -333,7 +333,7 @@ class KuriCard extends StatelessWidget {
     final m = k.months.isEmpty ? Month(n: 1) : k.months[n - 1];
     final got = k.paidSum(m);
     final paid = k.paidCount(m);
-    final winner = m.winner;
+    final winner = k.winnersName(m);
     return KCard(
       onTap: onTap,
       padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 18, 16),
@@ -375,7 +375,7 @@ class KuriCard extends StatelessWidget {
           const SizedBox(width: 6),
           Expanded(
             child: Text(
-              winner == null ? s.collectionNote(k.collectDate(n).day, k.monthShort(n), k.nextNote(n)) : s.takesPotName(k.slotName(winner)),
+              winner == null ? s.collectionNote(k.collectDate(n).day, k.monthShort(n), k.nextNote(n)) : (m.winners.length > 1 ? s.takePotNames(winner) : s.takesPotName(winner)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: T.small.copyWith(color: winner == null ? K.muted : K.green, fontWeight: FontWeight.w700),

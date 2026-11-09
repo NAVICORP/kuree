@@ -21,6 +21,14 @@ List<T> shuffled<T>(List<T> list) {
   return x;
 }
 
+/// k different items picked fairly from a list, in the order they were
+/// picked: one fair pick, then another from what is left, and so on. Every
+/// set of k is equally likely.
+List<T> pickSome<T>(List<T> from, int k, [int Function(int n) pick = fair]) {
+  final pool = List<T>.of(from);
+  return [for (var i = 0; i < k && pool.isNotEmpty; i++) pool.removeAt(pick(pool.length))];
+}
+
 // The messages below are written in the app's language.
 
 /// The message to one person who has not paid yet.
@@ -62,9 +70,18 @@ String groupList(KuriDoc k, Month m, String shareToken) {
   return b.toString().trim();
 }
 
-/// The result of a bottle draw, for the group chat.
-String drawResult(KuriDoc k, int month, int slot, int names, DateTime when) {
-  return S.current.msgDrawResult(k.fullName, month, k.monthLabel(month), slot, k.slotName(slot), k.money(k.pot), names, stamp(when));
+/// The result of a bottle draw, for the group chat. With several takers,
+/// one line each and what each one gets.
+String drawResult(KuriDoc k, int month, List<int> slots, int names, DateTime when) {
+  final s = S.current;
+  if (slots.length == 1 && k.winnersIn(month) <= 1) {
+    return s.msgDrawResult(k.fullName, month, k.monthLabel(month), slots.first, k.slotName(slots.first), k.money(k.pot), names, stamp(when));
+  }
+  final m = k.months[(month - 1).clamp(0, k.months.length - 1)];
+  final taken = m.winners.where((w) => !slots.contains(w)).length;
+  final list = [for (final x in slots) '$x. ${k.slotName(x)}'].join('\n');
+  final each = k.money(k.payoutOf(m, taken));
+  return s.msgDrawResultMany(k.fullName, month, k.monthLabel(month), list, each, names, stamp(when));
 }
 
 /// A WhatsApp link: to one person when there is a number, or to any chat

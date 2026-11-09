@@ -22,6 +22,8 @@ import 'package:kuree/ui/launch.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
 
+import '../test/support.dart' show multiChit;
+
 Future<void> loadFonts() async {
   Future<void> family(String name, List<String> files) async {
     final l = FontLoader(name);
@@ -420,6 +422,104 @@ void main() {
       await shot(tester, '$code-13-account');
     });
   }
+
+  // More slots than months: 20 slots over 10 months, two take the pot each
+  // month; and 25 over 10, three in months 1 to 5, then two.
+  for (final code in ['en', 'ar']) {
+    final s = S.forCode(code);
+    final pre = code == 'en' ? '' : '$code-';
+    String? lang() => code == 'en' ? null : code;
+
+    testWidgets('$code: several takers, a month', (tester) async {
+      sized(tester);
+      await pumpInTab(tester, KuriScreen(record: multiChit(currency: code == 'ar' ? 'AED' : 'INR')), lang());
+      await shot(tester, '${pre}30-multi-month');
+      await tester.tap(find.byTooltip(s.prevMonth));
+      await shot(tester, '${pre}31-multi-month-taken');
+      await tester.drag(find.byType(ListView).first, const Offset(0, -700));
+      await shot(tester, '${pre}32-multi-members');
+    });
+
+    testWidgets('$code: several takers, length in the editor', (tester) async {
+      sized(tester);
+      await pumpInTab(tester, KuriEditorScreen(record: multiChit(slots: 25)), lang());
+      await settle(tester);
+      await tester.scrollUntilVisible(find.text(s.chitLength), 200, scrollable: find.byType(Scrollable).first);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 160));
+      await shot(tester, '${pre}35-multi-length-25');
+      await tester.scrollUntilVisible(find.text(s.chitLength), 200, scrollable: find.byType(Scrollable).first);
+      await tester.pump();
+      await tester.tap(find.text(s.chitLength));
+      await shot(tester, '${pre}36-multi-length-picker');
+    });
+  }
+
+  testWidgets('several takers, choose by hand', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriScreen(record: multiChit()));
+    await settle(tester);
+    await tester.tap(find.text('Choose'));
+    await settle(tester);
+    await tester.tap(find.text('Ramshad Ac').last);
+    await shot(tester, '33-multi-choose');
+  });
+
+  testWidgets('several takers, draw the rest', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriScreen(record: multiChit(slots: 25)));
+    await settle(tester);
+    await tester.tap(find.byTooltip('More'));
+    await settle(tester);
+    await tester.tap(find.text('Draw the rest'));
+    await shot(tester, '34-multi-draw-rest');
+  });
+
+  testWidgets('several takers, home', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(HomeScreen(preview: ([multiChit(), boystown()], {'display': 'Ishaque', 'name': 'Ishaque'}))));
+    await shot(tester, '39-multi-home');
+  });
+
+  testWidgets('several takers, bottle draw ready', (tester) async {
+    sized(tester);
+    final k = multiChit().doc;
+    await tester.pumpWidget(phone(BottleDrawScreen(
+      title: k.fullName,
+      month: 3,
+      label: k.monthLabel(3),
+      pot: k.pot,
+      each: k.payoutOf(k.months[2], 0),
+      count: 2,
+      entries: [for (final s in k.waitingSlots()) DrawEntry(s, k.slotName(s))],
+      resultText: (a, b, c) => '',
+      onSave: (a, b) async => true,
+      by: 'Ishaque',
+    )));
+    await shot(tester, '37-multi-draw-ready');
+  });
+
+  test('several takers, bottle draw frames', () async {
+    final k = multiChit().doc;
+    final order = [for (final s in k.waitingSlots()) DrawEntry(s, k.slotName(s))];
+    final scene = BottleScene(
+      order: order, pickIndex: 3, seed: 7, kicker: k.fullName.toUpperCase(), title: 'Month 3 draw',
+      subtitle: '${k.monthLabel(3)}, pot ₹1,00,000', when: DateTime(2026, 11, 20, 19, 31),
+    )
+      ..subtitlePot = '₹50,000'
+      ..round = 'Pick 2 of 2';
+    final p = scene.plan;
+    Directory('test_screens/shots').createSync(recursive: true);
+    for (final e in {'38-multi-draw-writing': p.writeAt[2] + p.writeD * 0.3, '38b-multi-draw-result': p.reveal + 1600}.entries) {
+      scene.advanceTo(e.value);
+      final rec = ui.PictureRecorder();
+      final c = Canvas(rec);
+      c.scale(0.5);
+      scene.paint(c, e.value);
+      final img = await rec.endRecording().toImage(540, 960);
+      final png = await img.toByteData(format: ui.ImageByteFormat.png);
+      File('test_screens/shots/${e.key}.png').writeAsBytesSync(png!.buffer.asUint8List());
+    }
+  });
 
   test('bottle draw frames', () async {
     final k = boystown().doc;

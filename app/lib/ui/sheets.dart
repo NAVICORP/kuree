@@ -15,22 +15,39 @@ import 'widgets.dart';
 // ---------------------------------------------------------------- draw the rest
 
 /// Every slot still to take the pot, shuffled over the months from next month
-/// on. A slot is drawn as a whole, so a shared slot is one draw and a person
-/// with two slots has two. Returns month -> slot when the admin uses the order.
-Future<Map<int, int>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int currentMonth) {
+/// on, as many to a month as the month has places left. A slot is drawn as
+/// a whole, so a shared slot is one draw and a person with two slots has
+/// two. Returns month -> slots when the admin uses the order.
+Future<Map<int, List<int>>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int currentMonth) {
   final s = S.of(context);
   final slots = doc.waitingSlots();
-  final months = [for (final m in doc.months) if (m.n > currentMonth && m.winner == null) m.n];
+  final months = [for (final m in doc.months) if (m.n > currentMonth && doc.openIn(m) > 0) m.n];
   if (months.isEmpty || slots.isEmpty) {
     toast(context, months.isEmpty ? s.everyMonthTaken : s.allSlotsTaken, bad: true);
     return Future.value(null);
   }
+  // Each month's places, in order: month 6 twice, then month 7 twice...
+  final seats = [for (final n in months) for (var i = 0; i < doc.openIn(doc.months[n - 1]); i++) n];
   var order = shuffled(slots);
-  return showKSheet<Map<int, int>>(
+  Map<int, List<int>> placed() {
+    final out = <int, List<int>>{};
+    for (var i = 0; i < seats.length && i < order.length; i++) {
+      out.putIfAbsent(seats[i], () => []).add(order[i]);
+    }
+    return out;
+  }
+
+  return showKSheet<Map<int, List<int>>>(
     context,
     title: s.drawRest,
     builder: (ctx) => StatefulBuilder(builder: (ctx, setState) {
-      final extra = order.length > months.length ? order.sublist(months.length) : <int>[];
+      final extra = order.length > seats.length ? order.sublist(seats.length) : <int>[];
+      final got = placed();
+      Widget taker(int slot) => Row(children: [
+            SlotBadge('$slot', size: 36, style: SlotBadgeStyle.sun),
+            const SizedBox(width: Sp.md - 2),
+            Expanded(child: Text(doc.slotName(slot), maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong)),
+          ]);
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text(
           months.length == 1
@@ -59,15 +76,26 @@ Future<Map<int, int>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int 
                   ]),
                 ),
                 const SizedBox(width: Sp.sm),
-                if (i < order.length) ...[
-                  SlotBadge('${order[i]}', size: 36, style: SlotBadgeStyle.sun),
+                if (got[months[i]] == null)
+                  Expanded(flex: 7, child: Text(s.noSlotLeft, style: T.small))
+                else if (got[months[i]]!.length == 1) ...[
+                  SlotBadge('${got[months[i]]!.first}', size: 36, style: SlotBadgeStyle.sun),
                   const SizedBox(width: Sp.md - 2),
                   Expanded(
                     flex: 7,
-                    child: Text(doc.slotName(order[i]), maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong),
+                    child: Text(doc.slotName(got[months[i]]!.first), maxLines: 2, overflow: TextOverflow.ellipsis, style: T.bodyStrong),
                   ),
                 ] else
-                  Expanded(flex: 7, child: Text(s.noSlotLeft, style: T.small)),
+                  // Several takers in the month, one under the other.
+                  Expanded(
+                    flex: 9,
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      for (final (j, slot) in got[months[i]]!.indexed) ...[
+                        if (j > 0) const SizedBox(height: Sp.sm),
+                        taker(slot),
+                      ],
+                    ]),
+                  ),
               ]),
             ),
           ),
@@ -85,7 +113,7 @@ Future<Map<int, int>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int 
           onPressed: () async {
             final ok = await confirm(ctx, title: s.useOrderTitle, text: s.useOrderText(months.length), yes: s.useIt);
             if (!ok || !ctx.mounted) return;
-            Navigator.of(ctx).pop({for (var i = 0; i < months.length && i < order.length; i++) months[i]: order[i]});
+            Navigator.of(ctx).pop(placed());
           },
         ),
         const SizedBox(height: Sp.sm + 2),
@@ -98,6 +126,78 @@ Future<Map<int, int>?> showDrawRestSheet(BuildContext context, KuriDoc doc, int 
             HapticFeedback.mediumImpact();
             setState(() => order = shuffled(slots));
           },
+        ),
+      ]);
+    }),
+  );
+}
+
+// ---------------------------------------------------------------- choose by hand
+
+/// Who takes the pot in a month with several takers: tick up to as many as
+/// the month has places. Slots that took the pot in another month are not
+/// offered. Returns the slots in the order they were ticked.
+Future<List<int>?> showWinnersPicker(BuildContext context, KuriDoc doc, Month m) {
+  final s = S.of(context);
+  final k = doc.winnersIn(m.n);
+  final w = doc.drawn();
+  final options = [for (var x = 1; x <= doc.slots; x++) if (!w.containsKey(x) || w[x] == m.n) x];
+  final picked = List<int>.of(m.winners);
+  return showKSheet<List<int>>(
+    context,
+    title: s.takePotInMonthN(m.n),
+    builder: (ctx) => StatefulBuilder(builder: (ctx, setState) {
+      final full = picked.length >= k;
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(s.chooseUpTo(k, picked.length), style: T.small),
+        const SizedBox(height: Sp.md),
+        for (final x in options)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Sp.sm),
+            child: Material(
+              color: picked.contains(x) ? K.brand100 : K.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(K.rMd),
+                side: BorderSide(color: picked.contains(x) ? K.brand200 : K.border),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: !picked.contains(x) && full
+                    ? null
+                    : () {
+                        HapticFeedback.selectionClick();
+                        setState(() => picked.contains(x) ? picked.remove(x) : picked.add(x));
+                      },
+                child: Opacity(
+                  opacity: !picked.contains(x) && full ? 0.45 : 1,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
+                    child: Row(children: [
+                      SlotBadge('$x', size: 32, style: picked.contains(x) ? SlotBadgeStyle.sun : SlotBadgeStyle.plain),
+                      const SizedBox(width: Sp.md),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(doc.slotName(x), style: T.bodyStrong),
+                          Text(s.slotN(x), style: T.small),
+                        ]),
+                      ),
+                      const SizedBox(width: Sp.sm),
+                      Icon(
+                        picked.contains(x) ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                        color: picked.contains(x) ? K.green : K.border2,
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        const SizedBox(height: Sp.sm),
+        KButton(
+          label: picked.isEmpty ? s.nobodyYet : s.doneChoosing,
+          icon: Icons.check_rounded,
+          expand: true,
+          onPressed: () => Navigator.of(ctx).pop(List<int>.of(picked)),
         ),
       ]);
     }),

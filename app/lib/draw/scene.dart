@@ -552,7 +552,11 @@ class BottleScene {
     _text(g, kicker, W / 2, 150, size: 36, weight: FontWeight.w700, color: C.sun);
     _text(g, title, W / 2, 250, size: 84, weight: FontWeight.w700, heading: true, color: const Color(0xFFFFFFFF));
     _text(g, subtitle, W / 2, 312, size: 38, weight: FontWeight.w600, color: const Color(0xD9DDEEDF));
+    if (round.isNotEmpty) _text(g, round, W / 2, 380, size: 36, weight: FontWeight.w800, color: C.sun);
   }
+
+  /// "Pick 1 of 2" when the month has more than one taker; empty for one.
+  String round = '';
 
   void _footer(Canvas g) {
     final at = when;
