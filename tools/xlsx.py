@@ -84,11 +84,11 @@ def wins(m):
 
 
 def takers(slots, length, n):
-    """How many take the pot in month n; the earlier months one more when the
-    slots do not divide evenly over the months."""
+    """How many take the pot in the n-th of `length` payout months; the last
+    months one more when the slots do not divide evenly over the months."""
     if length <= 0:
         return 1
-    return slots // length + (1 if n <= slots % length else 0)
+    return slots // length + (1 if n > length - slots % length else 0)
 
 
 def split(total, k):
@@ -120,15 +120,20 @@ def main(out, d):
     months = sorted(d.get("months") or [], key=lambda m: m.get("n", 0))
     # A chit shorter than its slots runs that many months (an older app may
     # have added a month for every slot; those past the end go).
+    # The organiser takes the first month's collection and pays nothing; the
+    # slots take the pot in the months after.
+    org = 1 if d.get("organiser") is True else 0
     try:
         length = int(d.get("length") or 0)
     except (TypeError, ValueError):
         length = 0
-    if not 0 < length < slots:
-        length = slots
+    if not org < length < slots + org:
+        length = slots + org
     if length and len(months) > length:
         months = months[:length]
-    multi = length < slots
+    pay_months = max(1, length - org)
+    payout = share * pay_months
+    multi = pay_months < slots
     people = {p.get("id"): p.get("name", "") for p in d.get("people") or []}
     payers = sorted(d.get("payers") or [], key=lambda p: (p.get("slot", 0), str(p.get("id"))))
     slot_names = {}
@@ -142,7 +147,7 @@ def main(out, d):
     wb = Workbook()
     ws = wb.active
     ws.title = "Months"
-    ws.append(["Month", "Collected", "Late fines", "Pot", "Took the pot"] + (["Each took"] if multi else []))
+    ws.append(["Month", "Collected", "Late fines", "Pot", "Took the pot"] + (["Each took"] if multi or org else []))
     for i, m in enumerate(months, 1):
         paid = m.get("paid") or {}
         fines = m.get("fines") or {}
@@ -152,15 +157,21 @@ def main(out, d):
         mf = int(m["fineAmt"]) if m.get("fineAmt") is not None else fine
         won = wins(m)
         took = "; ".join(" / ".join(slot_names.get(w, [])) + " (slot %d)" % w for w in won)
+        if org and i == 1:
+            took = "Organiser"
         row = [label(i), got, mf * nf, share * slots, took]
-        if multi:
-            pays = split(share * slots + mf * nf, max(takers(slots, length, i), len(won)))
-            row.append(" / ".join(money(x, cur) for x in sorted(set(pays), reverse=True)) if won else "")
+        if multi or org:
+            if org and i == 1:
+                row.append(money(share * slots + mf * nf, cur))
+            else:
+                k = max(takers(slots, pay_months, i - org), len(won))
+                pays = [payout + x for x in split(mf * nf, k)]
+                row.append(" / ".join(money(x, cur) for x in sorted(set(pays), reverse=True)) if won else "")
         ws.append(row)
     for row in ws.iter_rows(min_row=2, min_col=2, max_col=4):
         for c in row:
             c.number_format = fmt
-    style(ws, [12, 13, 12, 12, 30] + ([16] if multi else []))
+    style(ws, [12, 13, 12, 12, 30] + ([16] if multi or org else []))
 
     ws = wb.create_sheet("Ledger")
     ws.append(["Slot", "Member", "Share"] + [label(i) for i in range(1, len(months) + 1)])
@@ -190,20 +201,24 @@ def main(out, d):
     ws["A1"].font = Font(bold=True, size=13)
     cd, ld = int(d.get("collectDay") or 20), int(d.get("lastDay") or 25)
     lines = [
-        "%d slots at %s a month%s." % (slots, money(share, cur), ", over %d months" % length if multi else ""),
+        "%d slots at %s a month%s." % (slots, money(share, cur), ", over %d months" % length if multi or org else ""),
         "Collection on the %s. Last date is midnight on the %s%s." % (ordinal(cd), ordinal(ld), " of the next month" if ld < cd else ""),
     ]
     if fine:
         lines.append("A late payment costs %s, which goes into that month's pot." % money(fine, cur))
+    if org:
+        lines.append("The organiser pays nothing and takes the first month's %s collection." % money(share * slots, cur))
     if multi:
-        base, extra = slots // length, slots % length
+        base, extra = slots // pay_months, slots % pay_months
         if not extra:
             plan = "%d slots take the pot each month" % base
         elif extra == 1:
-            plan = "%d slots take the pot in month 1, then %d" % (base + 1, base)
+            plan = "%d slots take the pot in the last month, %d in the others" % (base + 1, base)
         else:
-            plan = "%d slots take the pot in months 1 to %d, then %d" % (base + 1, extra, base)
-        lines.append("%s, sharing the month's %s pot equally." % (plan, money(share * slots, cur)))
+            plan = "%d slots take the pot in each of the last %d months, %d in the others" % (base + 1, extra, base)
+        lines.append("%s. Each one gets %s; the months with fewer takers keep money in hand for the last months." % (plan, money(payout, cur)))
+    elif org:
+        lines.append("One slot takes %s each month after that." % money(payout, cur))
     else:
         lines.append("One slot takes the whole %s pot each month." % money(share * slots, cur))
     lines += [

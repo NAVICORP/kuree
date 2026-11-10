@@ -22,7 +22,7 @@ import 'package:kuree/ui/launch.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
 
-import '../test/support.dart' show multiChit;
+import '../test/support.dart' show multiChit, multiChitJson;
 
 Future<void> loadFonts() async {
   Future<void> family(String name, List<String> files) async {
@@ -424,7 +424,7 @@ void main() {
   }
 
   // More slots than months: 20 slots over 10 months, two take the pot each
-  // month; and 25 over 10, three in months 1 to 5, then two.
+  // month; and 25 over 10, two in months 1 to 5, then three.
   for (final code in ['en', 'ar']) {
     final s = S.forCode(code);
     final pre = code == 'en' ? '' : '$code-';
@@ -472,6 +472,40 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Draw the rest'));
     await shot(tester, '34-multi-draw-rest');
+  });
+
+  // The organiser takes month 1 and pays nothing: 25 slots over 21 months,
+  // one taker a month, two in the last five, every taker the same amount.
+  KuriRecord organiserChit() {
+    final j = Map<String, dynamic>.from(multiChitJson(slots: 25, length: 21));
+    final d = Map<String, dynamic>.from(j['data'] as Map);
+    final all = (d['months'] as List).first['paid'];
+    d['organiser'] = true;
+    d['months'] = [
+      {'n': 1, 'paid': all},
+      {'n': 2, 'winner': 4, 'paid': all},
+    ];
+    j['data'] = d;
+    return KuriRecord.fromJson(j);
+  }
+
+  testWidgets('organiser month', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriScreen(record: organiserChit()));
+    await settle(tester);
+    await tester.tap(find.byTooltip(S.forCode('en').prevMonth));
+    await shot(tester, '40-organiser-taker');
+    await tester.tap(find.byTooltip(S.forCode('en').prevMonth));
+    await shot(tester, '41-organiser-month');
+  });
+
+  testWidgets('organiser month, editor', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriEditorScreen(record: organiserChit()));
+    await settle(tester);
+    await tester.scrollUntilVisible(find.text(S.forCode('en').organiserMonth), 200, scrollable: find.byType(Scrollable).first);
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 260));
+    await shot(tester, '42-organiser-editor');
   });
 
   testWidgets('several takers, home', (tester) async {

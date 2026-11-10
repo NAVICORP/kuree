@@ -455,8 +455,8 @@
   "chooseUpTo": "{n} तक चुनें। {chosen} चुने गए।",
   "doneChoosing": "हो गया",
   "planEven": "हर महीने {n} लोग रकम लेंगे",
-  "planUneven": "महीना 1 से {last} तक {more} लोग रकम लेंगे, फिर {fewer}",
-  "planUnevenOne": "महीना 1 में {more} लोग रकम लेंगे, फिर {fewer}",
+  "planUneven": "आखिरी {count} महीनों में हर महीने {more} लोग रकम लेंगे, बाकी महीनों में {fewer}",
+  "planUnevenOne": "आखिरी महीने में {more} लोग रकम लेंगे, बाकी महीनों में {fewer}",
   "chitLength": "अवधि",
   "lengthSame": "स्लॉट जितनी",
   "lengthSameSub": "{n} महीने, हर महीने एक व्यक्ति रकम लेगा",
@@ -467,5 +467,11 @@
   "bottlePicksK": "बोतल इनमें से {n} पर्चियाँ एक के बाद एक निकालेगी।",
   "takePotForEach": "महीना {n}, {label}: रकम इन्हें मिलेगी। हर एक को {each}।",
   "saveAsWinners": "महीना {n} के रकम लेने वाले सेव करें",
-  "msgDrawResultMany": "{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।"
+  "msgDrawResultMany": "{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।",
+  "organiserMonth": "आयोजक का महीना",
+  "organiserMonthSub": "आयोजक कुछ नहीं देता और पहले महीने की वसूली उसे मिलती है",
+  "organiserTakes": "इस महीने की वसूली {amount} आयोजक को मिलेगी",
+  "keptForLater": "{amount} आखिरी महीनों के लिए रखा, हाथ में {total}",
+  "fromKept": "{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}",
+  "payoutEach": "हर लेने वाले को {amount} मिलेंगे"
 }

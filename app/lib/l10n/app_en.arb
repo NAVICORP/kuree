@@ -1040,15 +1040,15 @@
       "n": {}
     }
   },
-  "planUneven": "{more} people take the pot in months 1 to {last}, then {fewer}",
+  "planUneven": "{more} people take the pot in each of the last {count} months, {fewer} in the others",
   "@planUneven": {
     "placeholders": {
       "more": {},
-      "last": {},
+      "count": {},
       "fewer": {}
     }
   },
-  "planUnevenOne": "{more} people take the pot in month 1, then {fewer}",
+  "planUnevenOne": "{more} people take the pot in the last month, {fewer} in the others",
   "@planUnevenOne": {
     "placeholders": {
       "more": {},
@@ -1120,6 +1120,34 @@
       "each": {},
       "count": {},
       "when": {}
+    }
+  },
+  "organiserMonth": "Organiser's month",
+  "organiserMonthSub": "The organiser pays nothing and takes the first month's collection",
+  "organiserTakes": "The organiser takes this month's collection, {amount}",
+  "@organiserTakes": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "keptForLater": "{amount} kept for the last months, {total} in hand",
+  "@keptForLater": {
+    "placeholders": {
+      "amount": {},
+      "total": {}
+    }
+  },
+  "fromKept": "{amount} comes from what earlier months kept, {total} left in hand",
+  "@fromKept": {
+    "placeholders": {
+      "amount": {},
+      "total": {}
+    }
+  },
+  "payoutEach": "Each taker gets {amount}",
+  "@payoutEach": {
+    "placeholders": {
+      "amount": {}
     }
   }
 }

@@ -22,11 +22,11 @@ void main() {
       expect([for (var n = 1; n <= 10; n++) k.winnersIn(n)], List.filled(10, 2));
       expect(k.plan, '2 people take the pot each month');
     });
-    test('25 slots over 10 months: three in months 1 to 5, then two', () {
+    test('25 slots over 10 months: two in months 1 to 5, then three', () {
       final k = doc(slots: 25);
-      expect([for (var n = 1; n <= 10; n++) k.winnersIn(n)], [3, 3, 3, 3, 3, 2, 2, 2, 2, 2]);
-      expect(k.plan, '3 people take the pot in months 1 to 5, then 2');
-      expect(KuriDoc.planText(21, 10), '3 people take the pot in month 1, then 2');
+      expect([for (var n = 1; n <= 10; n++) k.winnersIn(n)], [2, 2, 2, 2, 2, 3, 3, 3, 3, 3]);
+      expect(k.plan, '3 people take the pot in each of the last 5 months, 2 in the others');
+      expect(KuriDoc.planText(21, 10), '3 people take the pot in the last month, 2 in the others');
     });
     test('every slot gets exactly one place, whatever the length', () {
       for (var slots = 2; slots <= 60; slots++) {
@@ -34,9 +34,9 @@ void main() {
           final takers = [for (var n = 1; n <= len; n++) KuriDoc.takersIn(slots, len, n)];
           expect(takers.fold<int>(0, (a, b) => a + b), slots, reason: '$slots over $len');
           expect(takers.every((t) => t >= 1 && t <= KuriDoc.maxWinners), isTrue, reason: '$slots over $len');
-          // never more in a later month than an earlier one
+          // never fewer in a later month than an earlier one
           for (var n = 1; n < takers.length; n++) {
-            expect(takers[n] <= takers[n - 1], isTrue);
+            expect(takers[n] >= takers[n - 1], isTrue);
           }
         }
       }
@@ -56,16 +56,55 @@ void main() {
       expect(k.monthTotal(k.months[1]), 100200);
       expect(k.payouts(k.months[1]), [50100, 50100]);
     });
-    test('an uneven split: whole amounts that add up, months with fewer takers get more each', () {
+    test('uneven months: every taker gets the same, the money in hand never goes below zero', () {
       final k = doc(slots: 25);
       expect(k.pot, 125000);
-      final three = k.payouts(k.months[0]);
-      expect(three, [41667, 41667, 41666]);
-      expect(three.fold<int>(0, (a, b) => a + b), 125000);
-      expect(k.payouts(k.months[9]), [62500, 62500]);
-      expect(k.payoutOf(k.months[0], 2), 41666);
+      expect(k.payout, 50000);
+      expect(k.payouts(k.months[9]), [50000, 50000, 50000]);
+      expect(k.payoutOf(k.months[0], 1), k.payout);
+      // months 1 to 5 keep 25,000 each, months 6 to 10 use it
+      expect(k.keptIn(1), 25000);
+      expect(k.keptIn(6), -25000);
+      for (var n = 1; n <= 10; n++) {
+        expect(k.inHandAfter(n) >= 0, isTrue, reason: 'month $n');
+      }
+      expect(k.inHandAfter(10), 0);
       expect(KuriDoc.split(10, 3), [4, 3, 3]);
       expect(KuriDoc.split(65000, 1), [65000]);
+    });
+    test('every taker gets the same for any slots and length, and it all adds up', () {
+      for (final org in [false, true]) {
+        for (var slots = 2; slots <= 40; slots++) {
+          for (var pm = KuriDoc.minLength(slots); pm <= slots; pm++) {
+            final k = KuriDoc(name: 'x', share: 1000, slots: slots, length: pm + (org ? 1 : 0), organiser: org, startYear: 2026, startMonth: 1);
+            k.fitMonths();
+            final out = [for (var n = 1; n <= k.length; n++) k.winnersIn(n) * k.payout];
+            final orgGets = org ? k.pot : 0;
+            expect(out.fold<int>(0, (a, b) => a + b) + orgGets, k.pot * k.length, reason: '$slots over $pm, organiser $org');
+            for (var n = 1; n <= k.length; n++) {
+              expect(k.inHandAfter(n) >= 0, isTrue, reason: '$slots over $pm, month $n');
+            }
+          }
+        }
+      }
+    });
+    test('the organiser takes month 1 and pays nothing: 30 slots, 26 months, 3,000 each', () {
+      final k = KuriDoc(name: 'x', share: 3000, slots: 30, length: 26, organiser: true, startYear: 2026, startMonth: 11);
+      k.fitMonths();
+      expect(k.isOrganiserMonth(1), isTrue);
+      expect(k.winnersIn(1), 0);
+      expect(k.payoutMonths, 25);
+      expect(k.payout, 75000);
+      expect([for (var n = 2; n <= 26; n++) k.winnersIn(n)], [...List.filled(20, 1), ...List.filled(5, 2)]);
+      expect(k.keptIn(2), 15000);
+      expect(k.inHandAfter(21), 300000);
+      expect(k.keptIn(22), -60000);
+      expect(k.inHandAfter(26), 0);
+      expect(k.plan, '2 people take the pot in each of the last 5 months, 1 in the others');
+      final back = KuriDoc.fromJson(wire(k));
+      expect(back.organiser, isTrue);
+      expect(back.length, 26);
+      expect(back.months.length, 26);
     });
     test('shared parts: a shared slot pays its parts, and the pot is still every slot\'s share', () {
       final k = doc();

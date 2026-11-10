@@ -180,6 +180,7 @@ class KuriDoc {
     required this.share,
     required this.slots,
     int? length,
+    this.organiser = false,
     required this.startYear,
     required this.startMonth,
     this.collectDay = 20,
@@ -205,8 +206,14 @@ class KuriDoc {
   int slots;
 
   /// How many months the chit runs. The same as the slots unless the chit
-  /// ends sooner, with more than one slot taking the pot each month.
+  /// ends sooner, with more than one slot taking the pot each month (and one
+  /// more when the organiser takes the first month).
   int length;
+
+  /// The organiser takes the first month's collection. The organiser is not
+  /// one of the slots and pays nothing; the slots take the pot in the months
+  /// after.
+  bool organiser;
   int startYear;
   int startMonth;
 
@@ -227,7 +234,7 @@ class KuriDoc {
   // 'groupLang' was a setting for the group message's language; messages now
   // follow the app's language, so an old value is read and dropped.
   static const _known = {
-    'v', 'name', 'group', 'share', 'slots', 'length', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
+    'v', 'name', 'group', 'share', 'slots', 'length', 'organiser', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
     'currency', 'groupLang', 'people', 'payers', 'months', 'updated',
   };
 
@@ -253,9 +260,11 @@ class KuriDoc {
       extra: extra,
     );
     if (doc.slots <= 0) doc.slots = doc.payers.fold<int>(0, (m, p) => max(m, p.slot));
+    doc.organiser = j['organiser'] == true;
+    final org = doc.organiser ? 1 : 0;
     // Chits saved before the length existed run a month per slot.
-    doc.length = j['length'] == null ? doc.slots : _int(j['length'], doc.slots);
-    if (doc.length > doc.slots || doc.length < 1) doc.length = doc.slots;
+    doc.length = j['length'] == null ? doc.slots + org : _int(j['length'], doc.slots + org);
+    if (doc.length > doc.slots + org || doc.length < 1 + org) doc.length = doc.slots + org;
     doc.months.sort((a, b) => a.n.compareTo(b.n));
     doc.fitMonths();
     return doc;
@@ -269,6 +278,7 @@ class KuriDoc {
         'share': share,
         'slots': slots,
         if (length != slots) 'length': length,
+        if (organiser) 'organiser': true,
         'startYear': startYear,
         'startMonth': startMonth,
         'collectDay': collectDay,
@@ -300,34 +310,53 @@ class KuriDoc {
   /// The most slots that can take the pot in one month.
   static const maxWinners = 5;
 
-  /// The shortest a chit of this many slots can run.
-  static int minLength(int slots) => max(1, (slots + maxWinners - 1) ~/ maxWinners);
+  /// The shortest a chit of this many slots can run (a month longer with
+  /// the organiser's month).
+  static int minLength(int slots, [bool organiser = false]) =>
+      max(1, (slots + maxWinners - 1) ~/ maxWinners) + (organiser ? 1 : 0);
+
+  /// The longest: a month per slot, and the organiser's month.
+  static int maxLength(int slots, [bool organiser = false]) => slots + (organiser ? 1 : 0);
+
+  /// The months in which slots take the pot: all of them, or all but the
+  /// organiser's first month.
+  int get payoutMonths => max(1, length - (organiser ? 1 : 0));
+
+  /// Month n is the organiser's.
+  bool isOrganiserMonth(int n) => organiser && n == 1;
 
   /// More than one slot takes the pot in some month.
-  bool get multi => length < slots;
+  bool get multi => payoutMonths < slots;
 
-  /// How many slots take the pot in month n: the slots over the months, and
-  /// when that does not divide evenly the earlier months take one more
-  /// (25 slots over 10 months: 3 in months 1 to 5, then 2).
-  int winnersIn(int n) => takersIn(slots, length, n);
-
-  static int takersIn(int slots, int length, int n) {
-    if (length <= 0 || n < 1 || n > length) return 0;
-    return slots ~/ length + (n <= slots % length ? 1 : 0);
+  /// How many slots take the pot in month n (none in the organiser's month).
+  int winnersIn(int n) {
+    if (isOrganiserMonth(n)) return 0;
+    return takersIn(slots, payoutMonths, organiser ? n - 1 : n);
   }
 
-  /// How the takers fall over the months, in words: "2 take the pot each
-  /// month", or "3 take the pot in months 1 to 5, then 2". Null when one
-  /// slot takes it each month.
-  static String? planText(int slots, int length) {
-    if (length <= 0 || length >= slots) return null;
-    final s = S.current, base = slots ~/ length, extra = slots % length;
+  /// How many slots take the pot in the k-th of `months` payout months: the
+  /// slots over the months, and when that does not divide evenly the last
+  /// months take one more (25 slots over 10 months: 2 in months 1 to 5, then
+  /// 3). Every taker gets the same amount, so the months with fewer takers
+  /// keep money in hand for the months with more.
+  static int takersIn(int slots, int months, int k) {
+    if (months <= 0 || k < 1 || k > months) return 0;
+    return slots ~/ months + (k > months - slots % months ? 1 : 0);
+  }
+
+  /// How the takers fall over the months, in words: "2 people take the pot
+  /// each month", or "3 people take the pot in each of the last 5 months, 2
+  /// in the others". Null
+  /// when one slot takes it each month.
+  static String? planText(int slots, int months) {
+    if (months <= 0 || months >= slots) return null;
+    final s = S.current, base = slots ~/ months, extra = slots % months;
     if (extra == 0) return s.planEven(base);
     if (extra == 1) return s.planUnevenOne(base + 1, base);
     return s.planUneven(base + 1, extra, base);
   }
 
-  String? get plan => planText(slots, length);
+  String? get plan => planText(slots, payoutMonths);
 
   /// Places still open in month m.
   int openIn(Month m) => max(0, winnersIn(m.n) - m.winners.length);
@@ -335,10 +364,19 @@ class KuriDoc {
   /// What a month collects: every slot's share, and the late fines.
   int monthTotal(Month m) => pot + fineSum(m);
 
-  /// What each taker of month m gets: the month's total in equal parts,
-  /// whole numbers that add up to it (any remainder goes a unit at a time to
-  /// the first ones chosen).
-  List<int> payouts(Month m) => split(monthTotal(m), max(1, max(winnersIn(m.n), m.winners.length)));
+  /// What every taker gets: each slot's share for each month the slots take
+  /// the pot. With one taker a month that is the month's pot; in every chit
+  /// it adds up to what the slots pay in (after the organiser's month).
+  int get payout => share * payoutMonths;
+
+  /// What each taker of month m gets: the payout, and the month's late fines
+  /// in equal whole parts (any remainder a unit at a time to the first
+  /// chosen).
+  List<int> payouts(Month m) {
+    final k = max(1, max(winnersIn(m.n), m.winners.length));
+    final f = split(fineSum(m), k);
+    return [for (var i = 0; i < k; i++) payout + f[i]];
+  }
 
   /// What one taker of month m gets, the i-th chosen.
   int payoutOf(Month m, int i) {
@@ -351,6 +389,20 @@ class KuriDoc {
     if (k <= 1) return [total];
     final base = total ~/ k, rest = total - base * k;
     return [for (var i = 0; i < k; i++) base + (i < rest ? 1 : 0)];
+  }
+
+  /// What month n keeps in hand (more than it pays out) or, below zero,
+  /// takes from what earlier months kept. Fines go out the month they come
+  /// in, so they leave it as it is. Zero in the organiser's month.
+  int keptIn(int n) => isOrganiserMonth(n) ? 0 : pot - winnersIn(n) * payout;
+
+  /// The money in hand after month n, by the plan.
+  int inHandAfter(int n) {
+    var t = 0;
+    for (var i = 1; i <= n && i <= length; i++) {
+      t += keptIn(i);
+    }
+    return t;
   }
 
   // ---------------------------------------------------------------- money
@@ -419,7 +471,7 @@ class KuriDoc {
   }
 
   MonthState state(Month m, [DateTime? now]) {
-    if (allPaid(m) && m.hasWinner && m.winners.length >= winnersIn(m.n)) return MonthState.done;
+    if (allPaid(m) && (m.hasWinner || isOrganiserMonth(m.n)) && m.winners.length >= winnersIn(m.n)) return MonthState.done;
     return !(now ?? DateTime.now()).isBefore(collectDate(m.n)) ? MonthState.open : MonthState.soon;
   }
 

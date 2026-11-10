@@ -167,7 +167,7 @@ class _KuriScreenState extends State<KuriScreen> {
         month: month.n,
         label: doc.monthLabel(month.n),
         pot: doc.pot,
-        each: doc.winnersIn(month.n) > 1 ? each : null,
+        each: doc.winnersIn(month.n) > 1 || each != doc.pot ? each : null,
         count: count,
         currency: doc.currency,
         entries: [for (final s in waiting) DrawEntry(s, doc.slotName(s))],
@@ -520,12 +520,46 @@ class _KuriScreenState extends State<KuriScreen> {
   String _takes(String Function(Object) one, String Function(Object) many, Month x) =>
       x.winners.length > 1 ? many(doc.winnersName(x)!) : one(doc.winnersName(x)!);
 
+  /// The organiser's month: no draw, the collection goes to the organiser.
+  Widget _organiser(S s) => KCard(
+        padding: const EdgeInsets.all(Sp.lg),
+        child: Row(children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(color: K.sun, shape: BoxShape.circle),
+            child: const Icon(Icons.workspace_premium_rounded, color: K.deep, size: 22),
+          ),
+          const SizedBox(width: Sp.md + 2),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(s.organiserMonth, style: T.h3),
+              const SizedBox(height: 2),
+              Text(s.organiserTakes(doc.money(doc.monthTotal(m))),
+                  style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
+            ]),
+          ),
+        ]),
+      );
+
+  /// What this month keeps in hand for later months, or takes from it, in a
+  /// chit whose takers are not the same every month. Null when it is even.
+  String? _keptNote(S s) {
+    final kept = doc.keptIn(m.n);
+    if (kept == 0) return null;
+    final hand = doc.money(doc.inHandAfter(m.n));
+    return kept > 0 ? s.keptForLater(doc.money(kept), hand) : s.fromKept(doc.money(-kept), hand);
+  }
+
   Widget _winner(S s) {
+    if (doc.isOrganiserMonth(m.n)) return _organiser(s);
     if (doc.winnersIn(m.n) > 1) return _winners(s);
     final fines = doc.fineSum(m);
     final fromBottle = m.fromBottle;
     final winner = m.hasWinner ? m.winners.first : null;
-    var amount = fines > 0 ? s.winnerAmountFine(doc.money(doc.pot + fines), doc.money(fines)) : doc.money(doc.pot + fines);
+    final paid = doc.payoutOf(m, 0);
+    var amount = fines > 0 ? s.winnerAmountFine(doc.money(paid), doc.money(fines)) : doc.money(paid);
+    final kept = _keptNote(s);
     if (fromBottle) amount = s.pickedFromBottle(amount);
     return KCard(
       padding: const EdgeInsets.all(Sp.lg),
@@ -546,6 +580,10 @@ class _KuriScreenState extends State<KuriScreen> {
               if (winner != null) ...[
                 const SizedBox(height: 2),
                 Text(amount, style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
+              ],
+              if (kept != null) ...[
+                const SizedBox(height: 2),
+                Text(kept, style: T.small),
               ],
             ]),
           ),
@@ -571,10 +609,9 @@ class _KuriScreenState extends State<KuriScreen> {
     final k = doc.winnersIn(m.n), fines = doc.fineSum(m), open = doc.openIn(m);
     final pays = doc.payouts(m);
     final even = pays.every((x) => x == pays.first);
-    var note = even
-        ? (fines > 0 ? s.eachTakesFine(doc.money(pays.first), doc.money(fines)) : s.eachTakes(doc.money(pays.first)))
-        : (fines > 0 ? s.splitTotalFine(doc.money(doc.monthTotal(m)), k, doc.money(fines)) : s.splitTotal(doc.money(doc.monthTotal(m)), k));
+    var note = fines > 0 ? s.eachTakesFine(doc.money(pays.first), doc.money(fines)) : s.eachTakes(doc.money(pays.first));
     if (m.fromBottle) note = s.pickedFromBottle(note);
+    final kept = _keptNote(s);
     Widget row(Widget badge, String title, String? amount) => Padding(
           padding: const EdgeInsets.only(top: Sp.sm),
           child: Row(children: [
@@ -603,6 +640,10 @@ class _KuriScreenState extends State<KuriScreen> {
               Text(s.takePotThisMonthN(k), style: T.h3),
               const SizedBox(height: 2),
               Text(note, style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
+              if (kept != null) ...[
+                const SizedBox(height: 2),
+                Text(kept, style: T.small),
+              ],
             ]),
           ),
         ]),

@@ -56,7 +56,8 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
   /// The months the chit runs when shorter than its slots; null for a month
   /// per slot.
-  late int? chosenLength = base.length < base.slots ? base.length : null;
+  late int? chosenLength = base.payoutMonths < base.slots ? base.payoutMonths : null;
+  late bool organiser = base.organiser;
   final List<List<_Holder>> rows = [];
   final Map<String, String> phones = {};
   String? error;
@@ -73,12 +74,21 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   /// are the rows before that empty one.
   int get slots => rows.isNotEmpty && _isEmpty(rows.last) ? rows.length - 1 : rows.length;
 
-  /// The months the chit runs: one per slot, or the length chosen, kept
-  /// between the shortest the slots allow and the slots.
-  int get length {
+  /// The months in which slots take the pot: one per slot, or the length
+  /// chosen, kept between the shortest the slots allow and the slots.
+  int get payMonths {
     final c = chosenLength;
     if (c == null || slots < 2) return slots;
     return c.clamp(KuriDoc.minLength(slots), slots);
+  }
+
+  /// The months the chit runs: those, and the organiser's first month.
+  int get length => payMonths + (organiser ? 1 : 0);
+
+  /// How many slots take the pot in month n with these settings.
+  int _takers(int n) {
+    if (organiser && n == 1) return 0;
+    return KuriDoc.takersIn(slots, payMonths, organiser ? n - 1 : n);
   }
 
   static bool _isEmpty(List<_Holder> r) => r.length == 1 && r.first.name.text.trim().isEmpty;
@@ -244,7 +254,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     if (doc.months.length > len) {
       for (final m in doc.months.sublist(len)) {
         if (m.paid.isNotEmpty || m.fines.isNotEmpty || m.hasWinner) {
-          throw ApiError(len == slots ? t.errFewerSlots(m.n) : t.errEndsBefore(m.n));
+          throw ApiError(payMonths == slots && !organiser ? t.errFewerSlots(m.n) : t.errEndsBefore(m.n));
         }
       }
     }
@@ -252,10 +262,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       for (final w in m.winners) {
         if (w > slots) throw ApiError(t.errTakerSlot(w, m.n));
       }
-      final k = KuriDoc.takersIn(slots, len, m.n);
+      final k = _takers(m.n);
       if (m.n <= len && m.winners.length > k) throw ApiError(t.errTooManyTakers(m.n, m.winners.length, k));
     }
     doc.slots = slots;
+    doc.organiser = organiser;
     doc.length = len;
     doc.people
       ..clear()
@@ -317,10 +328,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   Future<void> _pickLength() async {
     final s = S.of(context);
     final n = slots;
-    final picked = await showPicker<int>(context, title: s.chitLength, selected: length >= n ? 0 : length, options: [
-      PickOption(0, s.lengthSame, sub: n < 2 ? s.slotsFromNames : s.lengthSameSub(n)),
+    final org = organiser ? 1 : 0;
+    final picked = await showPicker<int>(context, title: s.chitLength, selected: payMonths >= n ? 0 : payMonths, options: [
+      PickOption(0, org == 0 ? s.lengthSame : s.monthsCount(n + org), sub: n < 2 ? s.slotsFromNames : s.lengthSameSub(n + org)),
       if (n >= 2)
-        for (var l = n - 1; l >= KuriDoc.minLength(n); l--) PickOption(l, s.monthsCount(l), sub: KuriDoc.planText(n, l)),
+        for (var l = n - 1; l >= KuriDoc.minLength(n); l--) PickOption(l, s.monthsCount(l + org), sub: KuriDoc.planText(n, l)),
     ]);
     if (picked != null) setState(() => chosenLength = picked.value == 0 ? null : picked.value);
   }
@@ -382,8 +394,12 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                         slots == 0
                             ? s.slotsFromNames
                             : share > 0
-                                ? [s.potSummary(money(share * slots, currency), length), if (KuriDoc.planText(slots, length) case final p?) p].join('\n')
-                                : KuriDoc.planText(slots, length) ?? s.potSummaryNone(slots),
+                                ? [
+                                    s.potSummary(money(share * slots, currency), length),
+                                    if (KuriDoc.planText(slots, payMonths) case final p?) p,
+                                    if (organiser || payMonths < slots) s.payoutEach(money(share * payMonths, currency)),
+                                  ].join('\n')
+                                : KuriDoc.planText(slots, payMonths) ?? s.potSummaryNone(slots),
                         style: T.label.copyWith(color: K.brand600),
                       ),
                     ),
@@ -399,21 +415,41 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 const Divider(),
                 KChoice(
                   label: s.chitLength,
-                  value: length >= slots ? s.lengthSame : s.monthsCount(length),
+                  value: payMonths >= slots && !organiser ? s.lengthSame : s.monthsCount(length),
                   icon: Icons.date_range_outlined,
                   onTap: _pickLength,
                 ),
-                if (KuriDoc.planText(slots, length) != null)
+                if (KuriDoc.planText(slots, payMonths) != null)
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(48, 0, 16, 12),
                     child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.emoji_events_rounded, size: 16, color: K.warn)),
                       const SizedBox(width: 6),
                       Expanded(
-                        child: Text(KuriDoc.planText(slots, length)!, style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
+                        child: Text(KuriDoc.planText(slots, payMonths)!, style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
                       ),
                     ]),
                   ),
+                const Divider(),
+                InkWell(
+                  onTap: () => setState(() => organiser = !organiser),
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 10, 10),
+                    child: Row(children: [
+                      const Icon(Icons.workspace_premium_outlined, color: K.green, size: 20),
+                      const SizedBox(width: Sp.md + 2),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(s.organiserMonth, style: T.body.copyWith(color: K.ink)),
+                          const SizedBox(height: 2),
+                          Text(s.organiserMonthSub, style: T.small),
+                        ]),
+                      ),
+                      const SizedBox(width: Sp.sm),
+                      Switch(value: organiser, onChanged: (v) => setState(() => organiser = v)),
+                    ]),
+                  ),
+                ),
                 const Divider(),
                 KChoice(
                   label: s.collectionDay,

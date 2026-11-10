@@ -1259,10 +1259,10 @@ class S {
   /// {n} people take the pot each month
   String planEven(Object n) => _fill('planEven', {'n': n});
 
-  /// {more} people take the pot in months 1 to {last}, then {fewer}
-  String planUneven(Object more, Object last, Object fewer) => _fill('planUneven', {'more': more, 'last': last, 'fewer': fewer});
+  /// {more} people take the pot in each of the last {count} months, {fewer} in the others
+  String planUneven(Object more, Object count, Object fewer) => _fill('planUneven', {'more': more, 'count': count, 'fewer': fewer});
 
-  /// {more} people take the pot in month 1, then {fewer}
+  /// {more} people take the pot in the last month, {fewer} in the others
   String planUnevenOne(Object more, Object fewer) => _fill('planUnevenOne', {'more': more, 'fewer': fewer});
 
   /// Length
@@ -1297,6 +1297,24 @@ class S {
 
   /// {chit}, month {n} ({label}) The bottle picked: {list} {each} each. {count} names were in the bottle. Drawn {when}.
   String msgDrawResultMany(Object chit, Object n, Object label, Object list, Object each, Object count, Object when) => _fill('msgDrawResultMany', {'chit': chit, 'n': n, 'label': label, 'list': list, 'each': each, 'count': count, 'when': when});
+
+  /// Organiser's month
+  String get organiserMonth => _get('organiserMonth');
+
+  /// The organiser pays nothing and takes the first month's collection
+  String get organiserMonthSub => _get('organiserMonthSub');
+
+  /// The organiser takes this month's collection, {amount}
+  String organiserTakes(Object amount) => _fill('organiserTakes', {'amount': amount});
+
+  /// {amount} kept for the last months, {total} in hand
+  String keptForLater(Object amount, Object total) => _fill('keptForLater', {'amount': amount, 'total': total});
+
+  /// {amount} comes from what earlier months kept, {total} left in hand
+  String fromKept(Object amount, Object total) => _fill('fromKept', {'amount': amount, 'total': total});
+
+  /// Each taker gets {amount}
+  String payoutEach(Object amount) => _fill('payoutEach', {'amount': amount});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1772,8 +1790,8 @@ const Map<String, String> _en = {
   'chooseUpTo': 'Choose up to {n}. {chosen} chosen.',
   'doneChoosing': 'Done',
   'planEven': '{n} people take the pot each month',
-  'planUneven': '{more} people take the pot in months 1 to {last}, then {fewer}',
-  'planUnevenOne': '{more} people take the pot in month 1, then {fewer}',
+  'planUneven': '{more} people take the pot in each of the last {count} months, {fewer} in the others',
+  'planUnevenOne': '{more} people take the pot in the last month, {fewer} in the others',
   'chitLength': 'Length',
   'lengthSame': 'Same as slots',
   'lengthSameSub': '{n} months, one person takes the pot each month',
@@ -1785,6 +1803,12 @@ const Map<String, String> _en = {
   'takePotForEach': 'Take the pot for month {n}, {label}. {each} each.',
   'saveAsWinners': 'Save as month {n} winners',
   'msgDrawResultMany': '{chit}, month {n} ({label})\nThe bottle picked:\n{list}\n{each} each.\n{count} names were in the bottle. Drawn {when}.',
+  'organiserMonth': 'Organiser\'s month',
+  'organiserMonthSub': 'The organiser pays nothing and takes the first month\'s collection',
+  'organiserTakes': 'The organiser takes this month\'s collection, {amount}',
+  'keptForLater': '{amount} kept for the last months, {total} in hand',
+  'fromKept': '{amount} comes from what earlier months kept, {total} left in hand',
+  'payoutEach': 'Each taker gets {amount}',
 };
 
 const Map<String, String> _ar = {
@@ -2243,8 +2267,8 @@ const Map<String, String> _ar = {
   'chooseUpTo': 'اختر حتى {n}. تم اختيار {chosen}.',
   'doneChoosing': 'تم',
   'planEven': 'يستلم الجمعية {n} أشخاص كل شهر',
-  'planUneven': 'يستلم الجمعية {more} أشخاص في الشهور 1 إلى {last}، ثم {fewer}',
-  'planUnevenOne': 'يستلم الجمعية {more} أشخاص في الشهر 1، ثم {fewer}',
+  'planUneven': 'يستلم الجمعية {more} أشخاص في كل شهر من آخر {count} شهور، و{fewer} في باقي الشهور',
+  'planUnevenOne': 'يستلم الجمعية {more} أشخاص في الشهر الأخير، و{fewer} في باقي الشهور',
   'chitLength': 'المدة',
   'lengthSame': 'بعدد الأسهم',
   'lengthSameSub': '{n} شهور، يستلم الجمعية شخص واحد كل شهر',
@@ -2256,6 +2280,12 @@ const Map<String, String> _ar = {
   'takePotForEach': 'يستلمون الجمعية عن الشهر {n}، {label}. {each} لكل واحد.',
   'saveAsWinners': 'حفظهم مستلمين للشهر {n}',
   'msgDrawResultMany': '{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}.',
+  'organiserMonth': 'شهر المنظّم',
+  'organiserMonthSub': 'المنظّم لا يدفع شيئًا ويستلم جمع الشهر الأول',
+  'organiserTakes': 'يستلم المنظّم جمع هذا الشهر، {amount}',
+  'keptForLater': 'يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}',
+  'fromKept': '{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}',
+  'payoutEach': 'كل مستلم يحصل على {amount}',
 };
 
 const Map<String, String> _ml = {
@@ -2714,8 +2744,8 @@ const Map<String, String> _ml = {
   'chooseUpTo': '{n} പേരെ വരെ തിരഞ്ഞെടുക്കാം. {chosen} പേരെ തിരഞ്ഞെടുത്തു.',
   'doneChoosing': 'കഴിഞ്ഞു',
   'planEven': 'ഓരോ മാസവും {n} പേർക്ക് ചിട്ടി',
-  'planUneven': 'മാസം 1 മുതൽ {last} വരെ {more} പേർക്ക് ചിട്ടി, പിന്നെ {fewer} പേർക്ക്',
-  'planUnevenOne': 'മാസം 1-ൽ {more} പേർക്ക് ചിട്ടി, പിന്നെ {fewer} പേർക്ക്',
+  'planUneven': 'അവസാനത്തെ {count} മാസങ്ങളിൽ {more} പേർക്ക് വീതം ചിട്ടി, മറ്റു മാസങ്ങളിൽ {fewer}',
+  'planUnevenOne': 'അവസാന മാസം {more} പേർക്ക് ചിട്ടി, മറ്റു മാസങ്ങളിൽ {fewer}',
   'chitLength': 'കാലാവധി',
   'lengthSame': 'സ്ലോട്ടുകളുടെ എണ്ണം പോലെ',
   'lengthSameSub': '{n} മാസം, ഓരോ മാസവും ഒരാൾക്ക് ചിട്ടി',
@@ -2727,6 +2757,12 @@ const Map<String, String> _ml = {
   'takePotForEach': 'മാസം {n}, {label}: ചിട്ടി ഇവർക്ക്. ഓരോരുത്തർക്കും {each}.',
   'saveAsWinners': 'മാസം {n}-ലെ ചിട്ടിക്കാരായി സേവ് ചെയ്യുക',
   'msgDrawResultMany': '{chit}, മാസം {n} ({label})\nകുപ്പിയിൽ നിന്ന് കിട്ടിയത്:\n{list}\nഓരോരുത്തർക്കും {each}.\nകുപ്പിയിൽ {count} പേരുകൾ ഉണ്ടായിരുന്നു. നറുക്കെടുത്തത് {when}.',
+  'organiserMonth': 'നടത്തിപ്പുകാരന്റെ മാസം',
+  'organiserMonthSub': 'നടത്തിപ്പുകാരൻ പണം അടയ്ക്കില്ല, ആദ്യ മാസത്തെ പിരിവ് അദ്ദേഹത്തിന്',
+  'organiserTakes': 'ഈ മാസത്തെ പിരിവ് {amount} നടത്തിപ്പുകാരന്',
+  'keptForLater': '{amount} അവസാന മാസങ്ങൾക്കായി മാറ്റിവെക്കുന്നു, കയ്യിൽ {total}',
+  'fromKept': '{amount} മുൻ മാസങ്ങളിൽ മാറ്റിവെച്ചതിൽ നിന്ന്, കയ്യിൽ ബാക്കി {total}',
+  'payoutEach': 'ഓരോരുത്തർക്കും {amount} ലഭിക്കും',
 };
 
 const Map<String, String> _ta = {
@@ -3185,8 +3221,8 @@ const Map<String, String> _ta = {
   'chooseUpTo': '{n} பேர் வரை தேர்ந்தெடுக்கலாம். {chosen} பேர் தேர்ந்தெடுக்கப்பட்டனர்.',
   'doneChoosing': 'முடிந்தது',
   'planEven': 'ஒவ்வொரு மாதமும் {n} பேர் சீட்டு எடுப்பார்கள்',
-  'planUneven': 'மாதம் 1 முதல் {last} வரை {more} பேர் சீட்டு எடுப்பார்கள், பிறகு {fewer} பேர்',
-  'planUnevenOne': 'மாதம் 1 இல் {more} பேர் சீட்டு எடுப்பார்கள், பிறகு {fewer} பேர்',
+  'planUneven': 'கடைசி {count} மாதங்களில் மாதம் {more} பேர் சீட்டு எடுப்பார்கள், மற்ற மாதங்களில் {fewer} பேர்',
+  'planUnevenOne': 'கடைசி மாதத்தில் {more} பேர் சீட்டு எடுப்பார்கள், மற்ற மாதங்களில் {fewer} பேர்',
   'chitLength': 'காலம்',
   'lengthSame': 'ஸ்லாட்டுகளின் எண்ணிக்கை போல',
   'lengthSameSub': '{n} மாதங்கள், ஒவ்வொரு மாதமும் ஒருவர் சீட்டு எடுப்பார்',
@@ -3198,6 +3234,12 @@ const Map<String, String> _ta = {
   'takePotForEach': 'மாதம் {n}, {label}: சீட்டு இவர்களுக்கு. ஒவ்வொருவருக்கும் {each}.',
   'saveAsWinners': 'மாதம் {n} சீட்டு எடுப்பவர்களாகச் சேமி',
   'msgDrawResultMany': '{chit}, மாதம் {n} ({label})\nபாட்டில் தேர்ந்தெடுத்தது:\n{list}\nஒவ்வொருவருக்கும் {each}.\nபாட்டிலில் {count} பெயர்கள் இருந்தன. குலுக்கல் {when}.',
+  'organiserMonth': 'நடத்துநர் மாதம்',
+  'organiserMonthSub': 'நடத்துநர் எதுவும் கட்டமாட்டார், முதல் மாத வசூல் அவருக்கு',
+  'organiserTakes': 'இந்த மாத வசூல் {amount} நடத்துநருக்கு',
+  'keptForLater': '{amount} கடைசி மாதங்களுக்கு வைக்கப்படுகிறது, கையில் {total}',
+  'fromKept': '{amount} முந்தைய மாதங்களில் வைத்ததிலிருந்து, கையில் மீதம் {total}',
+  'payoutEach': 'ஒவ்வொருவருக்கும் {amount} கிடைக்கும்',
 };
 
 const Map<String, String> _kn = {
@@ -3656,8 +3698,8 @@ const Map<String, String> _kn = {
   'chooseUpTo': '{n} ಜನರವರೆಗೆ ಆಯ್ಕೆಮಾಡಿ. {chosen} ಆಯ್ಕೆಯಾಗಿದೆ.',
   'doneChoosing': 'ಮುಗಿಯಿತು',
   'planEven': 'ಪ್ರತಿ ತಿಂಗಳು {n} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ',
-  'planUneven': 'ತಿಂಗಳು 1 ರಿಂದ {last} ರವರೆಗೆ {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ನಂತರ {fewer} ಜನರು',
-  'planUnevenOne': 'ತಿಂಗಳು 1 ರಲ್ಲಿ {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ನಂತರ {fewer} ಜನರು',
+  'planUneven': 'ಕೊನೆಯ {count} ತಿಂಗಳುಗಳಲ್ಲಿ ಪ್ರತಿ ತಿಂಗಳು {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ಉಳಿದ ತಿಂಗಳುಗಳಲ್ಲಿ {fewer} ಜನರು',
+  'planUnevenOne': 'ಕೊನೆಯ ತಿಂಗಳು {more} ಜನರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ, ಉಳಿದ ತಿಂಗಳುಗಳಲ್ಲಿ {fewer} ಜನರು',
   'chitLength': 'ಅವಧಿ',
   'lengthSame': 'ಸ್ಲಾಟ್‌ಗಳಷ್ಟೇ',
   'lengthSameSub': '{n} ತಿಂಗಳುಗಳು, ಪ್ರತಿ ತಿಂಗಳು ಒಬ್ಬರು ಚೀಟಿ ಪಡೆಯುತ್ತಾರೆ',
@@ -3669,6 +3711,12 @@ const Map<String, String> _kn = {
   'takePotForEach': 'ತಿಂಗಳು {n}, {label}: ಚೀಟಿ ಇವರಿಗೆ. ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {each}.',
   'saveAsWinners': 'ತಿಂಗಳು {n} ರ ಚೀಟಿ ಪಡೆದವರಾಗಿ ಉಳಿಸಿ',
   'msgDrawResultMany': '{chit}, ತಿಂಗಳು {n} ({label})\nಬಾಟಲಿಯಿಂದ ಬಂದದ್ದು:\n{list}\nಪ್ರತಿಯೊಬ್ಬರಿಗೆ {each}.\nಬಾಟಲಿಯಲ್ಲಿ {count} ಹೆಸರುಗಳಿದ್ದವು. ಡ್ರಾ ಆದದ್ದು {when}.',
+  'organiserMonth': 'ಸಂಘಟಕರ ತಿಂಗಳು',
+  'organiserMonthSub': 'ಸಂಘಟಕರು ಏನೂ ಕಟ್ಟುವುದಿಲ್ಲ, ಮೊದಲ ತಿಂಗಳ ಸಂಗ್ರಹ ಅವರಿಗೆ',
+  'organiserTakes': 'ಈ ತಿಂಗಳ ಸಂಗ್ರಹ {amount} ಸಂಘಟಕರಿಗೆ',
+  'keptForLater': '{amount} ಕೊನೆಯ ತಿಂಗಳುಗಳಿಗೆ ಇಡಲಾಗಿದೆ, ಕೈಯಲ್ಲಿ {total}',
+  'fromKept': '{amount} ಹಿಂದಿನ ತಿಂಗಳುಗಳಲ್ಲಿ ಇಟ್ಟಿದ್ದರಿಂದ, ಕೈಯಲ್ಲಿ ಉಳಿದದ್ದು {total}',
+  'payoutEach': 'ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {amount} ಸಿಗುತ್ತದೆ',
 };
 
 const Map<String, String> _hi = {
@@ -4127,8 +4175,8 @@ const Map<String, String> _hi = {
   'chooseUpTo': '{n} तक चुनें। {chosen} चुने गए।',
   'doneChoosing': 'हो गया',
   'planEven': 'हर महीने {n} लोग रकम लेंगे',
-  'planUneven': 'महीना 1 से {last} तक {more} लोग रकम लेंगे, फिर {fewer}',
-  'planUnevenOne': 'महीना 1 में {more} लोग रकम लेंगे, फिर {fewer}',
+  'planUneven': 'आखिरी {count} महीनों में हर महीने {more} लोग रकम लेंगे, बाकी महीनों में {fewer}',
+  'planUnevenOne': 'आखिरी महीने में {more} लोग रकम लेंगे, बाकी महीनों में {fewer}',
   'chitLength': 'अवधि',
   'lengthSame': 'स्लॉट जितनी',
   'lengthSameSub': '{n} महीने, हर महीने एक व्यक्ति रकम लेगा',
@@ -4140,6 +4188,12 @@ const Map<String, String> _hi = {
   'takePotForEach': 'महीना {n}, {label}: रकम इन्हें मिलेगी। हर एक को {each}।',
   'saveAsWinners': 'महीना {n} के रकम लेने वाले सेव करें',
   'msgDrawResultMany': '{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।',
+  'organiserMonth': 'आयोजक का महीना',
+  'organiserMonthSub': 'आयोजक कुछ नहीं देता और पहले महीने की वसूली उसे मिलती है',
+  'organiserTakes': 'इस महीने की वसूली {amount} आयोजक को मिलेगी',
+  'keptForLater': '{amount} आखिरी महीनों के लिए रखा, हाथ में {total}',
+  'fromKept': '{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}',
+  'payoutEach': 'हर लेने वाले को {amount} मिलेंगे',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

@@ -455,8 +455,8 @@
   "chooseUpTo": "اختر حتى {n}. تم اختيار {chosen}.",
   "doneChoosing": "تم",
   "planEven": "يستلم الجمعية {n} أشخاص كل شهر",
-  "planUneven": "يستلم الجمعية {more} أشخاص في الشهور 1 إلى {last}، ثم {fewer}",
-  "planUnevenOne": "يستلم الجمعية {more} أشخاص في الشهر 1، ثم {fewer}",
+  "planUneven": "يستلم الجمعية {more} أشخاص في كل شهر من آخر {count} شهور، و{fewer} في باقي الشهور",
+  "planUnevenOne": "يستلم الجمعية {more} أشخاص في الشهر الأخير، و{fewer} في باقي الشهور",
   "chitLength": "المدة",
   "lengthSame": "بعدد الأسهم",
   "lengthSameSub": "{n} شهور، يستلم الجمعية شخص واحد كل شهر",
@@ -467,5 +467,11 @@
   "bottlePicksK": "تختار القارورة {n} منها، واحدة بعد الأخرى.",
   "takePotForEach": "يستلمون الجمعية عن الشهر {n}، {label}. {each} لكل واحد.",
   "saveAsWinners": "حفظهم مستلمين للشهر {n}",
-  "msgDrawResultMany": "{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}."
+  "msgDrawResultMany": "{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}.",
+  "organiserMonth": "شهر المنظّم",
+  "organiserMonthSub": "المنظّم لا يدفع شيئًا ويستلم جمع الشهر الأول",
+  "organiserTakes": "يستلم المنظّم جمع هذا الشهر، {amount}",
+  "keptForLater": "يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}",
+  "fromKept": "{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}",
+  "payoutEach": "كل مستلم يحصل على {amount}"
 }
