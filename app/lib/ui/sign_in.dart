@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart' show AppleLogoPainter;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -9,6 +8,7 @@ import '../core/api.dart';
 import '../core/config.dart';
 import '../core/social.dart';
 import '../l10n/strings.dart';
+import 'code_boxes.dart';
 import 'glass.dart';
 import 'language.dart';
 import 'theme.dart';
@@ -273,21 +273,7 @@ class _SignInScreenState extends State<SignInScreen> {
         return [
           _sentTo(s.codeSentEmail, email, true),
           const SizedBox(height: 14),
-          TextField(
-            controller: _code,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            textDirection: TextDirection.ltr,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
-            style: const TextStyle(fontFamily: 'Manrope', fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 0).merge(T.tabular),
-            decoration: const InputDecoration(hintText: '000000'),
-            onChanged: (v) {
-              if (v.length == 6) _verify();
-            },
-            onSubmitted: (_) => _verify(),
-          ),
+          CodeBoxes(controller: _code, onCompleted: (_) => _verify()),
           const SizedBox(height: Sp.lg),
           KButton(label: s.signIn, icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _verify),
           const SizedBox(height: 6),

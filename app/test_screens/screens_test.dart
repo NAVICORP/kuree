@@ -15,8 +15,10 @@ import 'package:kuree/draw/bottle_draw_screen.dart';
 import 'package:kuree/draw/scene.dart';
 import 'package:kuree/l10n/strings.dart';
 import 'package:kuree/ui/account.dart';
+import 'package:kuree/ui/code_boxes.dart';
 import 'package:kuree/ui/home.dart';
 import 'package:kuree/ui/kuri_editor.dart';
+import 'package:kuree/ui/language.dart';
 import 'package:kuree/ui/kuri_screen.dart';
 import 'package:kuree/ui/launch.dart';
 import 'package:kuree/ui/sign_in.dart';
@@ -216,6 +218,31 @@ void main() {
     await shot(tester, '02-sign-in-email');
     await tester.tap(find.text('Use a password'));
     await shot(tester, '02-sign-in-password');
+  });
+
+  testWidgets('sign in, language picker', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const SignInScreen(apple: true, google: true)));
+    await settle(tester);
+    await tester.tap(find.byType(LanguageChip));
+    await shot(tester, '03-language');
+  });
+
+  testWidgets('sign in, code boxes', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            CodeBoxes(controller: TextEditingController(text: '482'), autofocus: false),
+            const SizedBox(height: 24),
+            CodeBoxes(controller: TextEditingController(text: '482019'), autofocus: false),
+          ]),
+        ),
+      ),
+    )));
+    await shot(tester, '02-sign-in-code');
   });
 
   testWidgets('sign in on Android', (tester) async {
