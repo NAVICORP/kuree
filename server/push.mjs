@@ -16,6 +16,7 @@ import { createSign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
+import { mailRound } from './feature_mail.mjs';
 import { words } from './push_text.mjs';
 
 const SECRETS = process.env.SECRETS_DIR || '/secrets';
@@ -184,6 +185,10 @@ export async function main() {
   await listen();
   await round();
   setInterval(round, EVERY_MS);
+  // New feature requests go to the team by email.
+  const mail = () => mailRound(db).catch((e) => log(`feature mail: ${e.message}`));
+  mail();
+  setInterval(mail, EVERY_MS);
   setInterval(tidy, 3600_000);
   tidy();
 }
