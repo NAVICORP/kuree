@@ -72,9 +72,12 @@ class _CodeBoxesState extends State<CodeBoxes> with SingleTickerProviderStateMix
               Expanded(child: _box(i < text.length ? text[i] : null, i == active)),
             ],
           ]),
-          // The field that takes the typing, invisible over the boxes.
+          // The field that takes the typing, invisible over the boxes (still
+          // tappable, and still where the keyboard's code suggestion goes).
           Positioned.fill(
-            child: TextField(
+            child: Opacity(
+              opacity: 0,
+              child: TextField(
               controller: widget.controller,
               focusNode: _focus,
               autofocus: widget.autofocus,
@@ -84,10 +87,13 @@ class _CodeBoxesState extends State<CodeBoxes> with SingleTickerProviderStateMix
               showCursor: false,
               cursorColor: Colors.transparent,
               style: const TextStyle(color: Colors.transparent, fontSize: 1, height: 1),
-              decoration: const InputDecoration.collapsed(hintText: ''),
+              decoration: const InputDecoration.collapsed(hintText: '', filled: false),
+              expands: true,
+              maxLines: null,
               onChanged: (v) {
                 if (v.length == n) widget.onCompleted?.call(v);
               },
+              ),
             ),
           ),
         ]),
