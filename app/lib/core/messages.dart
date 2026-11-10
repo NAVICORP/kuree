@@ -75,7 +75,7 @@ String groupList(KuriDoc k, Month m, String shareToken) {
 String drawResult(KuriDoc k, int month, List<int> slots, int names, DateTime when) {
   final s = S.current;
   if (slots.length == 1 && k.winnersIn(month) <= 1) {
-    return s.msgDrawResult(k.fullName, month, k.monthLabel(month), slots.first, k.slotName(slots.first), k.money(k.pot), names, stamp(when));
+    return s.msgDrawResult(k.fullName, month, k.monthLabel(month), slots.first, k.slotName(slots.first), k.money(k.payout), names, stamp(when));
   }
   final m = k.months[(month - 1).clamp(0, k.months.length - 1)];
   final taken = m.winners.where((w) => !slots.contains(w)).length;

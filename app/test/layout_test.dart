@@ -230,7 +230,7 @@ void main() {
         await settle(tester);
         await tapText(tester, s.choose);
         expect(tester.takeException(), isNull);
-        expect(find.text(s.chooseUpTo(3, 0)), findsOneWidget);
+        expect(find.text(s.chooseUpTo(2, 0)), findsOneWidget); // month 3 of 25 over 10: two (three only in the last five)
         await tester.tapAt(const Offset(10, 10));
         await settle(tester);
         await tester.tap(find.byTooltip(s.more));

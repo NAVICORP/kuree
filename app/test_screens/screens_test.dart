@@ -15,14 +15,17 @@ import 'package:kuree/draw/bottle_draw_screen.dart';
 import 'package:kuree/draw/scene.dart';
 import 'package:kuree/l10n/strings.dart';
 import 'package:kuree/ui/account.dart';
+import 'package:kuree/ui/code_boxes.dart';
+import 'package:kuree/ui/connect_email.dart';
 import 'package:kuree/ui/home.dart';
 import 'package:kuree/ui/kuri_editor.dart';
+import 'package:kuree/ui/language.dart';
 import 'package:kuree/ui/kuri_screen.dart';
 import 'package:kuree/ui/launch.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
 
-import '../test/support.dart' show multiChit;
+import '../test/support.dart' show multiChit, multiChitJson;
 
 Future<void> loadFonts() async {
   Future<void> family(String name, List<String> files) async {
@@ -216,6 +219,39 @@ void main() {
     await shot(tester, '02-sign-in-email');
     await tester.tap(find.text('Use a password'));
     await shot(tester, '02-sign-in-password');
+  });
+
+  testWidgets('add your email (WhatsApp sign-in ended)', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const ConnectEmailScreen()));
+    await shot(tester, '04-add-email');
+    await tester.pumpWidget(phone(const ConnectEmailScreen(key: ValueKey('code'), startWithCode: 'ibrahim@example.com')));
+    await shot(tester, '04b-add-email-code');
+  });
+
+  testWidgets('sign in, language picker', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const SignInScreen(apple: true, google: true)));
+    await settle(tester);
+    await tester.tap(find.byType(LanguageChip));
+    await shot(tester, '03-language');
+  });
+
+  testWidgets('sign in, code boxes', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            CodeBoxes(controller: TextEditingController(text: '482'), autofocus: false),
+            const SizedBox(height: 24),
+            CodeBoxes(controller: TextEditingController(text: '482019'), autofocus: false),
+          ]),
+        ),
+      ),
+    )));
+    await shot(tester, '02-sign-in-code');
   });
 
   testWidgets('sign in on Android', (tester) async {
@@ -424,7 +460,7 @@ void main() {
   }
 
   // More slots than months: 20 slots over 10 months, two take the pot each
-  // month; and 25 over 10, three in months 1 to 5, then two.
+  // month; and 25 over 10, two in months 1 to 5, then three.
   for (final code in ['en', 'ar']) {
     final s = S.forCode(code);
     final pre = code == 'en' ? '' : '$code-';
@@ -472,6 +508,40 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Draw the rest'));
     await shot(tester, '34-multi-draw-rest');
+  });
+
+  // The organiser takes month 1 and pays nothing: 25 slots over 21 months,
+  // one taker a month, two in the last five, every taker the same amount.
+  KuriRecord organiserChit() {
+    final j = Map<String, dynamic>.from(multiChitJson(slots: 25, length: 21));
+    final d = Map<String, dynamic>.from(j['data'] as Map);
+    final all = (d['months'] as List).first['paid'];
+    d['organiser'] = true;
+    d['months'] = [
+      {'n': 1, 'paid': all},
+      {'n': 2, 'winner': 4, 'paid': all},
+    ];
+    j['data'] = d;
+    return KuriRecord.fromJson(j);
+  }
+
+  testWidgets('organiser month', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriScreen(record: organiserChit()));
+    await settle(tester);
+    await tester.tap(find.byTooltip(S.forCode('en').prevMonth));
+    await shot(tester, '40-organiser-taker');
+    await tester.tap(find.byTooltip(S.forCode('en').prevMonth));
+    await shot(tester, '41-organiser-month');
+  });
+
+  testWidgets('organiser month, editor', (tester) async {
+    sized(tester);
+    await pumpInTab(tester, KuriEditorScreen(record: organiserChit()));
+    await settle(tester);
+    await tester.scrollUntilVisible(find.text(S.forCode('en').organiserMonth), 200, scrollable: find.byType(Scrollable).first);
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 260));
+    await shot(tester, '42-organiser-editor');
   });
 
   testWidgets('several takers, home', (tester) async {

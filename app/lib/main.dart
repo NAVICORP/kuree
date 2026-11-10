@@ -9,12 +9,31 @@ import 'core/api.dart';
 import 'core/notifications.dart';
 import 'l10n/lang.dart';
 import 'l10n/strings.dart';
+import 'ui/connect_email.dart';
 import 'ui/home.dart';
 import 'ui/launch.dart';
 import 'ui/sign_in.dart';
 import 'ui/theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+/// Says once when the app falls back to what this phone kept, because the
+/// server could not be reached.
+void _sayWhenOffline() {
+  if (!Api.instance.showingSaved.value) return;
+  messengerKey.currentState
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(
+      content: Row(children: [
+        const Icon(Icons.cloud_off_rounded, color: Colors.white, size: 18),
+        const SizedBox(width: 10),
+        Expanded(child: Text(S.current.offlineSaved)),
+      ]),
+      backgroundColor: K.deep,
+      duration: const Duration(seconds: 4),
+    ));
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +51,7 @@ Future<void> main() async {
   // The card for the loading screen's first frame, where the launch screen had it.
   await LaunchScreen.prepare();
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
+  Api.instance.showingSaved.addListener(_sayWhenOffline);
   runApp(const KureeApp());
   // Reminders and pushes start alongside the first screen, so they never hold
   // the launch screen. Asks nothing here; a tapped notification is picked up
@@ -52,6 +72,7 @@ class KureeApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: kureeTheme(),
         navigatorKey: navigatorKey,
+        scaffoldMessengerKey: messengerKey,
         locale: Lang.instance.locale,
         supportedLocales: [for (final c in S.codes) Locale(c)],
         localizationsDelegates: const [
@@ -85,16 +106,20 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   late StreamSubscription<Session?> _sub;
   bool _signedIn = Api.instance.signedIn;
+  bool _needsEmail = Api.instance.needsEmail;
 
   @override
   void initState() {
     super.initState();
     _sub = Api.instance.changes.listen((s) {
-      final now = s != null;
-      if (now == _signedIn) return;
+      final now = s != null, needs = Api.instance.needsEmail;
+      if (now == _signedIn && needs == _needsEmail) return;
       // Signing out closes everything that was open.
       if (!now) navigatorKey.currentState?.popUntil((r) => r.isFirst);
-      setState(() => _signedIn = now);
+      setState(() {
+        _signedIn = now;
+        _needsEmail = needs;
+      });
     });
   }
 
@@ -108,7 +133,11 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
-      child: _signedIn ? const HomeScreen(key: ValueKey('home')) : const SignInScreen(key: ValueKey('signin')),
+      child: !_signedIn
+          ? const SignInScreen(key: ValueKey('signin'))
+          : _needsEmail
+              ? const ConnectEmailScreen(key: ValueKey('email'))
+              : const HomeScreen(key: ValueKey('home')),
     );
   }
 }
