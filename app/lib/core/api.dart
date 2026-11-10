@@ -238,6 +238,8 @@ class Api {
       return t.errWrongCode;
     }
     if (s.contains('invalid login credentials')) return t.errPasswordMismatch;
+    if (s.contains('already been registered')) return t.errEmailTaken;
+    if (s.contains('different whatsapp number')) return t.errEmailOtherNumber;
     if (s.contains('email address is invalid')) return t.errEmailLooksWrong;
     if (s.contains('jwt') || s.contains('not signed in')) return t.errSessionEnded;
     return m;
@@ -253,6 +255,25 @@ class Api {
   Future<void> verifyEmailCode(String email, String code) async {
     final j = await _send('POST', '/auth/v1/verify',
         body: {'email': email.trim().toLowerCase(), 'token': code.trim(), 'type': 'email'}, withUser: false);
+    await _take(j);
+  }
+
+  // ---------------------------------------------------------------- linking an email
+
+  /// Signed in with a WhatsApp number only. WhatsApp sign-in has ended, so
+  /// these accounts add an email before going on.
+  bool get needsEmail => _session != null && _session!.email == null && _session!.phone != null;
+
+  /// A code to a new email for this account.
+  Future<void> sendLinkCode(String email) async {
+    await _send('PUT', '/auth/v1/user', body: {'email': email.trim().toLowerCase()});
+  }
+
+  /// Links the email. The number stays on the account (or moves to the
+  /// account that already has this email), so every chit stays.
+  Future<void> verifyLinkCode(String email, String code) async {
+    final j = await _send('POST', '/auth/v1/verify',
+        body: {'email': email.trim().toLowerCase(), 'token': code.trim(), 'type': 'email_change'}, withUser: false);
     await _take(j);
   }
 

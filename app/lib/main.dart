@@ -9,6 +9,7 @@ import 'core/api.dart';
 import 'core/notifications.dart';
 import 'l10n/lang.dart';
 import 'l10n/strings.dart';
+import 'ui/connect_email.dart';
 import 'ui/home.dart';
 import 'ui/launch.dart';
 import 'ui/sign_in.dart';
@@ -105,16 +106,20 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   late StreamSubscription<Session?> _sub;
   bool _signedIn = Api.instance.signedIn;
+  bool _needsEmail = Api.instance.needsEmail;
 
   @override
   void initState() {
     super.initState();
     _sub = Api.instance.changes.listen((s) {
-      final now = s != null;
-      if (now == _signedIn) return;
+      final now = s != null, needs = Api.instance.needsEmail;
+      if (now == _signedIn && needs == _needsEmail) return;
       // Signing out closes everything that was open.
       if (!now) navigatorKey.currentState?.popUntil((r) => r.isFirst);
-      setState(() => _signedIn = now);
+      setState(() {
+        _signedIn = now;
+        _needsEmail = needs;
+      });
     });
   }
 
@@ -128,7 +133,11 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
-      child: _signedIn ? const HomeScreen(key: ValueKey('home')) : const SignInScreen(key: ValueKey('signin')),
+      child: !_signedIn
+          ? const SignInScreen(key: ValueKey('signin'))
+          : _needsEmail
+              ? const ConnectEmailScreen(key: ValueKey('email'))
+              : const HomeScreen(key: ValueKey('home')),
     );
   }
 }

@@ -16,6 +16,7 @@ import 'package:kuree/draw/scene.dart';
 import 'package:kuree/l10n/strings.dart';
 import 'package:kuree/ui/account.dart';
 import 'package:kuree/ui/code_boxes.dart';
+import 'package:kuree/ui/connect_email.dart';
 import 'package:kuree/ui/home.dart';
 import 'package:kuree/ui/kuri_editor.dart';
 import 'package:kuree/ui/language.dart';
@@ -218,6 +219,14 @@ void main() {
     await shot(tester, '02-sign-in-email');
     await tester.tap(find.text('Use a password'));
     await shot(tester, '02-sign-in-password');
+  });
+
+  testWidgets('add your email (WhatsApp sign-in ended)', (tester) async {
+    sized(tester);
+    await tester.pumpWidget(phone(const ConnectEmailScreen()));
+    await shot(tester, '04-add-email');
+    await tester.pumpWidget(phone(const ConnectEmailScreen(key: ValueKey('code'), startWithCode: 'ibrahim@example.com')));
+    await shot(tester, '04b-add-email-code');
   });
 
   testWidgets('sign in, language picker', (tester) async {

@@ -1318,6 +1318,21 @@ class S {
 
   /// Offline. Showing what was saved on this phone.
   String get offlineSaved => _get('offlineSaved');
+
+  /// Add your email
+  String get linkEmailTitle => _get('linkEmailTitle');
+
+  /// Sign in with WhatsApp has ended. Add your email to keep using Kuree. Your chits stay just as they are, and next time you sign in with this email.
+  String get linkEmailText => _get('linkEmailText');
+
+  /// Add email
+  String get linkEmailConfirm => _get('linkEmailConfirm');
+
+  /// That email is already used by another account. Try another email.
+  String get errEmailTaken => _get('errEmailTaken');
+
+  /// That email's account has a different phone number. Try another email.
+  String get errEmailOtherNumber => _get('errEmailOtherNumber');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1813,6 +1828,11 @@ const Map<String, String> _en = {
   'fromKept': '{amount} comes from what earlier months kept, {total} left in hand',
   'payoutEach': 'Each taker gets {amount}',
   'offlineSaved': 'Offline. Showing what was saved on this phone.',
+  'linkEmailTitle': 'Add your email',
+  'linkEmailText': 'Sign in with WhatsApp has ended. Add your email to keep using Kuree. Your chits stay just as they are, and next time you sign in with this email.',
+  'linkEmailConfirm': 'Add email',
+  'errEmailTaken': 'That email is already used by another account. Try another email.',
+  'errEmailOtherNumber': 'That email\'s account has a different phone number. Try another email.',
 };
 
 const Map<String, String> _ar = {
@@ -2291,6 +2311,11 @@ const Map<String, String> _ar = {
   'fromKept': '{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}',
   'payoutEach': 'كل مستلم يحصل على {amount}',
   'offlineSaved': 'غير متصل. نعرض ما حُفظ على هذا الهاتف.',
+  'linkEmailTitle': 'أضف بريدك الإلكتروني',
+  'linkEmailText': 'توقف تسجيل الدخول عبر واتساب. أضف بريدك الإلكتروني لتواصل استخدام Kuree. تبقى جمعياتك كما هي، وفي المرة القادمة سجّل الدخول بهذا البريد.',
+  'linkEmailConfirm': 'أضف البريد',
+  'errEmailTaken': 'هذا البريد مستخدم في حساب آخر. جرّب بريدًا آخر.',
+  'errEmailOtherNumber': 'حساب هذا البريد مرتبط برقم هاتف آخر. جرّب بريدًا آخر.',
 };
 
 const Map<String, String> _ml = {
@@ -2769,6 +2794,11 @@ const Map<String, String> _ml = {
   'fromKept': '{amount} മുൻ മാസങ്ങളിൽ മാറ്റിവെച്ചതിൽ നിന്ന്, കയ്യിൽ ബാക്കി {total}',
   'payoutEach': 'ഓരോരുത്തർക്കും {amount} ലഭിക്കും',
   'offlineSaved': 'ഓഫ്‌ലൈൻ. ഈ ഫോണിൽ സേവ് ചെയ്തത് കാണിക്കുന്നു.',
+  'linkEmailTitle': 'നിങ്ങളുടെ ഇമെയിൽ ചേർക്കുക',
+  'linkEmailText': 'വാട്സ്ആപ്പ് വഴിയുള്ള സൈൻ ഇൻ നിർത്തി. Kuree തുടർന്നും ഉപയോഗിക്കാൻ നിങ്ങളുടെ ഇമെയിൽ ചേർക്കുക. നിങ്ങളുടെ കുറികൾ അതുപോലെ തന്നെ ഉണ്ടാകും, അടുത്ത തവണ ഈ ഇമെയിൽ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാം.',
+  'linkEmailConfirm': 'ഇമെയിൽ ചേർക്കുക',
+  'errEmailTaken': 'ഈ ഇമെയിൽ മറ്റൊരു അക്കൗണ്ടിൽ ഉപയോഗത്തിലുണ്ട്. മറ്റൊരു ഇമെയിൽ നോക്കൂ.',
+  'errEmailOtherNumber': 'ഈ ഇമെയിലിന്റെ അക്കൗണ്ടിൽ വേറൊരു ഫോൺ നമ്പറാണ്. മറ്റൊരു ഇമെയിൽ നോക്കൂ.',
 };
 
 const Map<String, String> _ta = {
@@ -3247,6 +3277,11 @@ const Map<String, String> _ta = {
   'fromKept': '{amount} முந்தைய மாதங்களில் வைத்ததிலிருந்து, கையில் மீதம் {total}',
   'payoutEach': 'ஒவ்வொருவருக்கும் {amount} கிடைக்கும்',
   'offlineSaved': 'ஆஃப்லைன். இந்த போனில் சேமித்ததைக் காட்டுகிறது.',
+  'linkEmailTitle': 'உங்கள் மின்னஞ்சலைச் சேர்க்கவும்',
+  'linkEmailText': 'WhatsApp மூலம் உள்நுழைவு நிறுத்தப்பட்டது. Kuree-ஐத் தொடர்ந்து பயன்படுத்த உங்கள் மின்னஞ்சலைச் சேர்க்கவும். உங்கள் சீட்டுகள் அப்படியே இருக்கும், அடுத்த முறை இந்த மின்னஞ்சலுடன் உள்நுழையவும்.',
+  'linkEmailConfirm': 'மின்னஞ்சலைச் சேர்',
+  'errEmailTaken': 'இந்த மின்னஞ்சல் வேறு கணக்கில் உள்ளது. வேறு மின்னஞ்சலை முயற்சிக்கவும்.',
+  'errEmailOtherNumber': 'இந்த மின்னஞ்சல் கணக்கில் வேறு தொலைபேசி எண் உள்ளது. வேறு மின்னஞ்சலை முயற்சிக்கவும்.',
 };
 
 const Map<String, String> _kn = {
@@ -3725,6 +3760,11 @@ const Map<String, String> _kn = {
   'fromKept': '{amount} ಹಿಂದಿನ ತಿಂಗಳುಗಳಲ್ಲಿ ಇಟ್ಟಿದ್ದರಿಂದ, ಕೈಯಲ್ಲಿ ಉಳಿದದ್ದು {total}',
   'payoutEach': 'ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {amount} ಸಿಗುತ್ತದೆ',
   'offlineSaved': 'ಆಫ್‌ಲೈನ್. ಈ ಫೋನ್‌ನಲ್ಲಿ ಉಳಿಸಿದ್ದನ್ನು ತೋರಿಸುತ್ತಿದೆ.',
+  'linkEmailTitle': 'ನಿಮ್ಮ ಇಮೇಲ್ ಸೇರಿಸಿ',
+  'linkEmailText': 'WhatsApp ಮೂಲಕ ಸೈನ್ ಇನ್ ನಿಂತಿದೆ. Kuree ಬಳಸುತ್ತಿರಲು ನಿಮ್ಮ ಇಮೇಲ್ ಸೇರಿಸಿ. ನಿಮ್ಮ ಚೀಟಿಗಳು ಹಾಗೆಯೇ ಇರುತ್ತವೆ, ಮುಂದಿನ ಬಾರಿ ಈ ಇಮೇಲ್‌ನಿಂದ ಸೈನ್ ಇನ್ ಮಾಡಿ.',
+  'linkEmailConfirm': 'ಇಮೇಲ್ ಸೇರಿಸಿ',
+  'errEmailTaken': 'ಈ ಇಮೇಲ್ ಬೇರೆ ಖಾತೆಯಲ್ಲಿದೆ. ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ.',
+  'errEmailOtherNumber': 'ಈ ಇಮೇಲ್ ಖಾತೆಯಲ್ಲಿ ಬೇರೆ ಫೋನ್ ಸಂಖ್ಯೆ ಇದೆ. ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ.',
 };
 
 const Map<String, String> _hi = {
@@ -4203,6 +4243,11 @@ const Map<String, String> _hi = {
   'fromKept': '{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}',
   'payoutEach': 'हर लेने वाले को {amount} मिलेंगे',
   'offlineSaved': 'ऑफ़लाइन। इस फ़ोन पर सेव किया हुआ दिखा रहे हैं।',
+  'linkEmailTitle': 'अपना ईमेल जोड़ें',
+  'linkEmailText': 'WhatsApp से साइन इन बंद हो गया है। Kuree इस्तेमाल करते रहने के लिए अपना ईमेल जोड़ें। आपकी चिटें वैसी ही रहेंगी, और अगली बार इसी ईमेल से साइन इन करें।',
+  'linkEmailConfirm': 'ईमेल जोड़ें',
+  'errEmailTaken': 'यह ईमेल किसी दूसरे खाते में है। कोई और ईमेल आज़माएँ।',
+  'errEmailOtherNumber': 'इस ईमेल के खाते में कोई दूसरा फ़ोन नंबर है। कोई और ईमेल आज़माएँ।',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};
