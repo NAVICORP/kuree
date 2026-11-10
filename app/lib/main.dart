@@ -15,6 +15,24 @@ import 'ui/sign_in.dart';
 import 'ui/theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+/// Says once when the app falls back to what this phone kept, because the
+/// server could not be reached.
+void _sayWhenOffline() {
+  if (!Api.instance.showingSaved.value) return;
+  messengerKey.currentState
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(
+      content: Row(children: [
+        const Icon(Icons.cloud_off_rounded, color: Colors.white, size: 18),
+        const SizedBox(width: 10),
+        Expanded(child: Text(S.current.offlineSaved)),
+      ]),
+      backgroundColor: K.deep,
+      duration: const Duration(seconds: 4),
+    ));
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +50,7 @@ Future<void> main() async {
   // The card for the loading screen's first frame, where the launch screen had it.
   await LaunchScreen.prepare();
   await Future.wait([Api.instance.load(), Lang.instance.load()]);
+  Api.instance.showingSaved.addListener(_sayWhenOffline);
   runApp(const KureeApp());
   // Reminders and pushes start alongside the first screen, so they never hold
   // the launch screen. Asks nothing here; a tapped notification is picked up
@@ -52,6 +71,7 @@ class KureeApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: kureeTheme(),
         navigatorKey: navigatorKey,
+        scaffoldMessengerKey: messengerKey,
         locale: Lang.instance.locale,
         supportedLocales: [for (final c in S.codes) Locale(c)],
         localizationsDelegates: const [

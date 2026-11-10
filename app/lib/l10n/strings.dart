@@ -1315,6 +1315,9 @@ class S {
 
   /// Each taker gets {amount}
   String payoutEach(Object amount) => _fill('payoutEach', {'amount': amount});
+
+  /// Offline. Showing what was saved on this phone.
+  String get offlineSaved => _get('offlineSaved');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1809,6 +1812,7 @@ const Map<String, String> _en = {
   'keptForLater': '{amount} kept for the last months, {total} in hand',
   'fromKept': '{amount} comes from what earlier months kept, {total} left in hand',
   'payoutEach': 'Each taker gets {amount}',
+  'offlineSaved': 'Offline. Showing what was saved on this phone.',
 };
 
 const Map<String, String> _ar = {
@@ -2286,6 +2290,7 @@ const Map<String, String> _ar = {
   'keptForLater': 'يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}',
   'fromKept': '{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}',
   'payoutEach': 'كل مستلم يحصل على {amount}',
+  'offlineSaved': 'غير متصل. نعرض ما حُفظ على هذا الهاتف.',
 };
 
 const Map<String, String> _ml = {
@@ -2763,6 +2768,7 @@ const Map<String, String> _ml = {
   'keptForLater': '{amount} അവസാന മാസങ്ങൾക്കായി മാറ്റിവെക്കുന്നു, കയ്യിൽ {total}',
   'fromKept': '{amount} മുൻ മാസങ്ങളിൽ മാറ്റിവെച്ചതിൽ നിന്ന്, കയ്യിൽ ബാക്കി {total}',
   'payoutEach': 'ഓരോരുത്തർക്കും {amount} ലഭിക്കും',
+  'offlineSaved': 'ഓഫ്‌ലൈൻ. ഈ ഫോണിൽ സേവ് ചെയ്തത് കാണിക്കുന്നു.',
 };
 
 const Map<String, String> _ta = {
@@ -3240,6 +3246,7 @@ const Map<String, String> _ta = {
   'keptForLater': '{amount} கடைசி மாதங்களுக்கு வைக்கப்படுகிறது, கையில் {total}',
   'fromKept': '{amount} முந்தைய மாதங்களில் வைத்ததிலிருந்து, கையில் மீதம் {total}',
   'payoutEach': 'ஒவ்வொருவருக்கும் {amount} கிடைக்கும்',
+  'offlineSaved': 'ஆஃப்லைன். இந்த போனில் சேமித்ததைக் காட்டுகிறது.',
 };
 
 const Map<String, String> _kn = {
@@ -3717,6 +3724,7 @@ const Map<String, String> _kn = {
   'keptForLater': '{amount} ಕೊನೆಯ ತಿಂಗಳುಗಳಿಗೆ ಇಡಲಾಗಿದೆ, ಕೈಯಲ್ಲಿ {total}',
   'fromKept': '{amount} ಹಿಂದಿನ ತಿಂಗಳುಗಳಲ್ಲಿ ಇಟ್ಟಿದ್ದರಿಂದ, ಕೈಯಲ್ಲಿ ಉಳಿದದ್ದು {total}',
   'payoutEach': 'ಪ್ರತಿಯೊಬ್ಬರಿಗೆ {amount} ಸಿಗುತ್ತದೆ',
+  'offlineSaved': 'ಆಫ್‌ಲೈನ್. ಈ ಫೋನ್‌ನಲ್ಲಿ ಉಳಿಸಿದ್ದನ್ನು ತೋರಿಸುತ್ತಿದೆ.',
 };
 
 const Map<String, String> _hi = {
@@ -4194,6 +4202,7 @@ const Map<String, String> _hi = {
   'keptForLater': '{amount} आखिरी महीनों के लिए रखा, हाथ में {total}',
   'fromKept': '{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}',
   'payoutEach': 'हर लेने वाले को {amount} मिलेंगे',
+  'offlineSaved': 'ऑफ़लाइन। इस फ़ोन पर सेव किया हुआ दिखा रहे हैं।',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

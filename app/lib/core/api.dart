@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -122,7 +123,10 @@ class Api {
 
   Future<void> _setSession(Session? s) async {
     _session = s;
-    if (s == null) name = '';
+    if (s == null) {
+      name = '';
+      unawaited(_forgetKept());
+    }
     try {
       final prefs = await SharedPreferences.getInstance();
       if (s == null) {
@@ -174,7 +178,7 @@ class Api {
   }
 
   Future<dynamic> _send(String method, String path,
-      {Object? body, Map<String, String>? query, bool withUser = true, bool retry = true}) async {
+      {Object? body, Map<String, String>? query, bool withUser = true, bool retry = true, Duration wait = const Duration(seconds: 30)}) async {
     if (offline) throw ApiError(S.current.errOffline);
     if (withUser) await _fresh();
     final uri = Uri.parse('$kApiBase$path').replace(queryParameters: query);
@@ -182,8 +186,8 @@ class Api {
     try {
       final req = http.Request(method, uri)..headers.addAll(_headers(withUser));
       if (body != null) req.body = jsonEncode(body);
-      final streamed = await _http.send(req).timeout(const Duration(seconds: 30));
-      r = await http.Response.fromStream(streamed).timeout(const Duration(seconds: 30));
+      final streamed = await _http.send(req).timeout(wait);
+      r = await http.Response.fromStream(streamed).timeout(wait);
     } on TimeoutException {
       throw ApiError(S.current.errTimeout);
     } catch (_) {
@@ -207,7 +211,7 @@ class Api {
         await _setSession(null);
         throw ApiError(S.current.errSessionEnded, status: 401);
       }
-      return _send(method, path, body: body, query: query, withUser: withUser, retry: false);
+      return _send(method, path, body: body, query: query, withUser: withUser, retry: false, wait: wait);
     }
     throw _error(r.statusCode, j, text);
   }
@@ -316,7 +320,64 @@ class Api {
 
   // ---------------------------------------------------------------- database
 
-  Future<dynamic> rpc(String fn, [Map<String, dynamic>? args]) => _send('POST', '/rest/v1/rpc/$fn', body: args ?? const {});
+  Future<dynamic> rpc(String fn, [Map<String, dynamic>? args]) async {
+    final body = args ?? const <String, dynamic>{};
+    if (!_kept.contains(fn)) return _send('POST', '/rest/v1/rpc/$fn', body: body);
+    final key = '$_cachePrefix${_session?.userId ?? ''}:$fn:${jsonEncode(body)}';
+    final saved = await _keptAnswer(key);
+    try {
+      // With a copy on the phone, a slow network is not waited out for long.
+      final j = await _send('POST', '/rest/v1/rpc/$fn', body: body, wait: Duration(seconds: saved == null ? 30 : 8));
+      showingSaved.value = false;
+      unawaited(_keep(key, j));
+      return j;
+    } on ApiError catch (e) {
+      // The server answered: that is the answer. No answer at all (no
+      // network, timed out): what this phone kept from last time, if any.
+      if (e.status != 0 || saved == null) rethrow;
+      showingSaved.value = true;
+      return saved;
+    }
+  }
+
+  // ---------------------------------------------------------------- offline
+
+  /// The reads kept on this phone so the chits open without a network.
+  static const _kept = {'my_kuris', 'whoami', 'get_kuri'};
+  static const _cachePrefix = 'kuree.saved:';
+
+  /// True while the app shows what was kept on this phone because the
+  /// server could not be reached.
+  final ValueNotifier<bool> showingSaved = ValueNotifier(false);
+
+  Future<void> _keep(String key, dynamic j) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, jsonEncode(j));
+    } catch (_) {
+      // Not kept; it is only for reading offline.
+    }
+  }
+
+  Future<dynamic> _keptAnswer(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(key);
+      return raw == null ? null : jsonDecode(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _forgetKept() async {
+    showingSaved.value = false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (final k in prefs.getKeys().where((k) => k.startsWith(_cachePrefix)).toList()) {
+        await prefs.remove(k);
+      }
+    } catch (_) {}
+  }
 
   /// Calls a server function in supabase/functions.
   Future<dynamic> function(String name, [Map<String, dynamic>? body]) => _send('POST', '/functions/v1/$name', body: body ?? const {});

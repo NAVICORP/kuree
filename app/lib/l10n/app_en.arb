@@ -1149,5 +1149,6 @@
     "placeholders": {
       "amount": {}
     }
-  }
+  },
+  "offlineSaved": "Offline. Showing what was saved on this phone."
 }

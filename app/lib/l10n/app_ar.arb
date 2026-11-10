@@ -473,5 +473,6 @@
   "organiserTakes": "يستلم المنظّم جمع هذا الشهر، {amount}",
   "keptForLater": "يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}",
   "fromKept": "{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}",
-  "payoutEach": "كل مستلم يحصل على {amount}"
+  "payoutEach": "كل مستلم يحصل على {amount}",
+  "offlineSaved": "غير متصل. نعرض ما حُفظ على هذا الهاتف."
 }

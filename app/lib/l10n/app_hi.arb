@@ -473,5 +473,6 @@
   "organiserTakes": "इस महीने की वसूली {amount} आयोजक को मिलेगी",
   "keptForLater": "{amount} आखिरी महीनों के लिए रखा, हाथ में {total}",
   "fromKept": "{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}",
-  "payoutEach": "हर लेने वाले को {amount} मिलेंगे"
+  "payoutEach": "हर लेने वाले को {amount} मिलेंगे",
+  "offlineSaved": "ऑफ़लाइन। इस फ़ोन पर सेव किया हुआ दिखा रहे हैं।"
 }
