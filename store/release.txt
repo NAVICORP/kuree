@@ -1,6 +1,7 @@
-1.0.6 97
-Run a chit over fewer months than slots: several people can take the pot each month.
-The bottle draw picks one slip for each open place.
-Sign in with Google or Apple.
+1.0.6 104
+Organiser's month: the organiser pays nothing and takes the first month's collection.
+Run a chit over fewer months than slots, with the same amount for every taker.
+Open your chits even without a network.
+Sign in with Google or Apple, and a box for each digit of the email code.
 Reminders the day before and on collection day.
-Clearer Malayalam and Arabic text, and a new loading screen.
+Clearer Malayalam and Arabic text, a new language picker and loading screen.
