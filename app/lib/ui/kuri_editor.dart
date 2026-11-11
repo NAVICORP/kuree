@@ -82,6 +82,10 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     return c.clamp(KuriDoc.minLength(slots), slots);
   }
 
+  /// A length was chosen before there are enough names for it: each name is
+  /// a slot, and a chit cannot run more months than it has slots.
+  bool get _needsNames => chosenLength != null && slots < chosenLength!;
+
   /// The months the chit runs: those, and the organiser's first month.
   int get length => payMonths + (organiser ? 1 : 0);
 
@@ -223,6 +227,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
     // At least two slots: with fewer, the first empty one is the one to fill.
     if (slots < 2) throw ApiError(t.errSlotName(slots + 1));
+    if (_needsNames) throw ApiError(t.errLengthNeedsNames(chosenLength! + (organiser ? 1 : 0), chosenLength!));
     final payers = <Payer>[];
     final usedIds = <String>{};
     for (var i = 0; i < slots; i++) {
@@ -329,10 +334,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     final s = S.of(context);
     final n = slots;
     final org = organiser ? 1 : 0;
-    final picked = await showPicker<int>(context, title: s.chitLength, selected: payMonths >= n ? 0 : payMonths, options: [
-      PickOption(0, org == 0 ? s.lengthSame : s.monthsCount(n + org), sub: n < 2 ? s.slotsFromNames : s.lengthSameSub(n + org)),
+    final selected = _needsNames ? chosenLength! : (payMonths >= n ? 0 : payMonths);
+    final picked = await showPicker<int>(context, title: s.chitLength, selected: selected, options: [
+      PickOption(0, n < 2 || org == 0 ? s.lengthSame : s.monthsCount(n + org), sub: n < 2 ? s.slotsFromNames : s.lengthSameSub(n + org)),
       if (n >= 2)
         for (var l = n - 1; l >= KuriDoc.minLength(n); l--) PickOption(l, s.monthsCount(l + org), sub: KuriDoc.planText(n, l)),
+      // No names yet: the length can still be set first, and the names
+      // added to match it.
+      if (n < 2)
+        for (var l = 2; l <= kMaxSlots; l++) PickOption(l, s.monthsCount(l + org), sub: s.lengthNeedsNames(l)),
     ]);
     if (picked != null) setState(() => chosenLength = picked.value == 0 ? null : picked.value);
   }
@@ -372,6 +382,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 _field(s.fieldGroup, _group, hint: s.groupHint, caps: TextCapitalization.words),
               ]),
             ),
+            // Names first: the slots decide the pot and the lengths on offer.
+            SectionTitle(
+              s.slots,
+              trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
+            ),
+            for (var i = 0; i < rows.length; i++) ...[
+              _slotRow(i, s, cur),
+              const SizedBox(height: Sp.md - 2),
+            ],
             SectionTitle(s.sectionMoney),
             KCard(
               padding: EdgeInsets.zero,
@@ -387,7 +406,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                       Expanded(
                         child: _choiceField(
                           s.chitLength,
-                          slots == 0 ? s.lengthSame : s.monthsCount(length),
+                          _needsNames
+                              ? s.monthsCount(chosenLength! + (organiser ? 1 : 0))
+                              : slots == 0
+                                  ? s.lengthSame
+                                  : s.monthsCount(length),
                           onTap: _pickLength,
                         ),
                       ),
@@ -397,7 +420,9 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
                       child: Text(
-                        slots == 0
+                        _needsNames
+                            ? s.errLengthNeedsNames(chosenLength! + (organiser ? 1 : 0), chosenLength!)
+                            : slots == 0
                             ? s.slotsFromNames
                             : share > 0
                                 ? [
@@ -470,14 +495,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 ),
               ]),
             ),
-            SectionTitle(
-              s.slots,
-              trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
-            ),
-            for (var i = 0; i < rows.length; i++) ...[
-              _slotRow(i, s, cur),
-              const SizedBox(height: Sp.md - 2),
-            ],
             SectionTitle(s.numbersForReminders, trailing: Pill(s.countOf(withNumber, names.length), color: K.surface2, fg: K.ink2)),
             KCard(
               padding: EdgeInsets.zero,
