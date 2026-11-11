@@ -27,7 +27,8 @@ app = apps[0]['id']
 versions = call('GET', f'/apps/{app}/appStoreVersions?filter[platform]=IOS&limit=50')['data']
 for v in versions:
     print(f"Found version {v['attributes']['versionString']}: {v['attributes']['appStoreState']}")
-editable = [v for v in versions if v['attributes']['appStoreState'] in EDITABLE]
+# A version added to a review draft but not yet submitted can still change build.
+editable = [v for v in versions if v['attributes']['appStoreState'] in EDITABLE | {'READY_FOR_REVIEW'}]
 same = [v for v in editable if v['attributes']['versionString'] == version]
 if same:
     vid = same[0]['id']
