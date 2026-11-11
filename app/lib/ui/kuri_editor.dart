@@ -382,6 +382,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 _field(s.fieldGroup, _group, hint: s.groupHint, caps: TextCapitalization.words),
               ]),
             ),
+            // Names first: the slots decide the pot and the lengths on offer.
+            SectionTitle(
+              s.slots,
+              trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
+            ),
+            for (var i = 0; i < rows.length; i++) ...[
+              _slotRow(i, s, cur),
+              const SizedBox(height: Sp.md - 2),
+            ],
             SectionTitle(s.sectionMoney),
             KCard(
               padding: EdgeInsets.zero,
@@ -486,14 +495,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                 ),
               ]),
             ),
-            SectionTitle(
-              s.slots,
-              trailing: slots == 0 ? Text(s.oneNamePerSlot, style: T.small) : Pill('$slots', color: K.surface2, fg: K.ink2),
-            ),
-            for (var i = 0; i < rows.length; i++) ...[
-              _slotRow(i, s, cur),
-              const SizedBox(height: Sp.md - 2),
-            ],
             SectionTitle(s.numbersForReminders, trailing: Pill(s.countOf(withNumber, names.length), color: K.surface2, fg: K.ink2)),
             KCard(
               padding: EdgeInsets.zero,
