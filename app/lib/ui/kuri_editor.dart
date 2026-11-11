@@ -384,7 +384,13 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                     Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                       Expanded(child: _field(s.eachSlotPays, _share, hint: '5000', money: true)),
                       const SizedBox(width: Sp.md),
-                      Expanded(child: _field(s.lateFine, _fine, hint: s.fineNone, money: true)),
+                      Expanded(
+                        child: _choiceField(
+                          s.chitLength,
+                          slots == 0 ? s.lengthSame : s.monthsCount(length),
+                          onTap: _pickLength,
+                        ),
+                      ),
                     ]),
                     const SizedBox(height: Sp.lg),
                     Container(
@@ -412,24 +418,6 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
               padding: EdgeInsets.zero,
               child: Column(children: [
                 KChoice(label: s.firstMonth, value: '${monthName(startMonth)} $startYear', icon: Icons.event_outlined, onTap: _pickStart),
-                const Divider(),
-                KChoice(
-                  label: s.chitLength,
-                  value: payMonths >= slots && !organiser ? s.lengthSame : s.monthsCount(length),
-                  icon: Icons.date_range_outlined,
-                  onTap: _pickLength,
-                ),
-                if (KuriDoc.planText(slots, payMonths) != null)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(48, 0, 16, 12),
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.emoji_events_rounded, size: 16, color: K.warn)),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(KuriDoc.planText(slots, payMonths)!, style: T.small.copyWith(color: K.ink2, fontWeight: FontWeight.w700)),
-                      ),
-                    ]),
-                  ),
                 const Divider(),
                 InkWell(
                   onTap: () => setState(() => organiser = !organiser),
@@ -468,6 +456,16 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                   onTap: () async {
                     final d = await _pickDay(s.lastDayToPay, lastDay);
                     if (d != null) setState(() => lastDay = d);
+                  },
+                ),
+                const Divider(),
+                KChoice(
+                  label: s.lateFine,
+                  value: fine > 0 ? s.fineEach(money(fine, currency)) : s.fineNone,
+                  icon: Icons.price_change_outlined,
+                  onTap: () async {
+                    final v = await askFine(context, fine, currency);
+                    if (v != null) setState(() => _fine.text = v > 0 ? '$v' : '');
                   },
                 ),
               ]),
@@ -510,6 +508,22 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
           KButton(label: isNew ? s.startTheChit : s.saveChanges, icon: Icons.check_rounded, expand: true, busy: busy, onPressed: _save),
         ]),
       ),
+    );
+  }
+
+  /// A labelled box like the text fields, that opens a picker.
+  Widget _choiceField(String label, String value, {required VoidCallback onTap}) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label, style: T.label),
+        const SizedBox(height: Sp.sm),
+        InputDecorator(
+          decoration: const InputDecoration(suffixIcon: Icon(Icons.expand_more_rounded, color: K.ink2)),
+          child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: T.bodyStrong),
+        ),
+      ]),
     );
   }
 

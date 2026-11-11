@@ -246,7 +246,7 @@ void main() {
         await scrollThrough(tester);
         expect(tester.takeException(), isNull);
         await tester.scrollUntilVisible(find.text(s.chitLength), -300, scrollable: find.byType(Scrollable).first);
-        expect(find.text(s.planUneven(3, 5, 2)), findsWidgets);
+        expect(find.textContaining(s.planUneven(3, 5, 2)), findsWidgets); // in the pot line under Length
         await tapText(tester, s.chitLength);
         expect(tester.takeException(), isNull);
       });
