@@ -1,7 +1,7 @@
-1.0.6 114
+1.0.6 119
 Organiser's month: the organiser pays nothing and takes the first month's collection.
 Run a chit over fewer months than slots, with the same amount for every taker.
-Length now sits next to each slot's share, so it's easy to find.
+Add the names first, then pick how many months the chit runs.
 Alerts when another admin marks a payment or a member takes the pot.
 Open your chits even without a network.
 Sign in with Google, Apple or email. Signed in with WhatsApp before? Add your email to keep your chits.
