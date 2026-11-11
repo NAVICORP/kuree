@@ -1333,6 +1333,12 @@ class S {
 
   /// That email's account has a different phone number. Try another email.
   String get errEmailOtherNumber => _get('errEmailOtherNumber');
+
+  /// Needs {n} names, one for each slot
+  String lengthNeedsNames(Object n) => _fill('lengthNeedsNames', {'n': n});
+
+  /// A {months}-month chit needs at least {n} names below. Add more names or choose a shorter length.
+  String errLengthNeedsNames(Object months, Object n) => _fill('errLengthNeedsNames', {'months': months, 'n': n});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1833,6 +1839,8 @@ const Map<String, String> _en = {
   'linkEmailConfirm': 'Add email',
   'errEmailTaken': 'That email is already used by another account. Try another email.',
   'errEmailOtherNumber': 'That email\'s account has a different phone number. Try another email.',
+  'lengthNeedsNames': 'Needs {n} names, one for each slot',
+  'errLengthNeedsNames': 'A {months}-month chit needs at least {n} names below. Add more names or choose a shorter length.',
 };
 
 const Map<String, String> _ar = {
@@ -2316,6 +2324,8 @@ const Map<String, String> _ar = {
   'linkEmailConfirm': 'أضف البريد',
   'errEmailTaken': 'هذا البريد مستخدم في حساب آخر. جرّب بريدًا آخر.',
   'errEmailOtherNumber': 'حساب هذا البريد مرتبط برقم هاتف آخر. جرّب بريدًا آخر.',
+  'lengthNeedsNames': 'يحتاج {n} أسماء، اسم لكل سهم',
+  'errLengthNeedsNames': 'جمعية مدتها {months} شهرًا تحتاج {n} أسماء على الأقل في الأسفل. أضف أسماء أكثر أو اختر مدة أقصر.',
 };
 
 const Map<String, String> _ml = {
@@ -2799,6 +2809,8 @@ const Map<String, String> _ml = {
   'linkEmailConfirm': 'ഇമെയിൽ ചേർക്കുക',
   'errEmailTaken': 'ഈ ഇമെയിൽ മറ്റൊരു അക്കൗണ്ടിൽ ഉപയോഗത്തിലുണ്ട്. മറ്റൊരു ഇമെയിൽ നോക്കൂ.',
   'errEmailOtherNumber': 'ഈ ഇമെയിലിന്റെ അക്കൗണ്ടിൽ വേറൊരു ഫോൺ നമ്പറാണ്. മറ്റൊരു ഇമെയിൽ നോക്കൂ.',
+  'lengthNeedsNames': 'ഓരോ സ്ലോട്ടിനും ഒന്ന് വീതം {n} പേരുകൾ വേണം',
+  'errLengthNeedsNames': '{months} മാസത്തെ കുറിക്ക് താഴെ കുറഞ്ഞത് {n} പേരുകൾ വേണം. കൂടുതൽ പേരുകൾ ചേർക്കുക, അല്ലെങ്കിൽ കുറഞ്ഞ കാലാവധി തിരഞ്ഞെടുക്കുക.',
 };
 
 const Map<String, String> _ta = {
@@ -3282,6 +3294,8 @@ const Map<String, String> _ta = {
   'linkEmailConfirm': 'மின்னஞ்சலைச் சேர்',
   'errEmailTaken': 'இந்த மின்னஞ்சல் வேறு கணக்கில் உள்ளது. வேறு மின்னஞ்சலை முயற்சிக்கவும்.',
   'errEmailOtherNumber': 'இந்த மின்னஞ்சல் கணக்கில் வேறு தொலைபேசி எண் உள்ளது. வேறு மின்னஞ்சலை முயற்சிக்கவும்.',
+  'lengthNeedsNames': 'ஒவ்வொரு ஸ்லாட்டுக்கும் ஒன்றாக {n} பெயர்கள் தேவை',
+  'errLengthNeedsNames': '{months} மாத சீட்டுக்கு கீழே குறைந்தது {n} பெயர்கள் தேவை. மேலும் பெயர்களைச் சேர்க்கவும் அல்லது குறைந்த காலத்தைத் தேர்ந்தெடுக்கவும்.',
 };
 
 const Map<String, String> _kn = {
@@ -3765,6 +3779,8 @@ const Map<String, String> _kn = {
   'linkEmailConfirm': 'ಇಮೇಲ್ ಸೇರಿಸಿ',
   'errEmailTaken': 'ಈ ಇಮೇಲ್ ಬೇರೆ ಖಾತೆಯಲ್ಲಿದೆ. ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ.',
   'errEmailOtherNumber': 'ಈ ಇಮೇಲ್ ಖಾತೆಯಲ್ಲಿ ಬೇರೆ ಫೋನ್ ಸಂಖ್ಯೆ ಇದೆ. ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ.',
+  'lengthNeedsNames': 'ಪ್ರತಿ ಸ್ಲಾಟ್‌ಗೆ ಒಂದರಂತೆ {n} ಹೆಸರುಗಳು ಬೇಕು',
+  'errLengthNeedsNames': '{months} ತಿಂಗಳ ಚೀಟಿಗೆ ಕೆಳಗೆ ಕನಿಷ್ಠ {n} ಹೆಸರುಗಳು ಬೇಕು. ಇನ್ನಷ್ಟು ಹೆಸರುಗಳನ್ನು ಸೇರಿಸಿ ಅಥವಾ ಕಡಿಮೆ ಅವಧಿಯನ್ನು ಆರಿಸಿ.',
 };
 
 const Map<String, String> _hi = {
@@ -4248,6 +4264,8 @@ const Map<String, String> _hi = {
   'linkEmailConfirm': 'ईमेल जोड़ें',
   'errEmailTaken': 'यह ईमेल किसी दूसरे खाते में है। कोई और ईमेल आज़माएँ।',
   'errEmailOtherNumber': 'इस ईमेल के खाते में कोई दूसरा फ़ोन नंबर है। कोई और ईमेल आज़माएँ।',
+  'lengthNeedsNames': '{n} नाम चाहिए, हर स्लॉट के लिए एक',
+  'errLengthNeedsNames': '{months} महीने की चिट के लिए नीचे कम से कम {n} नाम चाहिए। और नाम जोड़ें या छोटी अवधि चुनें।',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

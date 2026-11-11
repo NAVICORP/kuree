@@ -1155,5 +1155,18 @@
   "linkEmailText": "Sign in with WhatsApp has ended. Add your email to keep using Kuree. Your chits stay just as they are, and next time you sign in with this email.",
   "linkEmailConfirm": "Add email",
   "errEmailTaken": "That email is already used by another account. Try another email.",
-  "errEmailOtherNumber": "That email's account has a different phone number. Try another email."
+  "errEmailOtherNumber": "That email's account has a different phone number. Try another email.",
+  "lengthNeedsNames": "Needs {n} names, one for each slot",
+  "@lengthNeedsNames": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "errLengthNeedsNames": "A {months}-month chit needs at least {n} names below. Add more names or choose a shorter length.",
+  "@errLengthNeedsNames": {
+    "placeholders": {
+      "months": {},
+      "n": {}
+    }
+  }
 }
