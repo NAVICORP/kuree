@@ -166,7 +166,7 @@ function shell(title, body, { home = false, head = '', foot = '', cta = true } =
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${esc(title)}</title>
-<meta name="description" content="Kuree: run your chit from your phone.">
+<meta name="description" content="Kuree: keep your chit&#39;s record on your phone.">
 <meta name="theme-color" content="#FAFAF5">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/assets/brand/touch-180.png">
