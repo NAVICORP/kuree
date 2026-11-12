@@ -26,3 +26,4 @@ jobs:
           read -r version build < store/release.txt
           tail -n +2 store/release.txt > "$RUNNER_TEMP/notes.txt"
           python3 .github/scripts/asc_release.py "$version" "$build" "$RUNNER_TEMP/notes.txt"
+          python3 .github/scripts/asc_listing.py "$version"
