@@ -182,7 +182,7 @@ ${top}
 <main class="kpage">
 ${body}
 </main>
-<footer class="kfoot"><p><a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="/delete-account">Delete an account</a></p><p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p></footer>
+<footer class="kfoot"><p><a href="/privacy">Privacy</a> &nbsp; <a href="/terms">Terms</a> &nbsp; <a href="/delete-account">Delete an account</a></p><p>Made by <a href="https://skifi.co" target="_blank" rel="noopener">SkiFi</a></p><p class="kfoot__legal">Kuree is a record-keeping app. It does not conduct chits or handle money. In India, chits are regulated under the Chit Funds Act, 1982, and organisers are responsible for sanction, registration and following the rules.</p></footer>
 ${foot}
 </body>
 </html>`);

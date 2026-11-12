@@ -1,6 +1,8 @@
 # Kuree
 
-> Kuree is a phone app for the people who run a chit, also called a chitty, committee or ROSCA: a group where every member pays the same share each month and one member takes the whole pot, until everyone has had it once. Kuree keeps the record of who paid, who is late, who takes the pot and what comes next. It never holds, moves or lends money; members pay each other the way they always have.
+> Kuree is a phone app for the people who run a chit, also called a chitty, committee or ROSCA: a group where every member pays the same share each month and one member takes the whole pot, until everyone has had it once. Kuree keeps the record of who paid, who is late, who takes the pot and what comes next. It never holds, moves or lends money, and it does not conduct, register or approve chits.
+
+Chits in India are regulated under the Chit Funds Act, 1982: a chit needs the State Government's sanction and registration with the Registrar of Chits, and the organiser is responsible for following the law. Kuree only keeps the record.
 
 Kuree is made by SkiFi (SKIFI GROUP LLC, https://skifi.co). It is free, with no in-app purchases, and is coming to the App Store (iPhone) and Google Play (Android).
 
@@ -18,9 +20,9 @@ Kuree is made by SkiFi (SKIFI GROUP LLC, https://skifi.co). It is free, with no 
 ## Pages
 
 - [Kuree home](https://kureeapp.com/): what the app does, the bottle draw, reminders, the members' link and questions
-- [Questions](https://kureeapp.com/#faq): does Kuree hold money, do members need the app, what members see, is the draw fair
+- [Questions](https://kureeapp.com/#faq): does Kuree hold money, is it legal to run a chit, do members need the app, what members see, is the draw fair
 - [Privacy](https://kureeapp.com/privacy)
-- [Terms](https://kureeapp.com/terms)
+- [Terms](https://kureeapp.com/terms), including chits and the law
 - [Deleting an account](https://kureeapp.com/delete-account)
 
 ## Contact
