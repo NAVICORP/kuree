@@ -12,6 +12,7 @@ import 'collect_screen.dart';
 import 'glass.dart';
 import 'kuri_editor.dart';
 import 'kuri_screen.dart';
+import 'law_notice.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -156,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _create() async {
     final nav = _navs[0].currentState;
     if (nav == null) return;
+    if (!await lawNoticeOnce(context) || !mounted) return;
     final made = await nav.push<KuriRecord>(MaterialPageRoute(builder: (_) => const KuriEditorScreen()));
     if (made == null || !mounted) return;
     await _open(made);

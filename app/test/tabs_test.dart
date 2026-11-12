@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kuree/core/api.dart';
 import 'package:kuree/l10n/strings.dart';
 import 'package:kuree/ui/collect_screen.dart';
@@ -34,7 +35,10 @@ Widget app(Widget home) => MaterialApp(
 
 void main() {
   setUpAll(loadAppFonts);
-  setUp(() => Api.instance.offline = true);
+  setUp(() {
+    Api.instance.offline = true;
+    SharedPreferences.setMockInitialValues({});
+  });
   tearDown(() {
     Api.instance.offline = false;
     S.current = S.forCode('en');
@@ -232,6 +236,10 @@ void main() {
   testWidgets('a new chit: Save above the footer, and the form ends at the keyboard', (tester) async {
     await start(tester);
     await tester.tap(find.text(s.newChit));
+    await settle(tester);
+    // The first time: the note on chits and the law, then the form.
+    expect(find.text(s.lawTitle), findsOneWidget);
+    await tester.tap(find.text(s.lawGotIt));
     await settle(tester);
     expect(find.byType(KuriEditorScreen), findsOneWidget);
     final footer = tester.getRect(find.byType(KNavBar));

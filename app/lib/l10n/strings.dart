@@ -1339,6 +1339,18 @@ class S {
 
   /// A {months}-month chit needs at least {n} names below. Add more names or choose a shorter length.
   String errLengthNeedsNames(Object months, Object n) => _fill('errLengthNeedsNames', {'months': months, 'n': n});
+
+  /// Chits and the law
+  String get lawTitle => _get('lawTitle');
+
+  /// In India, a chit needs the State Government's sanction and registration with the Registrar of Chits before it starts, under the Chit Funds Act, 1982. Kuree only keeps the record. It does not run or register chits and never handles money. Make sure your chit follows the law where you live.
+  String get lawText => _get('lawText');
+
+  /// Got it
+  String get lawGotIt => _get('lawGotIt');
+
+  /// Read more
+  String get lawReadMore => _get('lawReadMore');
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1841,6 +1853,10 @@ const Map<String, String> _en = {
   'errEmailOtherNumber': 'That email\'s account has a different phone number. Try another email.',
   'lengthNeedsNames': 'Needs {n} names, one for each slot',
   'errLengthNeedsNames': 'A {months}-month chit needs at least {n} names below. Add more names or choose a shorter length.',
+  'lawTitle': 'Chits and the law',
+  'lawText': 'In India, a chit needs the State Government\'s sanction and registration with the Registrar of Chits before it starts, under the Chit Funds Act, 1982. Kuree only keeps the record. It does not run or register chits and never handles money. Make sure your chit follows the law where you live.',
+  'lawGotIt': 'Got it',
+  'lawReadMore': 'Read more',
 };
 
 const Map<String, String> _ar = {
@@ -2326,6 +2342,10 @@ const Map<String, String> _ar = {
   'errEmailOtherNumber': 'حساب هذا البريد مرتبط برقم هاتف آخر. جرّب بريدًا آخر.',
   'lengthNeedsNames': 'يحتاج {n} أسماء، اسم لكل سهم',
   'errLengthNeedsNames': 'جمعية مدتها {months} شهرًا تحتاج {n} أسماء على الأقل في الأسفل. أضف أسماء أكثر أو اختر مدة أقصر.',
+  'lawTitle': 'الجمعيات والقانون',
+  'lawText': 'في الهند، تحتاج الجمعية إلى موافقة حكومة الولاية وتسجيل لدى مسجل الجمعيات قبل أن تبدأ، بموجب قانون صناديق الجمعيات لعام 1982. Kuree يحفظ السجل فقط. لا يدير الجمعيات ولا يسجلها ولا يتعامل مع المال أبدًا. تأكد أن جمعيتك تتبع القانون حيث تعيش.',
+  'lawGotIt': 'فهمت',
+  'lawReadMore': 'اقرأ المزيد',
 };
 
 const Map<String, String> _ml = {
@@ -2811,6 +2831,10 @@ const Map<String, String> _ml = {
   'errEmailOtherNumber': 'ഈ ഇമെയിലിന്റെ അക്കൗണ്ടിൽ വേറൊരു ഫോൺ നമ്പറാണ്. മറ്റൊരു ഇമെയിൽ നോക്കൂ.',
   'lengthNeedsNames': 'ഓരോ സ്ലോട്ടിനും ഒന്ന് വീതം {n} പേരുകൾ വേണം',
   'errLengthNeedsNames': '{months} മാസത്തെ കുറിക്ക് താഴെ കുറഞ്ഞത് {n} പേരുകൾ വേണം. കൂടുതൽ പേരുകൾ ചേർക്കുക, അല്ലെങ്കിൽ കുറഞ്ഞ കാലാവധി തിരഞ്ഞെടുക്കുക.',
+  'lawTitle': 'കുറിയും നിയമവും',
+  'lawText': 'ഇന്ത്യയിൽ, Chit Funds Act, 1982 പ്രകാരം ഒരു കുറി തുടങ്ങുന്നതിന് മുമ്പ് സംസ്ഥാന സർക്കാരിന്റെ അനുമതിയും Registrar of Chits-ൽ രജിസ്ട്രേഷനും വേണം. Kuree കണക്ക് സൂക്ഷിക്കുക മാത്രമാണ് ചെയ്യുന്നത്. ഇത് കുറി നടത്തുകയോ രജിസ്റ്റർ ചെയ്യുകയോ പണം കൈകാര്യം ചെയ്യുകയോ ഇല്ല. നിങ്ങളുടെ കുറി നിങ്ങളുടെ നാട്ടിലെ നിയമം പാലിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക.',
+  'lawGotIt': 'മനസ്സിലായി',
+  'lawReadMore': 'കൂടുതൽ വായിക്കുക',
 };
 
 const Map<String, String> _ta = {
@@ -3296,6 +3320,10 @@ const Map<String, String> _ta = {
   'errEmailOtherNumber': 'இந்த மின்னஞ்சல் கணக்கில் வேறு தொலைபேசி எண் உள்ளது. வேறு மின்னஞ்சலை முயற்சிக்கவும்.',
   'lengthNeedsNames': 'ஒவ்வொரு ஸ்லாட்டுக்கும் ஒன்றாக {n} பெயர்கள் தேவை',
   'errLengthNeedsNames': '{months} மாத சீட்டுக்கு கீழே குறைந்தது {n} பெயர்கள் தேவை. மேலும் பெயர்களைச் சேர்க்கவும் அல்லது குறைந்த காலத்தைத் தேர்ந்தெடுக்கவும்.',
+  'lawTitle': 'சீட்டும் சட்டமும்',
+  'lawText': 'இந்தியாவில், சிட் ஃபண்ட் சட்டம், 1982-ன்படி ஒரு சீட்டு தொடங்கும் முன் மாநில அரசின் அனுமதியும் சீட்டுப் பதிவாளரிடம் பதிவும் தேவை. Kuree கணக்கை மட்டுமே வைத்திருக்கும். அது சீட்டை நடத்துவதோ பதிவு செய்வதோ பணத்தைக் கையாள்வதோ இல்லை. உங்கள் சீட்டு உங்கள் பகுதியின் சட்டத்தைப் பின்பற்றுகிறதா என்பதை உறுதிசெய்யுங்கள்.',
+  'lawGotIt': 'புரிந்தது',
+  'lawReadMore': 'மேலும் படிக்க',
 };
 
 const Map<String, String> _kn = {
@@ -3781,6 +3809,10 @@ const Map<String, String> _kn = {
   'errEmailOtherNumber': 'ಈ ಇಮೇಲ್ ಖಾತೆಯಲ್ಲಿ ಬೇರೆ ಫೋನ್ ಸಂಖ್ಯೆ ಇದೆ. ಬೇರೆ ಇಮೇಲ್ ಪ್ರಯತ್ನಿಸಿ.',
   'lengthNeedsNames': 'ಪ್ರತಿ ಸ್ಲಾಟ್‌ಗೆ ಒಂದರಂತೆ {n} ಹೆಸರುಗಳು ಬೇಕು',
   'errLengthNeedsNames': '{months} ತಿಂಗಳ ಚೀಟಿಗೆ ಕೆಳಗೆ ಕನಿಷ್ಠ {n} ಹೆಸರುಗಳು ಬೇಕು. ಇನ್ನಷ್ಟು ಹೆಸರುಗಳನ್ನು ಸೇರಿಸಿ ಅಥವಾ ಕಡಿಮೆ ಅವಧಿಯನ್ನು ಆರಿಸಿ.',
+  'lawTitle': 'ಚೀಟಿ ಮತ್ತು ಕಾನೂನು',
+  'lawText': 'ಭಾರತದಲ್ಲಿ, ಚಿಟ್ ಫಂಡ್ ಕಾಯ್ದೆ, 1982ರ ಪ್ರಕಾರ ಚೀಟಿ ಆರಂಭವಾಗುವ ಮೊದಲು ರಾಜ್ಯ ಸರ್ಕಾರದ ಮಂಜೂರಾತಿ ಮತ್ತು ಚೀಟಿ ನೋಂದಣಾಧಿಕಾರಿಯ ಬಳಿ ನೋಂದಣಿ ಬೇಕು. Kuree ಲೆಕ್ಕವನ್ನು ಮಾತ್ರ ಇಡುತ್ತದೆ. ಇದು ಚೀಟಿ ನಡೆಸುವುದಿಲ್ಲ, ನೋಂದಾಯಿಸುವುದಿಲ್ಲ ಮತ್ತು ಎಂದಿಗೂ ಹಣವನ್ನು ನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ನಿಮ್ಮ ಚೀಟಿ ನಿಮ್ಮ ಊರಿನ ಕಾನೂನನ್ನು ಪಾಲಿಸುತ್ತದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.',
+  'lawGotIt': 'ಅರ್ಥವಾಯಿತು',
+  'lawReadMore': 'ಇನ್ನಷ್ಟು ಓದಿ',
 };
 
 const Map<String, String> _hi = {
@@ -4266,6 +4298,10 @@ const Map<String, String> _hi = {
   'errEmailOtherNumber': 'इस ईमेल के खाते में कोई दूसरा फ़ोन नंबर है। कोई और ईमेल आज़माएँ।',
   'lengthNeedsNames': '{n} नाम चाहिए, हर स्लॉट के लिए एक',
   'errLengthNeedsNames': '{months} महीने की चिट के लिए नीचे कम से कम {n} नाम चाहिए। और नाम जोड़ें या छोटी अवधि चुनें।',
+  'lawTitle': 'चिट और कानून',
+  'lawText': 'भारत में, चिट फंड अधिनियम, 1982 के तहत किसी चिट को शुरू होने से पहले राज्य सरकार की मंज़ूरी और रजिस्ट्रार ऑफ चिट्स के पास पंजीकरण चाहिए। Kuree सिर्फ़ हिसाब रखता है। यह चिट नहीं चलाता, पंजीकरण नहीं करता और कभी पैसे नहीं संभालता। पक्का करें कि आपकी चिट आपके यहाँ के कानून का पालन करती है।',
+  'lawGotIt': 'समझ गया',
+  'lawReadMore': 'और पढ़ें',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

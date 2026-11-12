@@ -10,6 +10,7 @@ import '../l10n/strings.dart';
 import 'feature_request_screen.dart';
 import 'home.dart';
 import 'language.dart';
+import 'law_notice.dart';
 import 'theme.dart';
 import 'widgets.dart';
 
@@ -216,6 +217,8 @@ class _AccountScreenState extends State<AccountScreen> {
             _row(Icons.privacy_tip_outlined, s.privacy, () => launchUrl(Uri.parse(kPrivacyUrl), mode: LaunchMode.externalApplication)),
             const Divider(),
             _row(Icons.description_outlined, s.terms, () => launchUrl(Uri.parse(kTermsUrl), mode: LaunchMode.externalApplication)),
+            const Divider(),
+            _row(Icons.gavel_rounded, s.lawTitle, () => showLawNotice(context)),
           ]),
         ),
         _label(s.account),
