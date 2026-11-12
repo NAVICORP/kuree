@@ -27,7 +27,7 @@ Track chit payments and fines, draw who takes the pot, remind on WhatsApp.
 ```
 Kuree keeps your chit in one place: who paid, who is late, who takes the pot and what comes next.
 
-It is made for the people who run a chit. Kuree only keeps the record. It never holds, moves or lends money; members pay each other the way they always have.
+It is made for chit organisers and admins. Kuree only keeps the record. It never holds, moves or lends money, and it does not run, register or approve chits.
 
 Members don't need the app. They follow along from a private link you share in the group, with no login.
 
@@ -59,6 +59,9 @@ RUN IT TOGETHER
 YOUR LANGUAGE, YOUR CURRENCY
 - Use Kuree in English, Arabic, Hindi, Malayalam, Tamil or Kannada.
 - Pick the currency for each chit: rupees, dirhams, riyals, dollars and more.
+
+CHITS AND THE LAW
+In India, chits come under the Chit Funds Act, 1982: a chit needs the State Government's sanction and registration with the Registrar of Chits before it starts. The organiser is responsible for following the law where they live. Kuree only keeps the record. More: https://kureeapp.com/terms#law
 
 Sign in with Google or email. Delete your account any time from your Profile.
 

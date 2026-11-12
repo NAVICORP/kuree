@@ -40,7 +40,7 @@ Why Finance first: people look for chit apps there, Google Play has it there too
 **Promotional text** (135 of 170, can be changed any time without a review)
 
 ```
-Run your chit from your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.
+Keep your chit's record on your phone: who paid, who is late, the monthly bottle draw and WhatsApp reminders. Members follow along from a link.
 ```
 
 **Description** (1,632 of 4,000)
@@ -48,7 +48,7 @@ Run your chit from your phone: who paid, who is late, the monthly bottle draw an
 ```
 Kuree keeps your chit in one place: who paid, who is late, who takes the pot and what comes next.
 
-It is made for the people who run a chit. Kuree only keeps the record. It never holds, moves or lends money; members pay each other the way they always have.
+It is made for chit organisers and admins. Kuree only keeps the record. It never holds, moves or lends money, and it does not run, register or approve chits.
 
 Members don't need the app. They follow along from a private link you share in the group, with no login.
 
@@ -76,6 +76,9 @@ RUN IT TOGETHER
 - Add co-admins by email.
 - Every change is kept. Undo, or bring back any earlier version.
 - Download every month and every payment as an Excel sheet.
+
+CHITS AND THE LAW
+In India, chits come under the Chit Funds Act, 1982: a chit needs the State Government's sanction and registration with the Registrar of Chits before it starts. The organiser is responsible for following the law where they live. Kuree only keeps the record. More: https://kureeapp.com/terms#law
 
 Sign in with Apple, Google or email. Delete your account any time from your Profile.
 
@@ -119,9 +122,9 @@ No app names or trademarks go in keywords (Review Guideline 2.3.7), so WhatsApp 
 **Notes** (paste as is)
 
 ```
-Kuree is a record keeper for the admins of a chit, an informal rotating savings group common in India. Each month every member pays a share and one member takes the whole pot, until everyone has had it once.
+Kuree is a record keeper for the admins of a chit, a rotating savings group common in India. Each month every member pays a share and one member takes the whole pot, until everyone has had it once.
 
-Kuree only keeps the record: who paid, late fines and who took the pot. It never holds, moves or lends money. It takes no payments, has no in-app purchases and is not a chit fund company or a financial service. Members pay each other directly, outside the app, as they always have.
+Kuree only keeps the record: who paid, late fines and who took the pot. It never holds, moves or lends money. It takes no payments, has no in-app purchases and is not a chit fund company or a financial service. Members pay each other directly, outside the app. Kuree does not run, register or approve chits.
 
 To sign in: tap "Use email instead", then "Use a password", and use the demo account above. It has a sample chit ready.
 
