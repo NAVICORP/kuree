@@ -267,8 +267,16 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
       for (final w in m.winners) {
         if (w > slots) throw ApiError(t.errTakerSlot(w, m.n));
       }
-      final k = _takers(m.n);
-      if (m.n <= len && m.winners.length > k) throw ApiError(t.errTooManyTakers(m.n, m.winners.length, k));
+    }
+    // A month may have more takers than the plan (an extra draw from money
+    // in hand), as long as the later months can give those places up.
+    final base = [for (var n = 1; n <= len; n++) _takers(n)];
+    final got = [for (var n = 1; n <= len; n++) n <= doc.months.length ? doc.months[n - 1].winners.length : 0];
+    final plan = KuriDoc.adjustPlan(base, got);
+    if (plan.fold<int>(0, (a, b) => a + b) > base.fold<int>(0, (a, b) => a + b)) {
+      for (var n = 1; n <= len; n++) {
+        if (got[n - 1] > base[n - 1]) throw ApiError(t.errTooManyTakers(n, got[n - 1], base[n - 1]));
+      }
     }
     doc.slots = slots;
     doc.organiser = organiser;

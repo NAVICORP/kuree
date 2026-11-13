@@ -328,11 +328,65 @@ class KuriDoc {
   /// More than one slot takes the pot in some month.
   bool get multi => payoutMonths < slots;
 
-  /// How many slots take the pot in month n (none in the organiser's month).
-  int winnersIn(int n) {
+  /// How many slots take the pot in month n by the plan alone, before any
+  /// extra draws (none in the organiser's month).
+  int plannedIn(int n) {
     if (isOrganiserMonth(n)) return 0;
     return takersIn(slots, payoutMonths, organiser ? n - 1 : n);
   }
+
+  /// How many slots take the pot in month n: the plan, with extra draws.
+  /// A month can take one more when the money in hand covers a payout (see
+  /// [canDrawExtra]); each extra taker then comes off the last months that
+  /// still have places, so every slot still takes the pot once.
+  int winnersIn(int n) {
+    final p = takersPlan;
+    return n >= 1 && n <= p.length ? p[n - 1] : 0;
+  }
+
+  /// The takers of every month, with extra draws moved in from the end.
+  List<int> get takersPlan => adjustPlan(
+        [for (var n = 1; n <= length; n++) plannedIn(n)],
+        [for (var n = 1; n <= length; n++) n <= months.length ? months[n - 1].winners.length : 0],
+      );
+
+  /// [base] takers each month, and [got] chosen so far: a month with more
+  /// chosen than planned keeps them, and that many places come off the last
+  /// months that still have room. Where no month has room the extra stays,
+  /// and the plan then adds up to more than the slots.
+  static List<int> adjustPlan(List<int> base, List<int> got) {
+    final plan = [for (var i = 0; i < base.length; i++) max(base[i], i < got.length ? got[i] : 0)];
+    var extra = 0;
+    for (var i = 0; i < base.length; i++) {
+      extra += max(0, (i < got.length ? got[i] : 0) - base[i]);
+    }
+    for (var i = base.length - 1; i >= 0 && extra > 0; i--) {
+      final room = plan[i] - (i < got.length ? got[i] : 0);
+      final cut = min(room, extra);
+      plan[i] -= cut;
+      extra -= cut;
+    }
+    return plan;
+  }
+
+  /// Month m can draw one more taker from the money kept in hand: its own
+  /// places are filled, there is enough in hand after it for one more
+  /// payout, a later month still has a place to give up, and someone is
+  /// still waiting.
+  bool canDrawExtra(Month m) {
+    if (isOrganiserMonth(m.n) || !multi) return false;
+    if (m.winners.length < winnersIn(m.n)) return false;
+    if (inHandAfter(m.n) < payout) return false;
+    if (waitingSlots().isEmpty) return false;
+    final p = takersPlan;
+    for (var n = m.n + 1; n <= p.length; n++) {
+      if (p[n - 1] > (n <= months.length ? months[n - 1].winners.length : 0)) return true;
+    }
+    return false;
+  }
+
+  /// Takers in month m beyond the plan: chosen with money kept in hand.
+  int extraIn(Month m) => max(0, m.winners.length - plannedIn(m.n));
 
   /// How many slots take the pot in the k-th of `months` payout months: the
   /// slots over the months, and when that does not divide evenly the last

@@ -244,4 +244,62 @@ void main() {
       }
     });
   });
+
+  group('an extra draw from money in hand', () {
+    KuriDoc fresh() {
+      final k = doc(slots: 25);
+      for (final m in k.months) {
+        m.winners.clear();
+      }
+      return k;
+    }
+
+    test('offered once the money in hand covers one more payout', () {
+      final k = fresh();
+      // 25 slots over 10 months: 2 take 50,000 each while 125,000 comes in,
+      // so 25,000 a month is kept for the last months.
+      expect(k.payout, 50000);
+      k.months[0].winners.addAll([1, 2]);
+      expect(k.canDrawExtra(k.months[0]), isFalse); // 25,000 in hand
+      k.months[1].winners.addAll([3, 4]);
+      expect(k.inHandAfter(2), 50000);
+      expect(k.canDrawExtra(k.months[1]), isTrue);
+      expect(k.canDrawExtra(k.months[2]), isFalse); // its own places are still open
+    });
+
+    test('the extra taker comes off the last month, and every slot still gets one place', () {
+      final k = fresh();
+      k.months[0].winners.addAll([1, 2]);
+      k.months[1].winners.addAll([3, 4, 5]);
+      expect(k.extraIn(k.months[1]), 1);
+      expect([for (var n = 1; n <= 10; n++) k.winnersIn(n)], [2, 3, 2, 2, 2, 3, 3, 3, 3, 2]);
+      expect(k.takersPlan.fold<int>(0, (a, b) => a + b), 25);
+      expect(k.inHandAfter(2), 0);
+      expect(k.inHandAfter(10), 0);
+      expect(k.canDrawExtra(k.months[1]), isFalse);
+    });
+
+    test('a second extra comes off the month before', () {
+      final k = fresh();
+      k.months[0].winners.addAll([1, 2]);
+      k.months[1].winners.addAll([3, 4, 5]);
+      for (final m in k.months.sublist(2, 4)) {
+        m.winners.addAll([10 + m.n * 2, 11 + m.n * 2]);
+      }
+      expect(k.canDrawExtra(k.months[3]), isTrue);
+      k.months[3].winners.add(20);
+      expect([for (var n = 1; n <= 10; n++) k.winnersIn(n)], [2, 3, 2, 3, 2, 3, 3, 3, 2, 2]);
+      expect(KuriDoc.adjustPlan([1, 1], [2, 1]), [2, 1]); // nowhere to give the place up
+    });
+
+    test('never in a chit with one taker a month', () {
+      final k = doc(slots: 10, length: 10);
+      for (final m in k.months) {
+        m.winners
+          ..clear()
+          ..add(m.n);
+      }
+      expect(k.months.every((m) => !k.canDrawExtra(m)), isTrue);
+    });
+  });
 }
