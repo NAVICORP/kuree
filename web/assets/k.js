@@ -78,10 +78,29 @@
   function PM() { return Math.max(1, LEN() - (ORG() ? 1 : 0)); }
   /* how many take the pot in month n: the last months one more when the
      slots do not divide evenly over the months */
-  function need(n) {
+  function planned(n) {
     if (orgMonth(n)) return 0;
     var L = PM(), S = SLOTS.length, k = ORG() ? n - 1 : n;
     return Math.floor(S / L) + (k > L - S % L ? 1 : 0);
+  }
+  /* with an extra draw (one more taker paid from money in hand) a month has
+     more takers than planned, and the last months with room give those
+     places up, as in the app */
+  function need(n) {
+    var L = LEN(), got = [], plan = [], extra = 0, i;
+    for (i = 1; i <= L; i++) {
+      var m = data.months[i - 1], g = m ? wins(m).length : 0, b = planned(i);
+      got.push(g); plan.push(Math.max(b, g)); extra += Math.max(0, g - b);
+    }
+    var last = -1;
+    for (i = 0; i < L; i++) if (got[i] > planned(i + 1)) last = i;
+    while (extra > 0) {
+      var at = -1;
+      for (i = L - 1; i > last; i--) if (plan[i] > got[i] && (at < 0 || plan[i] > plan[at])) at = i;
+      if (at < 0) break;
+      plan[at]--; extra--;
+    }
+    return plan[n - 1] || 0;
   }
   function multi() { return PM() < SLOTS.length; }
   /* every taker gets each share for each month the slots take the pot */

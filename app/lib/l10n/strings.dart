@@ -1351,6 +1351,18 @@ class S {
 
   /// Read more
   String get lawReadMore => _get('lawReadMore');
+
+  /// Enough in hand for one more
+  String get extraDrawTitle => _get('extraDrawTitle');
+
+  /// {hand} in hand covers another payout of {payout}. Draw one more taker this month, and the last months take one fewer.
+  String extraDrawText(Object hand, Object payout) => _fill('extraDrawText', {'hand': hand, 'payout': payout});
+
+  /// Extra draw
+  String get extraDraw => _get('extraDraw');
+
+  /// One more taker in month {n}
+  String extraChooseTitle(Object n) => _fill('extraChooseTitle', {'n': n});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1857,6 +1869,10 @@ const Map<String, String> _en = {
   'lawText': 'In India, a chit needs the State Government\'s sanction and registration with the Registrar of Chits before it starts, under the Chit Funds Act, 1982. Kuree only keeps the record. It does not run or register chits and never handles money. Make sure your chit follows the law where you live.',
   'lawGotIt': 'Got it',
   'lawReadMore': 'Read more',
+  'extraDrawTitle': 'Enough in hand for one more',
+  'extraDrawText': '{hand} in hand covers another payout of {payout}. Draw one more taker this month, and the last months take one fewer.',
+  'extraDraw': 'Extra draw',
+  'extraChooseTitle': 'One more taker in month {n}',
 };
 
 const Map<String, String> _ar = {
@@ -2346,6 +2362,10 @@ const Map<String, String> _ar = {
   'lawText': 'في الهند، تحتاج الجمعية إلى موافقة حكومة الولاية وتسجيل لدى مسجل الجمعيات قبل أن تبدأ، بموجب قانون صناديق الجمعيات لعام 1982. Kuree يحفظ السجل فقط. لا يدير الجمعيات ولا يسجلها ولا يتعامل مع المال أبدًا. تأكد أن جمعيتك تتبع القانون حيث تعيش.',
   'lawGotIt': 'فهمت',
   'lawReadMore': 'اقرأ المزيد',
+  'extraDrawTitle': 'المتوفر يكفي لشخص آخر',
+  'extraDrawText': 'المتوفر {hand} يكفي لدفعة أخرى بقيمة {payout}. اسحب مستلمًا إضافيًا هذا الشهر، وتنقص الشهور الأخيرة واحدًا.',
+  'extraDraw': 'سحب إضافي',
+  'extraChooseTitle': 'مستلم إضافي في الشهر {n}',
 };
 
 const Map<String, String> _ml = {
@@ -2835,6 +2855,10 @@ const Map<String, String> _ml = {
   'lawText': 'ഇന്ത്യയിൽ, Chit Funds Act, 1982 പ്രകാരം ഒരു കുറി തുടങ്ങുന്നതിന് മുമ്പ് സംസ്ഥാന സർക്കാരിന്റെ അനുമതിയും Registrar of Chits-ൽ രജിസ്ട്രേഷനും വേണം. Kuree കണക്ക് സൂക്ഷിക്കുക മാത്രമാണ് ചെയ്യുന്നത്. ഇത് കുറി നടത്തുകയോ രജിസ്റ്റർ ചെയ്യുകയോ പണം കൈകാര്യം ചെയ്യുകയോ ഇല്ല. നിങ്ങളുടെ കുറി നിങ്ങളുടെ നാട്ടിലെ നിയമം പാലിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക.',
   'lawGotIt': 'മനസ്സിലായി',
   'lawReadMore': 'കൂടുതൽ വായിക്കുക',
+  'extraDrawTitle': 'ഒരാൾക്ക് കൂടി കൊടുക്കാനുള്ള തുക കയ്യിലുണ്ട്',
+  'extraDrawText': 'കയ്യിലുള്ള {hand} കൊണ്ട് ഒരാൾക്ക് കൂടി {payout} കൊടുക്കാം. ഈ മാസം ഒരാളെ കൂടി നറുക്കെടുക്കാം, അവസാന മാസങ്ങളിൽ ഒരാൾ കുറയും.',
+  'extraDraw': 'എക്സ്ട്രാ നറുക്ക്',
+  'extraChooseTitle': 'മാസം {n}-ൽ ഒരാൾ കൂടി',
 };
 
 const Map<String, String> _ta = {
@@ -3324,6 +3348,10 @@ const Map<String, String> _ta = {
   'lawText': 'இந்தியாவில், சிட் ஃபண்ட் சட்டம், 1982-ன்படி ஒரு சீட்டு தொடங்கும் முன் மாநில அரசின் அனுமதியும் சீட்டுப் பதிவாளரிடம் பதிவும் தேவை. Kuree கணக்கை மட்டுமே வைத்திருக்கும். அது சீட்டை நடத்துவதோ பதிவு செய்வதோ பணத்தைக் கையாள்வதோ இல்லை. உங்கள் சீட்டு உங்கள் பகுதியின் சட்டத்தைப் பின்பற்றுகிறதா என்பதை உறுதிசெய்யுங்கள்.',
   'lawGotIt': 'புரிந்தது',
   'lawReadMore': 'மேலும் படிக்க',
+  'extraDrawTitle': 'இன்னொருவருக்கு கொடுக்கும் அளவு கையில் உள்ளது',
+  'extraDrawText': 'கையில் உள்ள {hand} கொண்டு இன்னொருவருக்கு {payout} கொடுக்கலாம். இந்த மாதம் இன்னொருவரைக் குலுக்கி எடுக்கலாம், கடைசி மாதங்களில் ஒருவர் குறைவார்.',
+  'extraDraw': 'கூடுதல் குலுக்கல்',
+  'extraChooseTitle': 'மாதம் {n} இல் இன்னொருவர்',
 };
 
 const Map<String, String> _kn = {
@@ -3813,6 +3841,10 @@ const Map<String, String> _kn = {
   'lawText': 'ಭಾರತದಲ್ಲಿ, ಚಿಟ್ ಫಂಡ್ ಕಾಯ್ದೆ, 1982ರ ಪ್ರಕಾರ ಚೀಟಿ ಆರಂಭವಾಗುವ ಮೊದಲು ರಾಜ್ಯ ಸರ್ಕಾರದ ಮಂಜೂರಾತಿ ಮತ್ತು ಚೀಟಿ ನೋಂದಣಾಧಿಕಾರಿಯ ಬಳಿ ನೋಂದಣಿ ಬೇಕು. Kuree ಲೆಕ್ಕವನ್ನು ಮಾತ್ರ ಇಡುತ್ತದೆ. ಇದು ಚೀಟಿ ನಡೆಸುವುದಿಲ್ಲ, ನೋಂದಾಯಿಸುವುದಿಲ್ಲ ಮತ್ತು ಎಂದಿಗೂ ಹಣವನ್ನು ನಿರ್ವಹಿಸುವುದಿಲ್ಲ. ನಿಮ್ಮ ಚೀಟಿ ನಿಮ್ಮ ಊರಿನ ಕಾನೂನನ್ನು ಪಾಲಿಸುತ್ತದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.',
   'lawGotIt': 'ಅರ್ಥವಾಯಿತು',
   'lawReadMore': 'ಇನ್ನಷ್ಟು ಓದಿ',
+  'extraDrawTitle': 'ಇನ್ನೊಬ್ಬರಿಗೆ ಕೊಡುವಷ್ಟು ಕೈಯಲ್ಲಿದೆ',
+  'extraDrawText': 'ಕೈಯಲ್ಲಿರುವ {hand} ನಿಂದ ಇನ್ನೊಬ್ಬರಿಗೆ {payout} ಕೊಡಬಹುದು. ಈ ತಿಂಗಳು ಇನ್ನೊಬ್ಬರನ್ನು ಡ್ರಾ ಮಾಡಿ, ಕೊನೆಯ ತಿಂಗಳುಗಳಲ್ಲಿ ಒಬ್ಬರು ಕಡಿಮೆ.',
+  'extraDraw': 'ಹೆಚ್ಚುವರಿ ಡ್ರಾ',
+  'extraChooseTitle': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಇನ್ನೊಬ್ಬರು',
 };
 
 const Map<String, String> _hi = {
@@ -4302,6 +4334,10 @@ const Map<String, String> _hi = {
   'lawText': 'भारत में, चिट फंड अधिनियम, 1982 के तहत किसी चिट को शुरू होने से पहले राज्य सरकार की मंज़ूरी और रजिस्ट्रार ऑफ चिट्स के पास पंजीकरण चाहिए। Kuree सिर्फ़ हिसाब रखता है। यह चिट नहीं चलाता, पंजीकरण नहीं करता और कभी पैसे नहीं संभालता। पक्का करें कि आपकी चिट आपके यहाँ के कानून का पालन करती है।',
   'lawGotIt': 'समझ गया',
   'lawReadMore': 'और पढ़ें',
+  'extraDrawTitle': 'एक और के लिए हाथ में काफ़ी रकम है',
+  'extraDrawText': 'हाथ में {hand} से एक और को {payout} दिया जा सकता है। इस महीने एक और का ड्रॉ करें, आखिरी महीनों में एक कम लेगा।',
+  'extraDraw': 'एक और ड्रॉ',
+  'extraChooseTitle': 'महीना {n} में एक और लेने वाला',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

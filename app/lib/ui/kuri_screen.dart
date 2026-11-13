@@ -143,10 +143,21 @@ class _KuriScreenState extends State<KuriScreen> {
     });
   }
 
-  Future<void> _bottle() async {
+  /// The bottle draw for the month's open places, or [extra] more taken
+  /// with money kept in hand.
+  /// One more taker this month, chosen by hand, paid from money in hand.
+  Future<void> _chooseExtra() async {
+    final t = S.of(context);
+    final options = [for (final s in doc.waitingSlots()) PickOption(s, doc.slotName(s), sub: t.slotN(s), badge: '$s')];
+    final picked = await showPicker<int>(context, title: t.extraChooseTitle(m.n), options: options);
+    if (picked == null) return;
+    _change(() => m.winners.add(picked.value));
+  }
+
+  Future<void> _bottle({int extra = 0}) async {
     final waiting = doc.waitingSlots();
     final month = m;
-    final count = doc.openIn(month);
+    final count = extra > 0 ? extra : doc.openIn(month);
     if (count < 1) return;
     if (waiting.length <= count) {
       final s = S.of(context);
@@ -167,7 +178,7 @@ class _KuriScreenState extends State<KuriScreen> {
         month: month.n,
         label: doc.monthLabel(month.n),
         pot: doc.pot,
-        each: doc.winnersIn(month.n) > 1 || each != doc.pot ? each : null,
+        each: doc.winnersIn(month.n) > 1 || extra > 0 || each != doc.pot ? each : null,
         count: count,
         currency: doc.currency,
         entries: [for (final s in waiting) DrawEntry(s, doc.slotName(s))],
@@ -551,6 +562,29 @@ class _KuriScreenState extends State<KuriScreen> {
     return kept > 0 ? s.keptForLater(doc.money(kept), hand) : s.fromKept(doc.money(-kept), hand);
   }
 
+  /// When the money in hand covers one more payout: a draw for one more
+  /// taker this month. Nothing otherwise.
+  List<Widget> _extraStrip(S s) {
+    if (!doc.canDrawExtra(m)) return const [];
+    return [
+      const SizedBox(height: Sp.md + 2),
+      Container(
+        padding: const EdgeInsets.all(Sp.md + 2),
+        decoration: BoxDecoration(color: K.brand100, borderRadius: BorderRadius.circular(K.rSm)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(s.extraDrawTitle, style: T.bodyStrong),
+          const SizedBox(height: 2),
+          Text(s.extraDrawText(doc.money(doc.inHandAfter(m.n)), doc.money(doc.payout)), style: T.small),
+          const SizedBox(height: Sp.md),
+          Wrap(spacing: Sp.sm, runSpacing: Sp.sm, children: [
+            KButton(label: s.extraDraw, icon: Icons.casino_outlined, kind: KButtonKind.sun, small: true, onPressed: () => _bottle(extra: 1)),
+            KButton(label: s.choose, icon: Icons.touch_app_outlined, kind: KButtonKind.secondary, small: true, onPressed: _chooseExtra),
+          ]),
+        ]),
+      ),
+    ];
+  }
+
   Widget _winner(S s) {
     if (doc.isOrganiserMonth(m.n)) return _organiser(s);
     if (doc.winnersIn(m.n) > 1) return _winners(s);
@@ -599,6 +633,7 @@ class _KuriScreenState extends State<KuriScreen> {
             onPressed: _choose,
           ),
         ]),
+        ..._extraStrip(s),
       ]),
     );
   }
@@ -674,6 +709,7 @@ class _KuriScreenState extends State<KuriScreen> {
             onPressed: _choose,
           ),
         ]),
+        ..._extraStrip(s),
       ]),
     );
   }
