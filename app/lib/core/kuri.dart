@@ -351,8 +351,8 @@ class KuriDoc {
       );
 
   /// [base] takers each month, and [got] chosen so far: a month with more
-  /// chosen than planned keeps them, and that many places come off the last
-  /// months that still have room. Where no month has room the extra stays,
+  /// chosen than planned keeps them, and that many places come off the
+  /// later months that still have room, the busiest first. Where no month has room the extra stays,
   /// and the plan then adds up to more than the slots.
   static List<int> adjustPlan(List<int> base, List<int> got) {
     final plan = [for (var i = 0; i < base.length; i++) max(base[i], i < got.length ? got[i] : 0)];
@@ -360,11 +360,16 @@ class KuriDoc {
     for (var i = 0; i < base.length; i++) {
       extra += max(0, (i < got.length ? got[i] : 0) - base[i]);
     }
-    for (var i = base.length - 1; i >= 0 && extra > 0; i--) {
-      final room = plan[i] - (i < got.length ? got[i] : 0);
-      final cut = min(room, extra);
-      plan[i] -= cut;
-      extra -= cut;
+    // One place at a time, from the busiest month with room, the latest of
+    // those first, so the months stay as even as they can.
+    while (extra > 0) {
+      var at = -1;
+      for (var i = base.length - 1; i >= 0; i--) {
+        if (plan[i] > (i < got.length ? got[i] : 0) && (at < 0 || plan[i] > plan[at])) at = i;
+      }
+      if (at < 0) break;
+      plan[at]--;
+      extra--;
     }
     return plan;
   }
