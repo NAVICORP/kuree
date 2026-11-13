@@ -92,9 +92,11 @@
       var m = data.months[i - 1], g = m ? wins(m).length : 0, b = planned(i);
       got.push(g); plan.push(Math.max(b, g)); extra += Math.max(0, g - b);
     }
+    var last = -1;
+    for (i = 0; i < L; i++) if (got[i] > planned(i + 1)) last = i;
     while (extra > 0) {
       var at = -1;
-      for (i = L - 1; i >= 0; i--) if (plan[i] > got[i] && (at < 0 || plan[i] > plan[at])) at = i;
+      for (i = L - 1; i > last; i--) if (plan[i] > got[i] && (at < 0 || plan[i] > plan[at])) at = i;
       if (at < 0) break;
       plan[at]--; extra--;
     }
