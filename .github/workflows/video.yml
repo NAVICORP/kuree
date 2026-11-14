@@ -1,0 +1,24 @@
+# The how-to video's pictures: runs only on the howto-video branch.
+name: Video pictures
+on:
+  push:
+    branches: [howto-video]
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - working-directory: app
+        run: flutter pub get
+      - working-directory: app
+        run: flutter test test_video --update-goldens
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: video-shots
+          path: app/test_video/shots
+          if-no-files-found: error
