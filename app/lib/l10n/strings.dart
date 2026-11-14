@@ -1301,7 +1301,7 @@ class S {
   /// Organiser's month
   String get organiserMonth => _get('organiserMonth');
 
-  /// The organiser pays nothing and takes the first month's collection
+  /// The organiser pays nothing and takes one month's collection
   String get organiserMonthSub => _get('organiserMonthSub');
 
   /// The organiser takes this month's collection, {amount}
@@ -1363,6 +1363,12 @@ class S {
 
   /// One more taker in month {n}
   String extraChooseTitle(Object n) => _fill('extraChooseTitle', {'n': n});
+
+  /// Month the organiser takes
+  String get organiserMonthPick => _get('organiserMonthPick');
+
+  /// Month {n} already has a taker. Pick another month for the organiser.
+  String errOrganiserMonthTaken(Object n) => _fill('errOrganiserMonthTaken', {'n': n});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1852,7 +1858,7 @@ const Map<String, String> _en = {
   'saveAsWinners': 'Save as month {n} winners',
   'msgDrawResultMany': '{chit}, month {n} ({label})\nThe bottle picked:\n{list}\n{each} each.\n{count} names were in the bottle. Drawn {when}.',
   'organiserMonth': 'Organiser\'s month',
-  'organiserMonthSub': 'The organiser pays nothing and takes the first month\'s collection',
+  'organiserMonthSub': 'The organiser pays nothing and takes one month\'s collection',
   'organiserTakes': 'The organiser takes this month\'s collection, {amount}',
   'keptForLater': '{amount} kept for the last months, {total} in hand',
   'fromKept': '{amount} comes from what earlier months kept, {total} left in hand',
@@ -1873,6 +1879,8 @@ const Map<String, String> _en = {
   'extraDrawText': '{hand} in hand covers another payout of {payout}. Draw one more taker this month, and the last months take one fewer.',
   'extraDraw': 'Extra draw',
   'extraChooseTitle': 'One more taker in month {n}',
+  'organiserMonthPick': 'Month the organiser takes',
+  'errOrganiserMonthTaken': 'Month {n} already has a taker. Pick another month for the organiser.',
 };
 
 const Map<String, String> _ar = {
@@ -2345,7 +2353,7 @@ const Map<String, String> _ar = {
   'saveAsWinners': 'حفظهم مستلمين للشهر {n}',
   'msgDrawResultMany': '{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}.',
   'organiserMonth': 'شهر المنظّم',
-  'organiserMonthSub': 'المنظّم لا يدفع شيئًا ويستلم جمع الشهر الأول',
+  'organiserMonthSub': 'المنظّم لا يدفع شيئًا ويستلم جمع شهر واحد',
   'organiserTakes': 'يستلم المنظّم جمع هذا الشهر، {amount}',
   'keptForLater': 'يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}',
   'fromKept': '{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}',
@@ -2366,6 +2374,8 @@ const Map<String, String> _ar = {
   'extraDrawText': 'المتوفر {hand} يكفي لدفعة أخرى بقيمة {payout}. اسحب مستلمًا إضافيًا هذا الشهر، وتنقص الشهور الأخيرة واحدًا.',
   'extraDraw': 'سحب إضافي',
   'extraChooseTitle': 'مستلم إضافي في الشهر {n}',
+  'organiserMonthPick': 'الشهر الذي يستلمه المنظّم',
+  'errOrganiserMonthTaken': 'الشهر {n} له مستلم بالفعل. اختر شهرًا آخر للمنظّم.',
 };
 
 const Map<String, String> _ml = {
@@ -2838,7 +2848,7 @@ const Map<String, String> _ml = {
   'saveAsWinners': 'മാസം {n}-ലെ കുറിക്കാരായി സേവ് ചെയ്യുക',
   'msgDrawResultMany': '{chit}, മാസം {n} ({label})\nകുപ്പിയിൽ നിന്ന് കിട്ടിയത്:\n{list}\nഓരോരുത്തർക്കും {each}.\nകുപ്പിയിൽ {count} പേരുകൾ ഉണ്ടായിരുന്നു. നറുക്കെടുത്തത് {when}.',
   'organiserMonth': 'നടത്തിപ്പുകാരന്റെ മാസം',
-  'organiserMonthSub': 'നടത്തിപ്പുകാരൻ പണം അടയ്ക്കില്ല, ആദ്യ മാസത്തെ പിരിവ് അദ്ദേഹത്തിന്',
+  'organiserMonthSub': 'നടത്തിപ്പുകാരൻ പണം അടയ്ക്കില്ല, ഒരു മാസത്തെ പിരിവ് അദ്ദേഹത്തിന്',
   'organiserTakes': 'ഈ മാസത്തെ പിരിവ് {amount} നടത്തിപ്പുകാരന്',
   'keptForLater': '{amount} അവസാന മാസങ്ങൾക്കായി മാറ്റിവെക്കുന്നു, കയ്യിൽ {total}',
   'fromKept': '{amount} മുൻ മാസങ്ങളിൽ മാറ്റിവെച്ചതിൽ നിന്ന്, കയ്യിൽ ബാക്കി {total}',
@@ -2859,6 +2869,8 @@ const Map<String, String> _ml = {
   'extraDrawText': 'കയ്യിലുള്ള {hand} കൊണ്ട് ഒരാൾക്ക് കൂടി {payout} കൊടുക്കാം. ഈ മാസം ഒരാളെ കൂടി നറുക്കെടുക്കാം, അവസാന മാസങ്ങളിൽ ഒരാൾ കുറയും.',
   'extraDraw': 'എക്സ്ട്രാ നറുക്ക്',
   'extraChooseTitle': 'മാസം {n}-ൽ ഒരാൾ കൂടി',
+  'organiserMonthPick': 'നടത്തിപ്പുകാരന്റെ മാസം ഏത്',
+  'errOrganiserMonthTaken': 'മാസം {n}-ൽ ഇതിനകം ഒരാൾ കുറി എടുത്തു. നടത്തിപ്പുകാരന് മറ്റൊരു മാസം തിരഞ്ഞെടുക്കുക.',
 };
 
 const Map<String, String> _ta = {
@@ -3331,7 +3343,7 @@ const Map<String, String> _ta = {
   'saveAsWinners': 'மாதம் {n} சீட்டு எடுப்பவர்களாகச் சேமி',
   'msgDrawResultMany': '{chit}, மாதம் {n} ({label})\nபாட்டில் தேர்ந்தெடுத்தது:\n{list}\nஒவ்வொருவருக்கும் {each}.\nபாட்டிலில் {count} பெயர்கள் இருந்தன. குலுக்கல் {when}.',
   'organiserMonth': 'நடத்துநர் மாதம்',
-  'organiserMonthSub': 'நடத்துநர் எதுவும் கட்டமாட்டார், முதல் மாத வசூல் அவருக்கு',
+  'organiserMonthSub': 'நடத்துநர் எதுவும் கட்டமாட்டார், ஒரு மாத வசூல் அவருக்கு',
   'organiserTakes': 'இந்த மாத வசூல் {amount} நடத்துநருக்கு',
   'keptForLater': '{amount} கடைசி மாதங்களுக்கு வைக்கப்படுகிறது, கையில் {total}',
   'fromKept': '{amount} முந்தைய மாதங்களில் வைத்ததிலிருந்து, கையில் மீதம் {total}',
@@ -3352,6 +3364,8 @@ const Map<String, String> _ta = {
   'extraDrawText': 'கையில் உள்ள {hand} கொண்டு இன்னொருவருக்கு {payout} கொடுக்கலாம். இந்த மாதம் இன்னொருவரைக் குலுக்கி எடுக்கலாம், கடைசி மாதங்களில் ஒருவர் குறைவார்.',
   'extraDraw': 'கூடுதல் குலுக்கல்',
   'extraChooseTitle': 'மாதம் {n} இல் இன்னொருவர்',
+  'organiserMonthPick': 'நடத்துநர் எடுக்கும் மாதம்',
+  'errOrganiserMonthTaken': 'மாதம் {n}-இல் ஏற்கனவே ஒருவர் எடுத்துவிட்டார். நடத்துநருக்கு வேறு மாதத்தைத் தேர்ந்தெடுக்கவும்.',
 };
 
 const Map<String, String> _kn = {
@@ -3824,7 +3838,7 @@ const Map<String, String> _kn = {
   'saveAsWinners': 'ತಿಂಗಳು {n} ರ ಚೀಟಿ ಪಡೆದವರಾಗಿ ಉಳಿಸಿ',
   'msgDrawResultMany': '{chit}, ತಿಂಗಳು {n} ({label})\nಬಾಟಲಿಯಿಂದ ಬಂದದ್ದು:\n{list}\nಪ್ರತಿಯೊಬ್ಬರಿಗೆ {each}.\nಬಾಟಲಿಯಲ್ಲಿ {count} ಹೆಸರುಗಳಿದ್ದವು. ಡ್ರಾ ಆದದ್ದು {when}.',
   'organiserMonth': 'ಸಂಘಟಕರ ತಿಂಗಳು',
-  'organiserMonthSub': 'ಸಂಘಟಕರು ಏನೂ ಕಟ್ಟುವುದಿಲ್ಲ, ಮೊದಲ ತಿಂಗಳ ಸಂಗ್ರಹ ಅವರಿಗೆ',
+  'organiserMonthSub': 'ಸಂಘಟಕರು ಏನೂ ಕಟ್ಟುವುದಿಲ್ಲ, ಒಂದು ತಿಂಗಳ ಸಂಗ್ರಹ ಅವರಿಗೆ',
   'organiserTakes': 'ಈ ತಿಂಗಳ ಸಂಗ್ರಹ {amount} ಸಂಘಟಕರಿಗೆ',
   'keptForLater': '{amount} ಕೊನೆಯ ತಿಂಗಳುಗಳಿಗೆ ಇಡಲಾಗಿದೆ, ಕೈಯಲ್ಲಿ {total}',
   'fromKept': '{amount} ಹಿಂದಿನ ತಿಂಗಳುಗಳಲ್ಲಿ ಇಟ್ಟಿದ್ದರಿಂದ, ಕೈಯಲ್ಲಿ ಉಳಿದದ್ದು {total}',
@@ -3845,6 +3859,8 @@ const Map<String, String> _kn = {
   'extraDrawText': 'ಕೈಯಲ್ಲಿರುವ {hand} ನಿಂದ ಇನ್ನೊಬ್ಬರಿಗೆ {payout} ಕೊಡಬಹುದು. ಈ ತಿಂಗಳು ಇನ್ನೊಬ್ಬರನ್ನು ಡ್ರಾ ಮಾಡಿ, ಕೊನೆಯ ತಿಂಗಳುಗಳಲ್ಲಿ ಒಬ್ಬರು ಕಡಿಮೆ.',
   'extraDraw': 'ಹೆಚ್ಚುವರಿ ಡ್ರಾ',
   'extraChooseTitle': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಇನ್ನೊಬ್ಬರು',
+  'organiserMonthPick': 'ಸಂಘಟಕರು ತೆಗೆದುಕೊಳ್ಳುವ ತಿಂಗಳು',
+  'errOrganiserMonthTaken': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಈಗಾಗಲೇ ಒಬ್ಬರು ಪಡೆದಿದ್ದಾರೆ. ಸಂಘಟಕರಿಗೆ ಬೇರೆ ತಿಂಗಳು ಆಯ್ಕೆಮಾಡಿ.',
 };
 
 const Map<String, String> _hi = {
@@ -4317,7 +4333,7 @@ const Map<String, String> _hi = {
   'saveAsWinners': 'महीना {n} के रकम लेने वाले सेव करें',
   'msgDrawResultMany': '{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।',
   'organiserMonth': 'आयोजक का महीना',
-  'organiserMonthSub': 'आयोजक कुछ नहीं देता और पहले महीने की वसूली उसे मिलती है',
+  'organiserMonthSub': 'आयोजक कुछ नहीं देता और एक महीने की वसूली उसे मिलती है',
   'organiserTakes': 'इस महीने की वसूली {amount} आयोजक को मिलेगी',
   'keptForLater': '{amount} आखिरी महीनों के लिए रखा, हाथ में {total}',
   'fromKept': '{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}',
@@ -4338,6 +4354,8 @@ const Map<String, String> _hi = {
   'extraDrawText': 'हाथ में {hand} से एक और को {payout} दिया जा सकता है। इस महीने एक और का ड्रॉ करें, आखिरी महीनों में एक कम लेगा।',
   'extraDraw': 'एक और ड्रॉ',
   'extraChooseTitle': 'महीना {n} में एक और लेने वाला',
+  'organiserMonthPick': 'आयोजक का कौन सा महीना',
+  'errOrganiserMonthTaken': 'महीने {n} में पहले से कोई ले चुका है। आयोजक के लिए दूसरा महीना चुनें।',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

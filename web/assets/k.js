@@ -70,17 +70,18 @@
     if (l.length ? l[0] !== w : w) l = w ? [w].concat(l.slice(1).filter(function (x) { return x !== w; })) : [];
     return l;
   }
-  /* the organiser takes month 1's collection and pays nothing; the slots
-     take the pot in the months after */
+  /* the organiser takes one month's collection (month 1 unless chosen
+     otherwise) and pays nothing; the slots take the pot in the others */
   function ORG() { return data.organiser === true; }
-  function orgMonth(n) { return ORG() && n === 1; }
+  function ORGAT() { return Math.min(Math.max(1, Number(data.organiserMonth) || 1), LEN()); }
+  function orgMonth(n) { return ORG() && n === ORGAT(); }
   function LEN() { return data.months.length || 1; }
   function PM() { return Math.max(1, LEN() - (ORG() ? 1 : 0)); }
   /* how many take the pot in month n: the last months one more when the
      slots do not divide evenly over the months */
   function planned(n) {
     if (orgMonth(n)) return 0;
-    var L = PM(), S = SLOTS.length, k = ORG() ? n - 1 : n;
+    var L = PM(), S = SLOTS.length, k = ORG() && n > ORGAT() ? n - 1 : n;
     return Math.floor(S / L) + (k > L - S % L ? 1 : 0);
   }
   /* with an extra draw (one more taker paid from money in hand) a month has
@@ -411,7 +412,7 @@
       '<div class="metric"><dt>Last date</dt><dd>' + ord(ld) + "</dd><small>Midnight" + (ld < cd ? ", the month after" : "") + "</small></div>" +
       (FINE() ? '<div class="metric"><dt>Late fine</dt><dd class="num">' + money(FINE()) + "</dd><small>goes to that month&rsquo;s pot</small></div>" : "") +
       (multi() ? '<div class="metric"><dt>Takers each month</dt><dd class="num">' + n + " months</dd><small>" + esc(plan()) + ", " + money(PAY()) + " each</small></div>" : "") +
-      (ORG() ? '<div class="metric"><dt>Organiser&rsquo;s month</dt><dd class="num">Month 1</dd><small>The organiser pays nothing and takes the first month&rsquo;s collection</small></div>' : "") +
+      (ORG() ? '<div class="metric"><dt>Organiser&rsquo;s month</dt><dd class="num">Month ' + ORGAT() + '</dd><small>The organiser pays nothing and takes that month&rsquo;s collection</small></div>' : "") +
       "</dl></div></section>");
 
     app.innerHTML = h.join("");

@@ -72,17 +72,20 @@ void main() {
       expect(KuriDoc.split(10, 3), [4, 3, 3]);
       expect(KuriDoc.split(65000, 1), [65000]);
     });
-    test('every taker gets the same for any slots and length, and it all adds up', () {
+    test('every taker gets the same for any slots, length and organiser month, and it all adds up', () {
       for (final org in [false, true]) {
         for (var slots = 2; slots <= 40; slots++) {
           for (var pm = KuriDoc.minLength(slots); pm <= slots; pm++) {
-            final k = KuriDoc(name: 'x', share: 1000, slots: slots, length: pm + (org ? 1 : 0), organiser: org, startYear: 2026, startMonth: 1);
-            k.fitMonths();
-            final out = [for (var n = 1; n <= k.length; n++) k.winnersIn(n) * k.payout];
-            final orgGets = org ? k.pot : 0;
-            expect(out.fold<int>(0, (a, b) => a + b) + orgGets, k.pot * k.length, reason: '$slots over $pm, organiser $org');
-            for (var n = 1; n <= k.length; n++) {
-              expect(k.inHandAfter(n) >= 0, isTrue, reason: '$slots over $pm, month $n');
+            for (final at in org ? [1, 2, (pm + 2) ~/ 2, pm + 1] : [1]) {
+              final k = KuriDoc(name: 'x', share: 1000, slots: slots, length: pm + (org ? 1 : 0), organiser: org, organiserAt: at, startYear: 2026, startMonth: 1);
+              k.fitMonths();
+              expect([for (var n = 1; n <= k.length; n++) k.winnersIn(n)].fold<int>(0, (a, b) => a + b), slots, reason: '$slots over $pm, organiser at $at');
+              final out = [for (var n = 1; n <= k.length; n++) k.winnersIn(n) * k.payout];
+              final orgGets = org ? k.pot : 0;
+              expect(out.fold<int>(0, (a, b) => a + b) + orgGets, k.pot * k.length, reason: '$slots over $pm, organiser $org');
+              for (var n = 1; n <= k.length; n++) {
+                expect(k.inHandAfter(n) >= 0, isTrue, reason: '$slots over $pm, month $n');
+              }
             }
           }
         }
@@ -105,6 +108,33 @@ void main() {
       expect(back.organiser, isTrue);
       expect(back.length, 26);
       expect(back.months.length, 26);
+    });
+    test('the organiser can take any month: 30 slots, 26 months, organiser in month 6', () {
+      final k = KuriDoc(name: 'x', share: 3000, slots: 30, length: 26, organiser: true, organiserAt: 6, startYear: 2026, startMonth: 11);
+      k.fitMonths();
+      expect(k.isOrganiserMonth(1), isFalse);
+      expect(k.isOrganiserMonth(6), isTrue);
+      expect(k.winnersIn(6), 0);
+      expect(k.keptIn(6), 0);
+      expect(k.payout, 75000);
+      // the same takers as with the organiser first, the organiser's month
+      // sitting in month 6 instead
+      expect([for (var n = 1; n <= 26; n++) k.winnersIn(n)], [1, 1, 1, 1, 1, 0, ...List.filled(15, 1), ...List.filled(5, 2)]);
+      expect(k.inHandAfter(26), 0);
+      final back = KuriDoc.fromJson(wire(k));
+      expect(back.organiserAt, 6);
+      expect(wire(k)['organiserMonth'], 6);
+      // month 1 is not written, so chits saved before stay as they were
+      final first = KuriDoc(name: 'x', share: 3000, slots: 30, length: 26, organiser: true, startYear: 2026, startMonth: 11);
+      expect(wire(first).containsKey('organiserMonth'), isFalse);
+      expect(KuriDoc.fromJson(wire(first)).organiserAt, 1);
+    });
+    test('the organiser in the last month: an extra draw still works', () {
+      final k = KuriDoc(name: 'x', share: 5000, slots: 25, length: 11, organiser: true, organiserAt: 11, startYear: 2026, startMonth: 1);
+      k.fitMonths();
+      expect([for (var n = 1; n <= 11; n++) k.winnersIn(n)], [2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 0]);
+      expect(k.payout, 50000);
+      expect(k.inHandAfter(10), 0);
     });
     test('shared parts: a shared slot pays its parts, and the pot is still every slot\'s share', () {
       final k = doc();

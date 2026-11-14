@@ -58,6 +58,10 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   /// per slot.
   late int? chosenLength = base.payoutMonths < base.slots ? base.payoutMonths : null;
   late bool organiser = base.organiser;
+
+  /// The month the organiser takes, kept within the months the chit runs.
+  late int _organiserAt = base.organiserAt;
+  int get organiserAt => _organiserAt.clamp(1, max(1, length));
   final List<List<_Holder>> rows = [];
   final Map<String, String> phones = {};
   String? error;
@@ -86,13 +90,13 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   /// a slot, and a chit cannot run more months than it has slots.
   bool get _needsNames => chosenLength != null && slots < chosenLength!;
 
-  /// The months the chit runs: those, and the organiser's first month.
+  /// The months the chit runs: those, and the organiser's month.
   int get length => payMonths + (organiser ? 1 : 0);
 
   /// How many slots take the pot in month n with these settings.
   int _takers(int n) {
-    if (organiser && n == 1) return 0;
-    return KuriDoc.takersIn(slots, payMonths, organiser ? n - 1 : n);
+    if (organiser && n == organiserAt) return 0;
+    return KuriDoc.takersIn(slots, payMonths, KuriDoc.payoutIndex(n, organiser, organiserAt));
   }
 
   static bool _isEmpty(List<_Holder> r) => r.length == 1 && r.first.name.text.trim().isEmpty;
@@ -268,6 +272,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
         if (w > slots) throw ApiError(t.errTakerSlot(w, m.n));
       }
     }
+    // The organiser's month has no draw, so it cannot be a month that
+    // already has a taker.
+    if (organiser && organiserAt <= doc.months.length && doc.months[organiserAt - 1].winners.isNotEmpty) {
+      throw ApiError(t.errOrganiserMonthTaken(organiserAt));
+    }
     // A month may have more takers than the plan (an extra draw from money
     // in hand), as long as the later months can give those places up.
     final planned = <int>[for (var n = 1; n <= len; n++) _takers(n)];
@@ -280,6 +289,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     }
     doc.slots = slots;
     doc.organiser = organiser;
+    doc.organiserAt = organiser ? organiserAt : 1;
     doc.length = len;
     doc.people
       ..clear()
@@ -334,6 +344,21 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
         startMonth = picked % 100;
       });
     }
+  }
+
+  /// Month n of the chit, by its calendar month: "March 2027".
+  String _monthOn(int n) {
+    final i = startMonth - 1 + n - 1;
+    return '${monthName(i % 12 + 1)} ${startYear + i ~/ 12}';
+  }
+
+  /// Which month the organiser takes: any month of the chit.
+  Future<void> _pickOrganiserMonth() async {
+    final s = S.of(context);
+    final picked = await showPicker<int>(context, title: s.organiserMonthPick, selected: organiserAt, options: [
+      for (var n = 1; n <= length; n++) PickOption(n, s.monthN(n), sub: _monthOn(n)),
+    ]);
+    if (picked != null) setState(() => _organiserAt = picked.value);
   }
 
   /// How long the chit runs: a month per slot, or shorter with more than one
@@ -471,6 +496,15 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                     ]),
                   ),
                 ),
+                if (organiser) ...[
+                  const Divider(),
+                  KChoice(
+                    label: s.organiserMonthPick,
+                    value: '${s.monthN(organiserAt)}, ${_monthOn(organiserAt)}',
+                    icon: Icons.event_available_outlined,
+                    onTap: _pickOrganiserMonth,
+                  ),
+                ],
                 const Divider(),
                 KChoice(
                   label: s.collectionDay,
