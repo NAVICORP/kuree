@@ -491,5 +491,8 @@
   "extraDraw": "एक और ड्रॉ",
   "extraChooseTitle": "महीना {n} में एक और लेने वाला",
   "organiserMonthPick": "आयोजक का कौन सा महीना",
-  "errOrganiserMonthTaken": "महीने {n} में पहले से कोई ले चुका है। आयोजक के लिए दूसरा महीना चुनें।"
+  "errOrganiserMonthTaken": "महीने {n} में पहले से कोई ले चुका है। आयोजक के लिए दूसरा महीना चुनें।",
+  "organiserName": "आयोजक का नाम",
+  "optional": "वैकल्पिक",
+  "organiserTakesNamed": "इस महीने की वसूली {amount} आयोजक {name} को मिलेगी"
 }

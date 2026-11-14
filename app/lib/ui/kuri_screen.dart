@@ -546,7 +546,10 @@ class _KuriScreenState extends State<KuriScreen> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(s.organiserMonth, style: T.h3),
               const SizedBox(height: 2),
-              Text(s.organiserTakes(doc.money(doc.monthTotal(m))),
+              Text(
+                  doc.organiserName.isEmpty
+                      ? s.organiserTakes(doc.money(doc.monthTotal(m)))
+                      : s.organiserTakesNamed(doc.organiserName, doc.money(doc.monthTotal(m))),
                   style: T.small.copyWith(color: K.brand600, fontWeight: FontWeight.w700)),
             ]),
           ),

@@ -1194,5 +1194,14 @@
     "placeholders": {
       "n": {}
     }
+  },
+  "organiserName": "Organiser's name",
+  "optional": "Optional",
+  "organiserTakesNamed": "{name}, the organiser, takes this month's collection, {amount}",
+  "@organiserTakesNamed": {
+    "placeholders": {
+      "name": {},
+      "amount": {}
+    }
   }
 }

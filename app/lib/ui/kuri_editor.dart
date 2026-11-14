@@ -48,6 +48,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
   late final _group = TextEditingController(text: base.group);
   late final _share = TextEditingController(text: isNew ? '' : '${base.share}');
   late final _fine = TextEditingController(text: base.fine > 0 ? '${base.fine}' : '');
+  late final _orgName = TextEditingController(text: base.organiserName);
   late String currency = base.currency;
   late int startYear = base.startYear;
   late int startMonth = base.startMonth;
@@ -124,7 +125,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
   @override
   void dispose() {
-    for (final c in [_name, _group, _share, _fine]) {
+    for (final c in [_name, _group, _share, _fine, _orgName]) {
       c.dispose();
     }
     for (final r in rows) {
@@ -290,6 +291,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
     doc.slots = slots;
     doc.organiser = organiser;
     doc.organiserAt = organiser ? organiserAt : 1;
+    doc.organiserName = organiser ? _orgName.text.trim().replaceAll(RegExp(r'\s+'), ' ') : '';
     doc.length = len;
     doc.people
       ..clear()
@@ -497,6 +499,11 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
                   ),
                 ),
                 if (organiser) ...[
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                    child: _field(s.organiserName, _orgName, hint: s.optional, caps: TextCapitalization.words),
+                  ),
                   const Divider(),
                   KChoice(
                     label: s.organiserMonthPick,

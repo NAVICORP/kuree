@@ -121,8 +121,10 @@ void main() {
       // sitting in month 6 instead
       expect([for (var n = 1; n <= 26; n++) k.winnersIn(n)], [1, 1, 1, 1, 1, 0, ...List.filled(15, 1), ...List.filled(5, 2)]);
       expect(k.inHandAfter(26), 0);
+      k.organiserName = 'Thomas';
       final back = KuriDoc.fromJson(wire(k));
       expect(back.organiserAt, 6);
+      expect(back.organiserName, 'Thomas');
       expect(wire(k)['organiserMonth'], 6);
       // month 1 is not written, so chits saved before stay as they were
       final first = KuriDoc(name: 'x', share: 3000, slots: 30, length: 26, organiser: true, startYear: 2026, startMonth: 11);

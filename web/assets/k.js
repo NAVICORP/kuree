@@ -74,6 +74,7 @@
      otherwise) and pays nothing; the slots take the pot in the others */
   function ORG() { return data.organiser === true; }
   function ORGAT() { return Math.min(Math.max(1, Number(data.organiserMonth) || 1), LEN()); }
+  function ORGNAME() { return ORG() && typeof data.organiserName === "string" ? data.organiserName.trim() : ""; }
   function orgMonth(n) { return ORG() && n === ORGAT(); }
   function LEN() { return data.months.length || 1; }
   function PM() { return Math.max(1, LEN() - (ORG() ? 1 : 0)); }
@@ -281,7 +282,7 @@
       : kp < 0 ? '<span class="win__amt">' + money(-kp) + " comes from what earlier months kept, " + money(inHand(m.n)) + " left in hand</span>" : "";
     if (orgMonth(m.n)) {
       winCtl = '<span class="wtag">' + svgi("i-trophy") + "Organiser&rsquo;s month</span>" +
-        '<span class="win__amt">The organiser takes this month&rsquo;s collection, ' + money(POT + fineSum(m)) + "</span>";
+        '<span class="win__amt">' + (ORGNAME() ? esc(ORGNAME()) + ", the organiser, takes" : "The organiser takes") + " this month&rsquo;s collection, " + money(POT + fineSum(m)) + "</span>";
     } else if (k > 1) {
       /* several take the pot: each one, and what each gets */
       var pays = payouts(m), even = pays.every(function (x) { return x === pays[0]; });
@@ -412,7 +413,7 @@
       '<div class="metric"><dt>Last date</dt><dd>' + ord(ld) + "</dd><small>Midnight" + (ld < cd ? ", the month after" : "") + "</small></div>" +
       (FINE() ? '<div class="metric"><dt>Late fine</dt><dd class="num">' + money(FINE()) + "</dd><small>goes to that month&rsquo;s pot</small></div>" : "") +
       (multi() ? '<div class="metric"><dt>Takers each month</dt><dd class="num">' + n + " months</dd><small>" + esc(plan()) + ", " + money(PAY()) + " each</small></div>" : "") +
-      (ORG() ? '<div class="metric"><dt>Organiser&rsquo;s month</dt><dd class="num">Month ' + ORGAT() + '</dd><small>The organiser pays nothing and takes that month&rsquo;s collection</small></div>' : "") +
+      (ORG() ? '<div class="metric"><dt>Organiser&rsquo;s month</dt><dd class="num">Month ' + ORGAT() + '</dd><small>' + (ORGNAME() ? esc(ORGNAME()) + ", the organiser, pays" : "The organiser pays") + ' nothing and takes that month&rsquo;s collection</small></div>' : "") +
       "</dl></div></section>");
 
     app.innerHTML = h.join("");
