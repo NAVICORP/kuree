@@ -24,7 +24,7 @@ import 'package:kuree/ui/language.dart';
 import 'package:kuree/ui/sign_in.dart';
 import 'package:kuree/ui/theme.dart';
 
-const code = 'ml';
+const code = 'en';
 final s = S.forCode(code);
 final taps = <String, List<double>>{};
 
@@ -85,7 +85,7 @@ KuriRecord chit({List<int> m2winners = const [], bool m2allPaid = false}) {
     'updated_at': now.subtract(const Duration(minutes: 3)).toUtc().toIso8601String(),
     'updated_by': 'Rasheed',
     'data': {
-      'name': 'നാട്ടുകൂട്ടം കുറി', 'group': 'Kannur', 'share': 2000, 'slots': 20, 'length': 9,
+      'name': 'Friends Chit', 'group': 'Kannur', 'share': 2000, 'slots': 20, 'length': 9,
       'organiser': true, 'organiserMonth': 5,
       'startYear': start.year, 'startMonth': start.month,
       'collectDay': 10, 'lastDay': 15, 'fine': 100, 'people': people, 'payers': payers,
@@ -164,9 +164,13 @@ void main() {
     File('test_video/shots/taps.json').writeAsStringSync(const JsonEncoder.withIndent(' ').convert(taps));
   });
 
+  // An iPhone 16: 393 x 852 points, the Dynamic Island and home bar
+  // insets at the top and bottom.
   void sized(WidgetTester tester) {
-    tester.view.physicalSize = const Size(1170, 2532);
+    tester.view.physicalSize = const Size(1179, 2556);
     tester.view.devicePixelRatio = 3;
+    tester.view.padding = const FakeViewPadding(top: 177, bottom: 102);
+    tester.view.viewPadding = const FakeViewPadding(top: 177, bottom: 102);
     addTearDown(tester.view.reset);
   }
 
@@ -190,7 +194,7 @@ void main() {
     await shot(tester, 'c1-new');
     final fields = find.byType(TextField);
     taps['c1-new'] = [tester.getCenter(fields.at(0)).dx * 3, tester.getCenter(fields.at(0)).dy * 3];
-    await tester.enterText(fields.at(0), 'നാട്ടുകൂട്ടം കുറി');
+    await tester.enterText(fields.at(0), 'Friends Chit');
     await tester.enterText(fields.at(1), 'Kannur');
     FocusManager.instance.primaryFocus?.unfocus();
     await shot(tester, 'c2-named');
@@ -247,7 +251,7 @@ void main() {
     sized(tester);
     await tester.pumpWidget(phone(HomeScreen(preview: ([chit(), family()], me))));
     await shot(tester, 'd1-home');
-    await tapOn(tester, find.text('നാട്ടുകൂട്ടം കുറി').first, 'd1-home');
+    await tapOn(tester, find.text('Friends Chit').first, 'd1-home');
   });
 
   testWidgets('e a month', (tester) async {
