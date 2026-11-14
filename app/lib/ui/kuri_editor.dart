@@ -61,7 +61,7 @@ class _KuriEditorScreenState extends State<KuriEditorScreen> {
 
   /// The month the organiser takes, kept within the months the chit runs.
   late int _organiserAt = base.organiserAt;
-  int get organiserAt => _organiserAt.clamp(1, length);
+  int get organiserAt => _organiserAt.clamp(1, max(1, length));
   final List<List<_Holder>> rows = [];
   final Map<String, String> phones = {};
   String? error;

@@ -270,7 +270,7 @@ class KuriDoc {
     // Chits saved before the length existed run a month per slot.
     doc.length = j['length'] == null ? doc.slots + org : _int(j['length'], doc.slots + org);
     if (doc.length > doc.slots + org || doc.length < 1 + org) doc.length = doc.slots + org;
-    doc.organiserAt = _int(j['organiserMonth'], 1).clamp(1, doc.length);
+    doc.organiserAt = _int(j['organiserMonth'], 1).clamp(1, max(1, doc.length));
     doc.months.sort((a, b) => a.n.compareTo(b.n));
     doc.fitMonths();
     return doc;
