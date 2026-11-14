@@ -254,13 +254,13 @@ void main() {
     sized(tester);
     await pumpInTab(tester, KuriScreen(record: chit()));
     await shot(tester, 'e1-month');
-    await tester.scrollUntilVisible(find.text('Bindu'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(find.text('Haris'), 200, scrollable: find.byType(Scrollable).first);
     await tester.drag(find.byType(Scrollable).first, const Offset(0, -500));
     await tester.pump();
     await shot(tester, 'e2-members');
-    await tapOn(tester, find.bySemanticsLabel(s.semPaid('Bindu')), 'e2-members');
+    await tapOn(tester, find.bySemanticsLabel(s.semPaid('Sajeev')), 'e2-members');
     await shot(tester, 'e3-marked');
-    await tapOn(tester, find.bySemanticsLabel(s.semPaid('Sajeev')), 'e3-marked');
+    await tapOn(tester, find.bySemanticsLabel(s.semPaid('Haris')), 'e3-marked');
     await shot(tester, 'e4-marked-2');
     final save = find.text(s.save);
     if (save.evaluate().isNotEmpty) taps['e4-marked-2'] = [tester.getCenter(save.first).dx * 3, tester.getCenter(save.first).dy * 3];
