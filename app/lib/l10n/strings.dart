@@ -1369,6 +1369,15 @@ class S {
 
   /// Month {n} already has a taker. Pick another month for the organiser.
   String errOrganiserMonthTaken(Object n) => _fill('errOrganiserMonthTaken', {'n': n});
+
+  /// Organiser's name
+  String get organiserName => _get('organiserName');
+
+  /// Optional
+  String get optional => _get('optional');
+
+  /// {name}, the organiser, takes this month's collection, {amount}
+  String organiserTakesNamed(Object name, Object amount) => _fill('organiserTakesNamed', {'name': name, 'amount': amount});
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
@@ -1881,6 +1890,9 @@ const Map<String, String> _en = {
   'extraChooseTitle': 'One more taker in month {n}',
   'organiserMonthPick': 'Month the organiser takes',
   'errOrganiserMonthTaken': 'Month {n} already has a taker. Pick another month for the organiser.',
+  'organiserName': 'Organiser\'s name',
+  'optional': 'Optional',
+  'organiserTakesNamed': '{name}, the organiser, takes this month\'s collection, {amount}',
 };
 
 const Map<String, String> _ar = {
@@ -2376,6 +2388,9 @@ const Map<String, String> _ar = {
   'extraChooseTitle': 'مستلم إضافي في الشهر {n}',
   'organiserMonthPick': 'الشهر الذي يستلمه المنظّم',
   'errOrganiserMonthTaken': 'الشهر {n} له مستلم بالفعل. اختر شهرًا آخر للمنظّم.',
+  'organiserName': 'اسم المنظّم',
+  'optional': 'اختياري',
+  'organiserTakesNamed': 'يستلم المنظّم {name} جمع هذا الشهر، {amount}',
 };
 
 const Map<String, String> _ml = {
@@ -2871,6 +2886,9 @@ const Map<String, String> _ml = {
   'extraChooseTitle': 'മാസം {n}-ൽ ഒരാൾ കൂടി',
   'organiserMonthPick': 'നടത്തിപ്പുകാരന്റെ മാസം ഏത്',
   'errOrganiserMonthTaken': 'മാസം {n}-ൽ ഇതിനകം ഒരാൾ കുറി എടുത്തു. നടത്തിപ്പുകാരന് മറ്റൊരു മാസം തിരഞ്ഞെടുക്കുക.',
+  'organiserName': 'നടത്തിപ്പുകാരന്റെ പേര്',
+  'optional': 'ഐച്ഛികം',
+  'organiserTakesNamed': 'ഈ മാസത്തെ പിരിവ് {amount} നടത്തിപ്പുകാരൻ {name}-ന്',
 };
 
 const Map<String, String> _ta = {
@@ -3366,6 +3384,9 @@ const Map<String, String> _ta = {
   'extraChooseTitle': 'மாதம் {n} இல் இன்னொருவர்',
   'organiserMonthPick': 'நடத்துநர் எடுக்கும் மாதம்',
   'errOrganiserMonthTaken': 'மாதம் {n}-இல் ஏற்கனவே ஒருவர் எடுத்துவிட்டார். நடத்துநருக்கு வேறு மாதத்தைத் தேர்ந்தெடுக்கவும்.',
+  'organiserName': 'நடத்துநர் பெயர்',
+  'optional': 'விருப்பம்',
+  'organiserTakesNamed': 'இந்த மாத வசூல் {amount} நடத்துநர் {name} அவர்களுக்கு',
 };
 
 const Map<String, String> _kn = {
@@ -3861,6 +3882,9 @@ const Map<String, String> _kn = {
   'extraChooseTitle': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಇನ್ನೊಬ್ಬರು',
   'organiserMonthPick': 'ಸಂಘಟಕರು ತೆಗೆದುಕೊಳ್ಳುವ ತಿಂಗಳು',
   'errOrganiserMonthTaken': 'ತಿಂಗಳು {n} ರಲ್ಲಿ ಈಗಾಗಲೇ ಒಬ್ಬರು ಪಡೆದಿದ್ದಾರೆ. ಸಂಘಟಕರಿಗೆ ಬೇರೆ ತಿಂಗಳು ಆಯ್ಕೆಮಾಡಿ.',
+  'organiserName': 'ಸಂಘಟಕರ ಹೆಸರು',
+  'optional': 'ಐಚ್ಛಿಕ',
+  'organiserTakesNamed': 'ಈ ತಿಂಗಳ ಸಂಗ್ರಹ {amount} ಸಂಘಟಕರಾದ {name} ಅವರಿಗೆ',
 };
 
 const Map<String, String> _hi = {
@@ -4356,6 +4380,9 @@ const Map<String, String> _hi = {
   'extraChooseTitle': 'महीना {n} में एक और लेने वाला',
   'organiserMonthPick': 'आयोजक का कौन सा महीना',
   'errOrganiserMonthTaken': 'महीने {n} में पहले से कोई ले चुका है। आयोजक के लिए दूसरा महीना चुनें।',
+  'organiserName': 'आयोजक का नाम',
+  'optional': 'वैकल्पिक',
+  'organiserTakesNamed': 'इस महीने की वसूली {amount} आयोजक {name} को मिलेगी',
 };
 
 const Map<String, Map<String, String>> _tables = {'en': _en, 'ar': _ar, 'ml': _ml, 'ta': _ta, 'kn': _kn, 'hi': _hi};

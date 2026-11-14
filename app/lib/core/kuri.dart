@@ -182,6 +182,7 @@ class KuriDoc {
     int? length,
     this.organiser = false,
     this.organiserAt = 1,
+    this.organiserName = '',
     required this.startYear,
     required this.startMonth,
     this.collectDay = 20,
@@ -219,6 +220,9 @@ class KuriDoc {
   /// The month the organiser takes, from 1 (the first month unless chosen
   /// otherwise).
   int organiserAt;
+
+  /// The organiser's name, when given; shown with the organiser's month.
+  String organiserName;
   int startYear;
   int startMonth;
 
@@ -239,7 +243,7 @@ class KuriDoc {
   // 'groupLang' was a setting for the group message's language; messages now
   // follow the app's language, so an old value is read and dropped.
   static const _known = {
-    'v', 'name', 'group', 'share', 'slots', 'length', 'organiser', 'organiserMonth', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
+    'v', 'name', 'group', 'share', 'slots', 'length', 'organiser', 'organiserMonth', 'organiserName', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
     'currency', 'groupLang', 'people', 'payers', 'months', 'updated',
   };
 
@@ -271,6 +275,7 @@ class KuriDoc {
     doc.length = j['length'] == null ? doc.slots + org : _int(j['length'], doc.slots + org);
     if (doc.length > doc.slots + org || doc.length < 1 + org) doc.length = doc.slots + org;
     doc.organiserAt = _int(j['organiserMonth'], 1).clamp(1, max(1, doc.length));
+    doc.organiserName = j['organiserName'] is String ? (j['organiserName'] as String).trim() : '';
     doc.months.sort((a, b) => a.n.compareTo(b.n));
     doc.fitMonths();
     return doc;
@@ -286,6 +291,7 @@ class KuriDoc {
         if (length != slots) 'length': length,
         if (organiser) 'organiser': true,
         if (organiser && organiserAt != 1) 'organiserMonth': organiserAt,
+        if (organiser && organiserName.isNotEmpty) 'organiserName': organiserName,
         'startYear': startYear,
         'startMonth': startMonth,
         'collectDay': collectDay,

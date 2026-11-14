@@ -491,5 +491,8 @@
   "extraDraw": "ಹೆಚ್ಚುವರಿ ಡ್ರಾ",
   "extraChooseTitle": "ತಿಂಗಳು {n} ರಲ್ಲಿ ಇನ್ನೊಬ್ಬರು",
   "organiserMonthPick": "ಸಂಘಟಕರು ತೆಗೆದುಕೊಳ್ಳುವ ತಿಂಗಳು",
-  "errOrganiserMonthTaken": "ತಿಂಗಳು {n} ರಲ್ಲಿ ಈಗಾಗಲೇ ಒಬ್ಬರು ಪಡೆದಿದ್ದಾರೆ. ಸಂಘಟಕರಿಗೆ ಬೇರೆ ತಿಂಗಳು ಆಯ್ಕೆಮಾಡಿ."
+  "errOrganiserMonthTaken": "ತಿಂಗಳು {n} ರಲ್ಲಿ ಈಗಾಗಲೇ ಒಬ್ಬರು ಪಡೆದಿದ್ದಾರೆ. ಸಂಘಟಕರಿಗೆ ಬೇರೆ ತಿಂಗಳು ಆಯ್ಕೆಮಾಡಿ.",
+  "organiserName": "ಸಂಘಟಕರ ಹೆಸರು",
+  "optional": "ಐಚ್ಛಿಕ",
+  "organiserTakesNamed": "ಈ ತಿಂಗಳ ಸಂಗ್ರಹ {amount} ಸಂಘಟಕರಾದ {name} ಅವರಿಗೆ"
 }

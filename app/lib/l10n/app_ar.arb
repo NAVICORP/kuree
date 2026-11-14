@@ -491,5 +491,8 @@
   "extraDraw": "سحب إضافي",
   "extraChooseTitle": "مستلم إضافي في الشهر {n}",
   "organiserMonthPick": "الشهر الذي يستلمه المنظّم",
-  "errOrganiserMonthTaken": "الشهر {n} له مستلم بالفعل. اختر شهرًا آخر للمنظّم."
+  "errOrganiserMonthTaken": "الشهر {n} له مستلم بالفعل. اختر شهرًا آخر للمنظّم.",
+  "organiserName": "اسم المنظّم",
+  "optional": "اختياري",
+  "organiserTakesNamed": "يستلم المنظّم {name} جمع هذا الشهر، {amount}"
 }
