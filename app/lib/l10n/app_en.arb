@@ -1123,7 +1123,7 @@
     }
   },
   "organiserMonth": "Organiser's month",
-  "organiserMonthSub": "The organiser pays nothing and takes the first month's collection",
+  "organiserMonthSub": "The organiser pays nothing and takes one month's collection",
   "organiserTakes": "The organiser takes this month's collection, {amount}",
   "@organiserTakes": {
     "placeholders": {
@@ -1184,6 +1184,13 @@
   "extraDraw": "Extra draw",
   "extraChooseTitle": "One more taker in month {n}",
   "@extraChooseTitle": {
+    "placeholders": {
+      "n": {}
+    }
+  },
+  "organiserMonthPick": "Month the organiser takes",
+  "errOrganiserMonthTaken": "Month {n} already has a taker. Pick another month for the organiser.",
+  "@errOrganiserMonthTaken": {
     "placeholders": {
       "n": {}
     }

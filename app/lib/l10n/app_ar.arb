@@ -469,7 +469,7 @@
   "saveAsWinners": "حفظهم مستلمين للشهر {n}",
   "msgDrawResultMany": "{chit}، الشهر {n} ({label})\nاختارت القارورة:\n{list}\n{each} لكل واحد.\nكان في القارورة {count} أسماء. تم السحب {when}.",
   "organiserMonth": "شهر المنظّم",
-  "organiserMonthSub": "المنظّم لا يدفع شيئًا ويستلم جمع الشهر الأول",
+  "organiserMonthSub": "المنظّم لا يدفع شيئًا ويستلم جمع شهر واحد",
   "organiserTakes": "يستلم المنظّم جمع هذا الشهر، {amount}",
   "keptForLater": "يُحفظ {amount} للشهور الأخيرة، والمتوفر {total}",
   "fromKept": "{amount} من المبلغ المحفوظ من الشهور السابقة، ويبقى {total}",
@@ -489,5 +489,7 @@
   "extraDrawTitle": "المتوفر يكفي لشخص آخر",
   "extraDrawText": "المتوفر {hand} يكفي لدفعة أخرى بقيمة {payout}. اسحب مستلمًا إضافيًا هذا الشهر، وتنقص الشهور الأخيرة واحدًا.",
   "extraDraw": "سحب إضافي",
-  "extraChooseTitle": "مستلم إضافي في الشهر {n}"
+  "extraChooseTitle": "مستلم إضافي في الشهر {n}",
+  "organiserMonthPick": "الشهر الذي يستلمه المنظّم",
+  "errOrganiserMonthTaken": "الشهر {n} له مستلم بالفعل. اختر شهرًا آخر للمنظّم."
 }

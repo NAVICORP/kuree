@@ -181,6 +181,7 @@ class KuriDoc {
     required this.slots,
     int? length,
     this.organiser = false,
+    this.organiserAt = 1,
     required this.startYear,
     required this.startMonth,
     this.collectDay = 20,
@@ -207,13 +208,17 @@ class KuriDoc {
 
   /// How many months the chit runs. The same as the slots unless the chit
   /// ends sooner, with more than one slot taking the pot each month (and one
-  /// more when the organiser takes the first month).
+  /// more for the organiser's month).
   int length;
 
-  /// The organiser takes the first month's collection. The organiser is not
-  /// one of the slots and pays nothing; the slots take the pot in the months
-  /// after.
+  /// The organiser takes one month's collection. The organiser is not one
+  /// of the slots and pays nothing; the slots take the pot in the other
+  /// months.
   bool organiser;
+
+  /// The month the organiser takes, from 1 (the first month unless chosen
+  /// otherwise).
+  int organiserAt;
   int startYear;
   int startMonth;
 
@@ -234,7 +239,7 @@ class KuriDoc {
   // 'groupLang' was a setting for the group message's language; messages now
   // follow the app's language, so an old value is read and dropped.
   static const _known = {
-    'v', 'name', 'group', 'share', 'slots', 'length', 'organiser', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
+    'v', 'name', 'group', 'share', 'slots', 'length', 'organiser', 'organiserMonth', 'startYear', 'startMonth', 'collectDay', 'lastDay', 'fine',
     'currency', 'groupLang', 'people', 'payers', 'months', 'updated',
   };
 
@@ -265,6 +270,7 @@ class KuriDoc {
     // Chits saved before the length existed run a month per slot.
     doc.length = j['length'] == null ? doc.slots + org : _int(j['length'], doc.slots + org);
     if (doc.length > doc.slots + org || doc.length < 1 + org) doc.length = doc.slots + org;
+    doc.organiserAt = _int(j['organiserMonth'], 1).clamp(1, doc.length);
     doc.months.sort((a, b) => a.n.compareTo(b.n));
     doc.fitMonths();
     return doc;
@@ -279,6 +285,7 @@ class KuriDoc {
         'slots': slots,
         if (length != slots) 'length': length,
         if (organiser) 'organiser': true,
+        if (organiser && organiserAt != 1) 'organiserMonth': organiserAt,
         'startYear': startYear,
         'startMonth': startMonth,
         'collectDay': collectDay,
@@ -319,11 +326,15 @@ class KuriDoc {
   static int maxLength(int slots, [bool organiser = false]) => slots + (organiser ? 1 : 0);
 
   /// The months in which slots take the pot: all of them, or all but the
-  /// organiser's first month.
+  /// organiser's month.
   int get payoutMonths => max(1, length - (organiser ? 1 : 0));
 
   /// Month n is the organiser's.
-  bool isOrganiserMonth(int n) => organiser && n == 1;
+  bool isOrganiserMonth(int n) => organiser && n == organiserAt;
+
+  /// Which of the payout months month n is: the months after the
+  /// organiser's count one less.
+  static int payoutIndex(int n, bool organiser, int organiserAt) => organiser && n > organiserAt ? n - 1 : n;
 
   /// More than one slot takes the pot in some month.
   bool get multi => payoutMonths < slots;
@@ -332,7 +343,7 @@ class KuriDoc {
   /// extra draws (none in the organiser's month).
   int plannedIn(int n) {
     if (isOrganiserMonth(n)) return 0;
-    return takersIn(slots, payoutMonths, organiser ? n - 1 : n);
+    return takersIn(slots, payoutMonths, payoutIndex(n, organiser, organiserAt));
   }
 
   /// How many slots take the pot in month n: the plan, with extra draws.

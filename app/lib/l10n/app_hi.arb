@@ -469,7 +469,7 @@
   "saveAsWinners": "महीना {n} के रकम लेने वाले सेव करें",
   "msgDrawResultMany": "{chit}, महीना {n} ({label})\nबोतल से निकले:\n{list}\nहर एक को {each}।\nबोतल में {count} नाम थे। ड्रॉ {when}।",
   "organiserMonth": "आयोजक का महीना",
-  "organiserMonthSub": "आयोजक कुछ नहीं देता और पहले महीने की वसूली उसे मिलती है",
+  "organiserMonthSub": "आयोजक कुछ नहीं देता और एक महीने की वसूली उसे मिलती है",
   "organiserTakes": "इस महीने की वसूली {amount} आयोजक को मिलेगी",
   "keptForLater": "{amount} आखिरी महीनों के लिए रखा, हाथ में {total}",
   "fromKept": "{amount} पिछले महीनों में रखे पैसे से, हाथ में बाकी {total}",
@@ -489,5 +489,7 @@
   "extraDrawTitle": "एक और के लिए हाथ में काफ़ी रकम है",
   "extraDrawText": "हाथ में {hand} से एक और को {payout} दिया जा सकता है। इस महीने एक और का ड्रॉ करें, आखिरी महीनों में एक कम लेगा।",
   "extraDraw": "एक और ड्रॉ",
-  "extraChooseTitle": "महीना {n} में एक और लेने वाला"
+  "extraChooseTitle": "महीना {n} में एक और लेने वाला",
+  "organiserMonthPick": "आयोजक का कौन सा महीना",
+  "errOrganiserMonthTaken": "महीने {n} में पहले से कोई ले चुका है। आयोजक के लिए दूसरा महीना चुनें।"
 }
