@@ -199,11 +199,6 @@ void main() {
       await tester.scrollUntilVisible(find.byKey(ValueKey('slot-$i-1')), 200, scrollable: list);
       await tester.enterText(find.byKey(ValueKey('slot-$i-1')), names[i - 1]);
       await tester.pump();
-      if (i == 1) {
-        FocusManager.instance.primaryFocus?.unfocus();
-        await tester.drag(list, const Offset(0, -80));
-        await shot(tester, 'c3-names-1');
-      }
       if (i == 4) {
         FocusManager.instance.primaryFocus?.unfocus();
         await shot(tester, 'c4-names-4');
@@ -259,7 +254,9 @@ void main() {
     sized(tester);
     await pumpInTab(tester, KuriScreen(record: chit()));
     await shot(tester, 'e1-month');
-    await tester.drag(find.byType(ListView).first, const Offset(0, -700));
+    await tester.scrollUntilVisible(find.text('Bindu'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -500));
+    await tester.pump();
     await shot(tester, 'e2-members');
     await tapOn(tester, find.bySemanticsLabel(s.semPaid('Bindu')), 'e2-members');
     await shot(tester, 'e3-marked');
@@ -338,7 +335,7 @@ void main() {
     await shot(tester, 'j2-to-collect');
   });
 
-  test('k draw frames', () async {
+  test('k draw frames', timeout: const Timeout(Duration(minutes: 40)), () async {
     final k = chit(m2allPaid: true).doc;
     final order = [for (final w in k.waitingSlots()) DrawEntry(w, k.slotName(w))];
     final scene = BottleScene(
